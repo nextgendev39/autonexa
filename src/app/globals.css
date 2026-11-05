@@ -1,0 +1,403 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-app), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-display);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-strong: var(--brand-strong);
+  --color-chrome: var(--chrome);
+
+  /* Motion system — every entrance uses fill-mode "backwards" so no transform
+     lingers after the animation (a lingering transform would trap position:fixed). */
+  --animate-rise: rise 0.55s var(--ease-out-expo) backwards;
+  --animate-page-in: page-in 0.45s var(--ease-out-expo) backwards;
+  --animate-fade-in: fade-in 0.4s ease-out backwards;
+  --animate-pop: pop 0.45s var(--ease-spring) backwards;
+  --animate-grow-x: grow-x 0.9s var(--ease-out-expo) backwards;
+  --animate-grow-y: grow-y 0.9s var(--ease-out-expo) backwards;
+  --animate-draw: draw 1.4s var(--ease-out-expo) backwards;
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+  --animate-sheen: sheen 3.2s ease-in-out infinite;
+  --animate-drift: drift 14s ease-in-out infinite alternate;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-ping-soft: ping-soft 2.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  --animate-speed: speed 2.4s linear infinite;
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(14px) scale(0.985);
+    }
+  }
+  @keyframes page-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+      filter: blur(2px);
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+  }
+  @keyframes grow-x {
+    from {
+      transform: scaleX(0);
+    }
+  }
+  @keyframes grow-y {
+    from {
+      transform: scaleY(0);
+    }
+  }
+  @keyframes draw {
+    from {
+      stroke-dashoffset: 1;
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 150% 0;
+    }
+    to {
+      background-position: -50% 0;
+    }
+  }
+  @keyframes sheen {
+    0%,
+    55% {
+      transform: translateX(-120%) skewX(-18deg);
+    }
+    100% {
+      transform: translateX(220%) skewX(-18deg);
+    }
+  }
+  @keyframes drift {
+    from {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    to {
+      transform: translate3d(6%, -8%, 0) scale(1.12);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+  @keyframes ping-soft {
+    75%,
+    100% {
+      transform: scale(2.4);
+      opacity: 0;
+    }
+  }
+  @keyframes speed {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(400%);
+    }
+  }
+  --shadow-xs: 0 1px 2px hsl(var(--shadow-color) / 0.05);
+  --shadow-sm:
+    0 1px 2px hsl(var(--shadow-color) / 0.04), 0 2px 6px -1px hsl(var(--shadow-color) / 0.06);
+  --shadow-md:
+    0 2px 4px hsl(var(--shadow-color) / 0.04), 0 8px 20px -4px hsl(var(--shadow-color) / 0.1);
+  --shadow-lg:
+    0 4px 8px hsl(var(--shadow-color) / 0.05), 0 18px 40px -8px hsl(var(--shadow-color) / 0.16);
+  /* One corner radius across the app: every rounded-* size resolves to --radius (4px).
+     rounded-full stays round for avatars, dots, pills and switches. */
+  --radius-xs: var(--radius);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+  --radius-2xl: var(--radius);
+  --radius-3xl: var(--radius);
+  --radius-4xl: var(--radius);
+}
+
+:root {
+  /* AutoNexa — "Carbon & Gold": the showroom palette lifted from the
+     shield logo (carbon black, chrome silver, metallic gold rim). */
+  --font-app: var(--font-latin), var(--font-arabic);
+  --font-display: var(--font-heading-latin), var(--font-latin), var(--font-arabic);
+  --background: oklch(0.972 0.003 255);
+  --foreground: oklch(0.2 0.008 265);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.008 265);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.008 265);
+  --primary: oklch(0.21 0.009 265);
+  --primary-foreground: oklch(0.985 0.002 90);
+  --secondary: oklch(0.945 0.004 255);
+  --secondary-foreground: oklch(0.24 0.01 265);
+  --muted: oklch(0.952 0.004 255);
+  --muted-foreground: oklch(0.5 0.012 260);
+  --accent: oklch(0.95 0.02 85);
+  --accent-foreground: oklch(0.24 0.01 265);
+  --destructive: oklch(0.57 0.21 25);
+  --border: oklch(0.9 0.006 255);
+  --input: oklch(0.85 0.008 255);
+  --ring: oklch(0.72 0.13 80);
+  --brand: oklch(0.72 0.135 78);
+  --brand-strong: oklch(0.62 0.13 70);
+  --brand-foreground: oklch(0.18 0.01 265);
+  --brand-soft: oklch(0.72 0.135 78 / 13%);
+  --chrome: oklch(0.82 0.008 255);
+  --chart-1: oklch(0.72 0.135 78);
+  --chart-2: oklch(0.42 0.02 265);
+  --chart-3: oklch(0.62 0.13 160);
+  --chart-4: oklch(0.66 0.15 45);
+  --chart-5: oklch(0.6 0.04 250);
+  --radius: 4px;
+  --shadow-color: 260 15% 12%;
+  --sidebar: oklch(0.165 0.006 265);
+  --sidebar-foreground: oklch(0.93 0.004 255);
+  --sidebar-primary: oklch(0.8 0.13 82);
+  --sidebar-primary-foreground: oklch(0.18 0.01 265);
+  --sidebar-accent: oklch(0.235 0.008 265);
+  --sidebar-accent-foreground: oklch(0.985 0.002 90);
+  --sidebar-border: oklch(0.28 0.008 265);
+  --sidebar-ring: oklch(0.8 0.13 82);
+  /* Metallic finishes used by the brand surfaces. */
+  --gold-gradient: linear-gradient(
+    135deg,
+    oklch(0.86 0.11 88) 0%,
+    oklch(0.74 0.14 78) 38%,
+    oklch(0.6 0.12 65) 70%,
+    oklch(0.8 0.12 85) 100%
+  );
+  --chrome-gradient: linear-gradient(
+    180deg,
+    oklch(0.98 0.002 255) 0%,
+    oklch(0.8 0.008 255) 48%,
+    oklch(0.62 0.01 255) 52%,
+    oklch(0.9 0.004 255) 100%
+  );
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  color-scheme: light;
+}
+
+html[lang="ar"] {
+  --font-app: var(--font-arabic), var(--font-latin);
+  --font-display: var(--font-arabic), var(--font-heading-latin);
+}
+
+.dark {
+  --background: oklch(0.14 0.004 265);
+  --foreground: oklch(0.95 0.004 90);
+  --card: oklch(0.18 0.005 265);
+  --card-foreground: oklch(0.95 0.004 90);
+  --popover: oklch(0.21 0.006 265);
+  --popover-foreground: oklch(0.95 0.004 90);
+  --primary: oklch(0.8 0.13 82);
+  --primary-foreground: oklch(0.17 0.008 265);
+  --secondary: oklch(0.25 0.006 265);
+  --secondary-foreground: oklch(0.95 0.004 90);
+  --muted: oklch(0.24 0.006 265);
+  --muted-foreground: oklch(0.72 0.01 255);
+  --accent: oklch(0.27 0.012 80);
+  --accent-foreground: oklch(0.95 0.004 90);
+  --destructive: oklch(0.7 0.17 25);
+  --border: oklch(0.95 0.004 255 / 10%);
+  --input: oklch(0.95 0.004 255 / 15%);
+  --ring: oklch(0.8 0.13 82);
+  --brand: oklch(0.8 0.13 82);
+  --brand-strong: oklch(0.86 0.11 88);
+  --brand-foreground: oklch(0.17 0.008 265);
+  --brand-soft: oklch(0.8 0.13 82 / 13%);
+  --chrome: oklch(0.7 0.008 255);
+  --shadow-color: 265 30% 2%;
+  --chart-1: oklch(0.8 0.13 82);
+  --chart-2: oklch(0.72 0.012 255);
+  --chart-3: oklch(0.72 0.12 160);
+  --chart-4: oklch(0.74 0.13 50);
+  --chart-5: oklch(0.6 0.03 250);
+  --sidebar: oklch(0.115 0.004 265);
+  --sidebar-foreground: oklch(0.93 0.004 255);
+  --sidebar-primary: oklch(0.8 0.13 82);
+  --sidebar-primary-foreground: oklch(0.17 0.008 265);
+  --sidebar-accent: oklch(0.2 0.006 265);
+  --sidebar-accent-foreground: oklch(0.97 0.004 90);
+  --sidebar-border: oklch(0.95 0.004 255 / 8%);
+  --sidebar-ring: oklch(0.8 0.13 82);
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply h-full overflow-hidden font-sans;
+  }
+  body {
+    @apply bg-background text-foreground h-full overflow-hidden;
+    font-feature-settings: "cv11", "ss01";
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--brand-soft);
+  }
+  /* Tailwind v4 leaves buttons on the default cursor; show a pointer on everything clickable. */
+  a[href],
+  button,
+  summary,
+  label[for],
+  select,
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="file"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  [role="button"],
+  [role="link"],
+  [role="tab"],
+  [role="menuitem"],
+  [role="menuitemcheckbox"],
+  [role="menuitemradio"],
+  [role="option"],
+  [role="checkbox"],
+  [role="radio"],
+  [role="switch"],
+  [role="combobox"],
+  [data-slot="select-trigger"],
+  [onclick] {
+    cursor: pointer;
+  }
+  :is(button, input, select, [role="button"], [role="option"], [role="menuitem"], [role="tab"]):is(
+      :disabled,
+      [aria-disabled="true"],
+      [data-disabled]
+    ) {
+    cursor: not-allowed;
+  }
+  /* Slim, theme-aware scrollbars for the scrolling panes. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 18%, transparent) transparent;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* Staggered entrance: children rise one after another. Set --stagger on the
+   parent to change the step. */
+@utility stagger {
+  & > * {
+    animation: var(--animate-rise);
+    animation-delay: calc(var(--stagger, 70ms) * var(--i, 0));
+  }
+  & > :nth-child(2) { --i: 1; }
+  & > :nth-child(3) { --i: 2; }
+  & > :nth-child(4) { --i: 3; }
+  & > :nth-child(5) { --i: 4; }
+  & > :nth-child(6) { --i: 5; }
+  & > :nth-child(7) { --i: 6; }
+  & > :nth-child(8) { --i: 7; }
+  & > :nth-child(9) { --i: 8; }
+  & > :nth-child(n + 10) { --i: 9; }
+}
+
+/* Metallic gold text, e.g. hero headlines and KPI highlights. */
+@utility text-gold {
+  background-image: var(--gold-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+@utility bg-gold {
+  background-image: var(--gold-gradient);
+}
+
+/* A light glint that sweeps across a surface (needs relative + overflow-hidden). */
+@utility sheen {
+  &::after {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 40%;
+    pointer-events: none;
+    background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.35), transparent);
+    animation: var(--animate-sheen);
+  }
+}
+
+/* Woven carbon-fibre texture for dark brand panels. */
+@utility bg-carbon {
+  background-color: var(--sidebar);
+  background-image:
+    linear-gradient(45deg, oklch(1 0 0 / 0.025) 25%, transparent 25%, transparent 75%, oklch(1 0 0 / 0.025) 75%),
+    linear-gradient(45deg, oklch(1 0 0 / 0.025) 25%, transparent 25%, transparent 75%, oklch(1 0 0 / 0.025) 75%),
+    linear-gradient(135deg, oklch(0 0 0 / 0.25) 25%, transparent 25%, transparent 75%, oklch(0 0 0 / 0.25) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px, 0 0;
+}

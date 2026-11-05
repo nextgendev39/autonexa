@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "autonexa-dev", "url": "http://localhost:3003", "port": 3003 }
+  ]
+}

@@ -1,0 +1,4 @@
+-- Snapshot anchor only. The existing Supabase migrations 00001–00046 install
+-- the complete baseline, including functions, triggers, policies, and grants.
+-- Do not execute this directory with the Drizzle migrator.
+-- New Drizzle SQL is published to supabase/migrations by npm run db:generate.

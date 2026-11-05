@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { getUserContext } from "@/lib/auth/session";
 import { hasPermission, type Permission } from "@/lib/permissions";
+import { permissionAllowedByPlan, type PlanFeature } from "@/lib/platform/features";
 import type { UserContext } from "@/types/auth";
 
 export type ApiErrorBody = {
@@ -58,7 +59,23 @@ export async function requireApiUser(
     };
   }
 
+  if (permission && !permissionAllowedByPlan(permission, context.disabledFeatures)) {
+    return { response: planFeatureError() };
+  }
+
   return { context };
+}
+
+function planFeatureError() {
+  return jsonError("feature_disabled", "This module isn't included in your plan.", 403);
+}
+
+/**
+ * For routes that take no permission up front and go on to definer functions or service-role code.
+ * Returns the response to send when the dealership's plan doesn't include the module.
+ */
+export function planFeatureGate(context: UserContext, feature: PlanFeature) {
+  return context.disabledFeatures.includes(feature) ? planFeatureError() : null;
 }
 
 export async function readJsonBody(request: Request): Promise<unknown> {

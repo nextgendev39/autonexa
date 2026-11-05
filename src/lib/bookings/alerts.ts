@@ -58,7 +58,7 @@ async function createBookingAlert(kind: BookingEvent, bookingId: string, actorId
     admin
       .from("reservations")
       .select(
-        "reservation_number, salesperson_id, selling_price, amount, currency, units, cancel_reason, vehicle_id, cancellation_hold_reason, cancellation_hold_requested_by, cancellation_hold_review_note, vehicles(stock_number, year, make, model, quantity), customers(display_name)",
+        "branch_id, reservation_number, salesperson_id, selling_price, amount, currency, units, cancel_reason, vehicle_id, cancellation_hold_reason, cancellation_hold_requested_by, cancellation_hold_review_note, vehicles(stock_number, year, make, model, quantity), customers(display_name)",
       )
       .eq("id", bookingId)
       .maybeSingle(),
@@ -66,6 +66,7 @@ async function createBookingAlert(kind: BookingEvent, bookingId: string, actorId
   ]);
 
   const booking = bookingRow as unknown as {
+    branch_id: string;
     reservation_number: string;
     salesperson_id: string | null;
     selling_price: number | string | null;
@@ -94,7 +95,7 @@ async function createBookingAlert(kind: BookingEvent, bookingId: string, actorId
   // events stay with admins and the sales executive, minus whoever acted.
   const recipients =
     kind === "sold"
-      ? await listActiveUserIds(admin)
+      ? await listActiveUserIds(admin, booking.branch_id)
       : kind === "hold_requested"
         ? superAdmins
         : kind === "hold_approved" || kind === "hold_rejected"

@@ -24,7 +24,10 @@ export function MobileNav() {
   const { can, user } = usePermission();
   const [moreOpen, setMoreOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
-  const filtered = useMemo(() => filterNavigation(navigation, can, user.roles), [can, user.roles]);
+  const filtered = useMemo(
+    () => filterNavigation(navigation, can, user.roles, user.canManageCatalog, user.disabledFeatures),
+    [can, user.roles, user.canManageCatalog, user.disabledFeatures],
+  );
   const allowedQuickActions = useMemo(
     () => quickActions.filter((action) => can(action.permission)),
     [can],

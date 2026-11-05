@@ -1,9 +1,11 @@
-import { jsonError, jsonOk, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { getAcquisitionMeta } from "@/lib/acquisitions/service";
 
 export async function GET(request: Request) {
   const auth = await requireApiUser("acquisition.view");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const url = new URL(request.url);
   const branchId = url.searchParams.get("branchId") ?? undefined;

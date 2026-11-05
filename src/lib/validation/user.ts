@@ -6,6 +6,8 @@ export const inviteUserSchema = z.object({
   firstName: z.string().trim().min(1, { error: validationMessages.required }),
   lastName: z.string().trim().min(1, { error: validationMessages.required }),
   roleKey: z.string().min(1, { error: validationMessages.required }),
+  /** Limits the role to one branch. Absent or null means every branch. */
+  branchId: z.uuid().nullable().optional(),
 });
 
 // "invited" is excluded: it is only set by the invite flow and cleared by verification.
@@ -18,6 +20,7 @@ export const updateUserSchema = z.object({
   lastName: z.string().trim().min(1, { error: validationMessages.required }).optional(),
   roleKey: z.string().min(1, { error: validationMessages.required }).optional(),
   status: editableUserStatusSchema.optional(),
+  branchId: z.uuid().nullable().optional(),
 });
 
 export const editUserFormSchema = inviteUserSchema.extend({

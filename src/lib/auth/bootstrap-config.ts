@@ -8,6 +8,17 @@ export function isBootstrapEnabled() {
   return getBootstrapSecret().length >= 16;
 }
 
+/** A separate secret for the first AutoNexa platform owner. Refused if it's the same as the other. */
+export function getPlatformBootstrapSecret() {
+  const secret = process.env.PLATFORM_BOOTSTRAP_SECRET?.trim() || "";
+  return secret.length >= 16 && secret !== getBootstrapSecret() ? secret : "";
+}
+
+/** Whether the setup page exists at all. */
+export function isAnyBootstrapEnabled() {
+  return isBootstrapEnabled() || getPlatformBootstrapSecret().length > 0;
+}
+
 export function secretsMatch(provided: string, expected: string) {
   if (!provided || !expected || provided.length !== expected.length) {
     return false;

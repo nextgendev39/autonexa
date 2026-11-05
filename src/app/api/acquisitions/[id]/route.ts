@@ -1,6 +1,6 @@
 import { firstFieldErrors } from "@/lib/validation";
 import { updateAcquisitionSchema } from "@/lib/validation/acquisition";
-import { jsonError, jsonOk, readJsonBody, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, readJsonBody, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { getAcquisition, updateAcquisition } from "@/lib/acquisitions/service";
 
 function statusForCode(code: string) {
@@ -24,6 +24,8 @@ export async function GET(
 ) {
   const auth = await requireApiUser("acquisition.view");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const { id } = await context.params;
   const result = await getAcquisition(id, auth.context);
@@ -39,6 +41,8 @@ export async function PATCH(
 ) {
   const auth = await requireApiUser("acquisition.edit");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const body = await readJsonBody(request);
   if (!body || typeof body !== "object") {

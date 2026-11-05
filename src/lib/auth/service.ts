@@ -1,6 +1,10 @@
+import { createHash } from "node:crypto";
+
 import { authErrorKeys, mapAuthError } from "@/lib/auth/errors";
-import { getBootstrapSecret, isBootstrapEnabled, secretsMatch } from "@/lib/auth/bootstrap-config";
+import { getBootstrapSecret, isBootstrapEnabled, secretsMatch, getPlatformBootstrapSecret, isAnyBootstrapEnabled } from "@/lib/auth/bootstrap-config";
 import { hasServiceRoleKey, platformClient } from "@/lib/server/privileged";
+import { createFirstOwner } from "@/lib/server/privileged/platform";
+import { hitRateLimit } from "@/lib/server/privileged/storefront";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -172,8 +176,13 @@ export async function acceptInvitation(input: ResetPasswordValues): Promise<Auth
   return authSuccessState("/dashboard");
 }
 
-export async function bootstrapAdmin(input: BootstrapAdminValues): Promise<AuthActionState> {
-  if (!isBootstrapEnabled()) {
+/**
+ * The secret decides what's created: the platform secret makes the first AutoNexa platform owner, and
+ * the bootstrap secret the first dealership Super Admin. Checked before anything else, so without a
+ * secret nobody can learn whether an owner exists or whether an email is taken.
+ */
+export async function bootstrapAdmin(input: BootstrapAdminValues, address = "unknown"): Promise<AuthActionState> {
+  if (!isAnyBootstrapEnabled()) {
     return authErrorState("auth.bootstrap.disabled");
   }
 
@@ -190,8 +199,26 @@ export async function bootstrapAdmin(input: BootstrapAdminValues): Promise<AuthA
     return authFieldErrorState(firstFieldErrors(parsed.error));
   }
 
-  const expected = getBootstrapSecret();
-  if (!secretsMatch(parsed.data.secret, expected)) {
+  // Guesses are limited per address, and overall in case addresses are spoofed.
+  const addressKey = createHash("sha256").update(address).digest("hex");
+  const allowed =
+    (await hitRateLimit(`bootstrap:${addressKey}`, 5, 60 * 60)) && (await hitRateLimit("bootstrap:all", 20, 60 * 60));
+  if (!allowed) return authErrorState("auth.bootstrap.tooMany");
+
+  if (secretsMatch(parsed.data.secret, getPlatformBootstrapSecret())) {
+    const { error } = await createFirstOwner({
+      email: parsed.data.email,
+      firstName: parsed.data.firstName,
+      lastName: parsed.data.lastName,
+      password: parsed.data.password,
+    });
+    if (error === "already_exists") return authErrorState("auth.bootstrap.platformExists");
+    if (error === "email_taken") return authFieldErrorState({ email: "auth.bootstrap.userExists" });
+    if (error) return authErrorState("auth.bootstrap.schemaMissing");
+    return authSuccessState("/login");
+  }
+
+  if (!isBootstrapEnabled() || !secretsMatch(parsed.data.secret, getBootstrapSecret())) {
     return authErrorState("auth.bootstrap.invalidSecret");
   }
 

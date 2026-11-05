@@ -4,9 +4,11 @@ import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/layout/page-header";
 import { DisplayPreferences } from "@/components/settings/display-preferences";
 import { PaymentTermsCard } from "@/components/settings/payment-terms-card";
+import { PlanCard } from "@/components/settings/plan-card";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requirePagePermission } from "@/lib/auth/authorize";
 import { hasPermission } from "@/lib/permissions";
+import { getDealershipPlan, listOwnInvoices } from "@/lib/platform/dealership";
 import { getPaymentTerms } from "@/lib/settings/payment-terms";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -17,7 +19,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SettingsPage() {
   const context = await requirePagePermission("settings.view");
   const t = await getTranslations();
-  const paymentTerms = await getPaymentTerms();
+  const [paymentTerms, plan, invoices] = await Promise.all([
+    getPaymentTerms(),
+    getDealershipPlan(),
+    listOwnInvoices(),
+  ]);
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
@@ -26,6 +32,7 @@ export default async function SettingsPage() {
         initial={paymentTerms}
         canManage={hasPermission(context.permissions, "settings.manage", context.roles)}
       />
+      {plan ? <PlanCard plan={plan} invoices={invoices} /> : null}
       <Card>
         <CardHeader>
           <CardTitle>{t("settings.display")}</CardTitle>

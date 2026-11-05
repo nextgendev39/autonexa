@@ -30,15 +30,19 @@ import {
 import { postAuthJson } from "@/lib/auth/client";
 import { firstFieldErrors } from "@/lib/validation";
 import { inviteUserSchema } from "@/lib/validation/user";
-import type { RoleOption } from "@/lib/users/service";
+import type { BranchOption, RoleOption } from "@/lib/users/service";
 import { roleLabel } from "@/components/users/role-label";
 import { RoleChip } from "@/components/users/role-chip";
 
+const ALL_BRANCHES = "all";
+
 export function InviteUserDialog({
   roles,
+  branches,
   onSuccess,
 }: {
   roles: RoleOption[];
+  branches: BranchOption[];
   onSuccess: () => void;
 }) {
   const t = useTranslations("modules.users");
@@ -54,6 +58,7 @@ export function InviteUserDialog({
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [roleKey, setRoleKey] = useState("");
+  const [branchId, setBranchId] = useState(ALL_BRANCHES);
   const [submitted, setSubmitted] = useState(false);
 
   function validate(values: {
@@ -94,7 +99,13 @@ export function InviteUserDialog({
     if (!validate({ email, firstName, lastName, roleKey })) return;
 
     setLoading(true);
-    const result = await postAuthJson("/api/users/invite", { email, firstName, lastName, roleKey });
+    const result = await postAuthJson("/api/users/invite", {
+      email,
+      firstName,
+      lastName,
+      roleKey,
+      branchId: branchId === ALL_BRANCHES ? null : branchId,
+    });
 
     setLoading(false);
 
@@ -239,6 +250,32 @@ export function InviteUserDialog({
                 </SelectContent>
               </Select>
             </FormField>
+
+            {branches.length > 1 && (
+              <FormField label={t("branchAccess")} htmlFor="invite-branch" hint={t("branchHint")}>
+                <Select
+                  value={branchId}
+                  onValueChange={(v) => setBranchId(v ?? ALL_BRANCHES)}
+                  disabled={loading}
+                >
+                  <SelectTrigger id="invite-branch" className="w-full">
+                    <SelectValue>
+                      {(value: string | null) =>
+                        branches.find((b) => b.id === value)?.name ?? t("branchAll")
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL_BRANCHES}>{t("branchAll")}</SelectItem>
+                    {branches.map((branch) => (
+                      <SelectItem key={branch.id} value={branch.id}>
+                        {branch.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+            )}
 
             {formError && (
               <Alert variant="destructive">

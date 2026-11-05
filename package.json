@@ -27,10 +27,11 @@
     "db:test:security": "supabase db query -f supabase/tests/rls_security_checks.sql",
     "db:test:inventory": "supabase db query -f supabase/tests/phase5_inventory.sql",
     "db:test:acquisitions": "supabase db query -f supabase/tests/phase6_acquisitions.sql",
-    "test": "node scripts/test-vehicle-transitions.mjs && node scripts/test-acquisition-transitions.mjs && node scripts/test-inspection-transitions.mjs && node scripts/test-vehicle-photo-validation.mjs && node scripts/test-acquisition-document-validation.mjs && node scripts/test-vehicle-catalog.mjs && node scripts/test-email-verification.mjs && tsx --test scripts/test-sales-pricing-view.test.ts scripts/test-password-reset.test.ts scripts/test-vehicle-form-rules.test.ts scripts/test-booking-validation.test.ts scripts/test-pricing-discount.test.ts scripts/test-booking-list-query.test.ts scripts/test-customer-list-query.test.ts scripts/test-booking-cancellation-hold.test.ts",
+    "test": "node scripts/test-vehicle-transitions.mjs && node scripts/test-acquisition-transitions.mjs && node scripts/test-inspection-transitions.mjs && node scripts/test-vehicle-photo-validation.mjs && node scripts/test-acquisition-document-validation.mjs && node scripts/test-vehicle-catalog.mjs && node scripts/test-email-verification.mjs && tsx --test scripts/test-sales-pricing-view.test.ts scripts/test-password-reset.test.ts scripts/test-vehicle-form-rules.test.ts scripts/test-booking-validation.test.ts scripts/test-pricing-discount.test.ts scripts/test-booking-list-query.test.ts scripts/test-customer-list-query.test.ts scripts/test-booking-cancellation-hold.test.ts && npm run db:test:tenants",
     "catalog:generate": "node scripts/generate-vehicle-catalog-seed.mjs",
     "test:transitions": "node scripts/test-vehicle-transitions.mjs && node scripts/test-acquisition-transitions.mjs && node scripts/test-inspection-transitions.mjs",
-    "db:test:tenants": "tsx --test scripts/database/tenancy/*.test.ts"
+    "db:test:tenants": "tsx --test scripts/database/tenancy/*.test.ts",
+    "test:storefront:http": "bash scripts/storefront-smoke/run.sh"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

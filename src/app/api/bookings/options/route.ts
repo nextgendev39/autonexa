@@ -1,10 +1,12 @@
-import { jsonError, jsonOk, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { canSellDirectly, listBookingOptions } from "@/lib/bookings/service";
 import { hasPermission } from "@/lib/permissions";
 
 export async function GET() {
   const auth = await requireApiUser();
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "bookings");
+  if (offPlan) return offPlan;
   // The same options serve the booking form and the direct sale form.
   const { context } = auth;
   if (!hasPermission(context.permissions, "reservation.create", context.roles) && !canSellDirectly(context)) {

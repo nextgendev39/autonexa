@@ -739,6 +739,19 @@ export async function createBooking(
     !!id && salesExecutives.some((p) => p.id === id);
 
   if (values.customerMode === "existing") {
+    // Read through the session: the ID came from the browser, and a customer of a branch the
+    // caller can't see must not be reachable by naming it.
+    const { data: visibleCustomer } = await supabase
+      .from("customers")
+      .select("id")
+      .eq("id", customerId!)
+      .is("deleted_at", null)
+      .maybeSingle();
+    if (!visibleCustomer) {
+      return fail("not_found", "Customer not found.", {
+        customerId: "bookings.errors.customerNotFound",
+      });
+    }
     // Existing customers always stay with the sales executive from their first booking.
     salespersonId = (await customerOwners([customerId!])).get(customerId!) ?? null;
   } else {

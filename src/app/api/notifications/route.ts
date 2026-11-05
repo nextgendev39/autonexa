@@ -14,7 +14,7 @@ export async function GET() {
 
   // Every signed-in client polls this route, so it doubles as the payment-deadline trigger.
   // Awaited so a deadline that just passed shows up in this same response.
-  const nextDeadlineAt = await maybeRunBookingDeadlineSweep();
+  const nextDeadlineAt = await maybeRunBookingDeadlineSweep(auth.context);
 
   const result = await listNotifications();
   if (result.error !== null) return jsonError("db_error", result.error, 500);

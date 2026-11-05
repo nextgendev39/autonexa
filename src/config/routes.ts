@@ -16,8 +16,11 @@ export const protectedPrefixes = [
   "/audit-logs",
   "/notifications",
   "/settings",
+  "/storefront",
+  "/billing",
   "/profile",
   "/unauthorized",
+  "/platform",
 ] as const;
 
 const publicAuthPaths = new Set([
@@ -63,6 +66,8 @@ export const breadcrumbLabels: Record<string, string> = {
   "audit-logs": "nav.auditLogs",
   notifications: "nav.notifications",
   settings: "nav.settings",
+  storefront: "nav.storefront",
+  billing: "nav.billing",
   profile: "nav.profile",
   new: "common.new",
   edit: "inventory.actions.edit",

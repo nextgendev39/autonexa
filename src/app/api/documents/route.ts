@@ -1,4 +1,4 @@
-import { jsonError, jsonOk, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { listStaffDocuments, uploadStaffDocument } from "@/lib/staff-documents/service";
 import { firstFieldErrors } from "@/lib/validation";
 import { staffDocumentMetaSchema } from "@/lib/validation/staff-document";
@@ -6,6 +6,8 @@ import { staffDocumentMetaSchema } from "@/lib/validation/staff-document";
 export async function GET(request: Request) {
   const auth = await requireApiUser("document.view");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "staff_documents");
+  if (offPlan) return offPlan;
   const scope = new URL(request.url).searchParams.get("scope") === "all" ? "all" : "mine";
   const result = await listStaffDocuments(auth.context, scope);
   if (result.error) return jsonError(result.error.code, result.error.message, 500);
@@ -16,6 +18,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const auth = await requireApiUser("document.view");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "staff_documents");
+  if (offPlan) return offPlan;
 
   const form = await request.formData().catch(() => null);
   const file = form?.get("file");

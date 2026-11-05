@@ -1,6 +1,8 @@
 import { z } from "zod";
 
 import { jsonError, jsonOk, requireApiUser } from "@/lib/api/http";
+import { canPlatform } from "@/lib/platform/permissions";
+import { getPlatformContext } from "@/lib/platform/session";
 import {
   listCatalogMakes,
   listCatalogModels,
@@ -110,8 +112,12 @@ const bodySchema = z.discriminatedUnion("action", [
 ]);
 
 export async function GET(request: Request) {
-  const auth = await requireApiUser("settings.view");
-  if ("response" in auth) return auth.response;
+  // Platform staff have no dealership, so they can't come through requireApiUser.
+  const staff = await getPlatformContext();
+  if (!staff || !canPlatform(staff, "catalog.manage")) {
+    const auth = await requireApiUser("settings.view");
+    if ("response" in auth) return auth.response;
+  }
 
   const url = new URL(request.url);
   const makeId = url.searchParams.get("makeId") ?? undefined;
@@ -145,8 +151,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const auth = await requireApiUser("settings.manage");
-  if ("response" in auth) return auth.response;
+  // The catalog is shared by every dealership. RLS enforces this too; here it gets a clear answer.
+  const staff = await getPlatformContext();
+  if (!staff || !canPlatform(staff, "catalog.manage")) {
+    return jsonError("forbidden", "The vehicle catalog is managed by AutoNexa.", 403);
+  }
 
   let json: unknown;
   try {
@@ -163,9 +172,6 @@ export async function POST(request: Request) {
   const body = parsed.data;
 
   if (body.action === "update" || body.action === "delete") {
-    if (!auth.context.roles.includes("super_admin")) {
-      return jsonError("forbidden", "Only Super Admins can edit or delete catalog items.", 403);
-    }
     const result =
       body.action === "update"
         ? await updateCatalogItem(body.table, body.id, body)

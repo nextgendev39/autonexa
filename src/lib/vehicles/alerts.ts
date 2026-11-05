@@ -16,7 +16,7 @@ const TYPES: Record<VehicleEvent, string> = {
 };
 
 /**
- * Tells every active user, including whoever acted, that a car is ready for sale or was sold
+ * Tells every active user who can reach the car's branch, including whoever acted, that a car is ready for sale or was sold
  * outside a booking, in-app and by push on every browser they subscribed from. Runs after the
  * response so the update isn't held up.
  */
@@ -34,17 +34,17 @@ export function alertVehicleEvent(kind: VehicleEvent, vehicleId: string, actorId
 async function createVehicleAlert(kind: VehicleEvent, vehicleId: string, actorId: string) {
   // Runs after the response: the dealership comes from the person who acted.
   const admin = await tenantClientForUser(actorId);
-  const [userIds, { data: vehicleRow }, { data: actorRow }] = await Promise.all([
-    listActiveUserIds(admin),
+  const [{ data: vehicleRow }, { data: actorRow }] = await Promise.all([
     admin
       .from("vehicles")
-      .select("stock_number, year, make, model, quantity")
+      .select("branch_id, stock_number, year, make, model, quantity")
       .eq("id", vehicleId)
       .maybeSingle(),
     admin.from("profiles").select("display_name").eq("id", actorId).maybeSingle(),
   ]);
 
   const vehicle = vehicleRow as {
+    branch_id: string;
     stock_number: string | null;
     year: number | null;
     make: string | null;
@@ -53,6 +53,7 @@ async function createVehicleAlert(kind: VehicleEvent, vehicleId: string, actorId
   } | null;
   // The vehicle may have been rolled back (e.g. a failed acquisition) before this ran.
   if (!vehicle) return;
+  const userIds = await listActiveUserIds(admin, vehicle.branch_id);
 
   const actorName = (actorRow as { display_name: string } | null)?.display_name ?? null;
   const vehicleTitle =

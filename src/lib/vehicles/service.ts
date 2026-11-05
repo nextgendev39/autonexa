@@ -1,3 +1,4 @@
+import { checkPlanLimit, planLimitFromError } from "@/lib/platform/limits";
 import { currentTenantClient } from "@/lib/server/privileged";
 import { createClient } from "@/lib/supabase/server";
 import { decodeVehicleRef, isUuid } from "@/lib/vehicles/routes";
@@ -155,6 +156,8 @@ function mapListItem(row: VehicleRow): VehicleListItem {
 }
 
 function mapDbError(error: { code?: string; message?: string }): VehicleServiceError {
+  const planLimit = planLimitFromError(error);
+  if (planLimit) return { code: "forbidden", message: planLimit.message };
   const message = (error.message ?? "").toLowerCase();
   if (error.code === "23505" || message.includes("vehicles_vin_active_unique")) {
     return { code: "duplicate_vin", message: "A vehicle with this VIN already exists." };
@@ -267,8 +270,8 @@ const LIST_SELECT = `
   source, status, purchase_date, registration_date, registration_expiry, description,
   current_selling_price, make_id, model_id, model_year_id, variant_id, custom_variant,
   quantity, port_location, has_minimum_price, split_from_id, archived_at, created_by, updated_by, created_at, updated_at, deleted_at,
-  branches:branch_id ( id, name ),
-  branch_locations:location_id ( id, name )
+  branches!vehicles_branch_id_fkey ( id, name ),
+  branch_locations!vehicles_location_id_fkey ( id, name )
 `;
 
 /** The PostgREST filter methods used below (method syntax keeps the builder's generics assignable). */
@@ -780,6 +783,9 @@ export async function createVehicle(
   if (!hasPermission(context.permissions, "vehicle.create", context.roles)) {
     return { data: null, error: { code: "forbidden", message: "You do not have permission to create vehicles." } };
   }
+
+  const overLimit = await checkPlanLimit("vehicles", values.quantity ?? 1);
+  if (overLimit) return { data: null, error: { code: "forbidden", message: overLimit.message } };
 
   const duplicate = await findDuplicateVehicle({
     vin: values.vin,

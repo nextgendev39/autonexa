@@ -12,6 +12,12 @@ export type BranchAccessScope = "ALL_BRANCHES" | "ASSIGNED_BRANCHES" | "OWN_BRAN
 export type UserContext = {
   /** The active dealership, resolved by the database from membership. Never from the client. */
   tenantId: string | null;
+  /** May edit the vehicle catalog shared by every dealership. Grants no other platform access. */
+  canManageCatalog: boolean;
+  /** AutoNexa staff with the Platform console. Such a login belongs to no dealership. */
+  hasPlatformConsole: boolean;
+  /** Modules this dealership's plan switches off. The database enforces this as well. */
+  disabledFeatures: string[];
   userId: string;
   profileId: string;
   email: string | null;

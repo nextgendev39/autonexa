@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/select";
 import { roleLabel } from "@/components/users/role-label";
 import { RoleChip } from "@/components/users/role-chip";
-import type { RoleOption, UserListItem } from "@/lib/users/service";
+import type { BranchOption, RoleOption, UserListItem } from "@/lib/users/service";
 import { firstFieldErrors } from "@/lib/validation";
 import { editableUserStatuses, editUserFormSchema } from "@/lib/validation/user";
 
@@ -47,7 +47,7 @@ const STATUS_LABEL_KEY: Record<Status, string> = {
   disabled: "statusDisabled",
 };
 
-async function patchUser(id: string, body: Record<string, string>) {
+async function patchUser(id: string, body: Record<string, string | null>) {
   const res = await fetch(`/api/users/${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -70,10 +70,13 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   roles: RoleOption[];
+  branches: BranchOption[];
   onSuccess: () => void;
 };
 
-export function EditUserDialog({ user, open, onOpenChange, roles, onSuccess }: Props) {
+const ALL_BRANCHES = "all";
+
+export function EditUserDialog({ user, open, onOpenChange, roles, branches, onSuccess }: Props) {
   const t = useTranslations("modules.users");
   const tRoot = useTranslations();
   const msg = (key: string) => tRoot(key as Parameters<typeof tRoot>[0]);
@@ -84,6 +87,7 @@ export function EditUserDialog({ user, open, onOpenChange, roles, onSuccess }: P
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [roleKey, setRoleKey] = useState("");
+  const [branchId, setBranchId] = useState(ALL_BRANCHES);
   const [status, setStatus] = useState<Status>("active");
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -116,6 +120,7 @@ export function EditUserDialog({ user, open, onOpenChange, roles, onSuccess }: P
       setFirstName(user.firstName ?? "");
       setLastName(user.lastName ?? "");
       setRoleKey(user.roles[0]?.key ?? "");
+      setBranchId(user.branchId ?? ALL_BRANCHES);
       setStatus(user.status);
       setFieldErrors({});
       setFormError(null);
@@ -130,12 +135,14 @@ export function EditUserDialog({ user, open, onOpenChange, roles, onSuccess }: P
     setFormError(null);
     if (!validate({ email, firstName, lastName, roleKey, status })) return;
 
-    const updates: Record<string, string> = {};
+    const updates: Record<string, string | null> = {};
     if (email.trim() !== user.email) updates.email = email.trim();
     if (firstName.trim() !== user.firstName) updates.firstName = firstName.trim();
     if (lastName.trim() !== user.lastName) updates.lastName = lastName.trim();
     if (user.roles.length !== 1 || user.roles[0].key !== roleKey) updates.roleKey = roleKey;
     if (status !== user.status) updates.status = status;
+    const nextBranch = branchId === ALL_BRANCHES ? null : branchId;
+    if (nextBranch !== user.branchId) updates.branchId = nextBranch;
 
     if (Object.keys(updates).length === 0) {
       onOpenChange(false);
@@ -310,6 +317,32 @@ export function EditUserDialog({ user, open, onOpenChange, roles, onSuccess }: P
                 </Select>
               </FormField>
             </div>
+
+            {branches.length > 1 && (
+              <FormField label={t("branchAccess")} htmlFor="edit-branch" hint={t("branchHint")}>
+                <Select
+                  value={branchId}
+                  onValueChange={(v) => setBranchId(v ?? ALL_BRANCHES)}
+                  disabled={loading}
+                >
+                  <SelectTrigger id="edit-branch" className="w-full">
+                    <SelectValue>
+                      {(value: string | null) =>
+                        branches.find((b) => b.id === value)?.name ?? t("branchAll")
+                      }
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL_BRANCHES}>{t("branchAll")}</SelectItem>
+                    {branches.map((branch) => (
+                      <SelectItem key={branch.id} value={branch.id}>
+                        {branch.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormField>
+            )}
 
             {formError && (
               <Alert variant="destructive">

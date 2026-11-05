@@ -1,12 +1,14 @@
 import { NextResponse } from "next/server";
 
-import { jsonError, requireApiUser } from "@/lib/api/http";
+import { jsonError, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { staffDocumentUrl } from "@/lib/staff-documents/service";
 
 /** Opens the file (`?download=1` saves it) through a one-minute signed link. */
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireApiUser("document.view");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "staff_documents");
+  if (offPlan) return offPlan;
   const { id } = await params;
   const download = new URL(request.url).searchParams.get("download") === "1";
   const result = await staffDocumentUrl(id, auth.context, download);

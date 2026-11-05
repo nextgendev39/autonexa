@@ -1,6 +1,6 @@
 import { firstFieldErrors } from "@/lib/validation";
 import { receiveAcquisitionSchema } from "@/lib/validation/acquisition";
-import { jsonError, jsonOk, readJsonBody, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, readJsonBody, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { receiveAcquisition } from "@/lib/acquisitions/service";
 
 export async function POST(
@@ -9,6 +9,8 @@ export async function POST(
 ) {
   const auth = await requireApiUser();
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const body = await readJsonBody(request);
   const parsed = receiveAcquisitionSchema.safeParse(body ?? {});

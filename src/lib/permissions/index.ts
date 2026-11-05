@@ -58,6 +58,8 @@ export const permissionCatalog = [
   "notification.view",
   "settings.view",
   "settings.manage",
+  "storefront.manage",
+  "billing.manage",
 ] as const;
 
 export type Permission = (typeof permissionCatalog)[number];
@@ -109,6 +111,8 @@ export const routePermissions: { prefix: string; permission: Permission }[] = [
   { prefix: "/audit-logs", permission: "audit.view" },
   { prefix: "/notifications", permission: "notification.view" },
   { prefix: "/settings", permission: "settings.view" },
+  { prefix: "/storefront", permission: "storefront.manage" },
+  { prefix: "/billing", permission: "billing.manage" },
   { prefix: "/dashboard", permission: "dashboard.view" },
 ];
 

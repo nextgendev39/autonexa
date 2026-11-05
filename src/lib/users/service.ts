@@ -9,6 +9,8 @@ export type UserListItem = {
   displayName: string;
   status: "active" | "invited" | "suspended" | "disabled";
   roles: { key: string; name: string }[];
+  /** The branch the role is limited to. Null means every branch. */
+  branchId: string | null;
   createdAt: string;
   lastSignInAt: string | null;
 };
@@ -23,7 +25,7 @@ export async function listUsers(): Promise<UserListItem[]> {
       .is("deleted_at", null)
       .order("created_at", { ascending: false }),
     memberAuthDetails(admin),
-    admin.from("user_roles").select("user_id, roles(key, name)"),
+    admin.from("user_roles").select("user_id, branch_id, roles(key, name)"),
   ]);
 
   const profiles = profilesResult.data ?? [];
@@ -33,12 +35,14 @@ export async function listUsers(): Promise<UserListItem[]> {
   );
 
   const rolesByUser = new Map<string, { key: string; name: string }[]>();
+  const branchByUser = new Map<string, string | null>();
   for (const row of roleAssignmentsResult.data ?? []) {
     const roleData = Array.isArray(row.roles) ? row.roles[0] : row.roles;
     if (!roleData) continue;
     const userId = (row as { user_id: string }).user_id;
     const existing = rolesByUser.get(userId) ?? [];
     rolesByUser.set(userId, [...existing, { key: roleData.key, name: roleData.name }]);
+    branchByUser.set(userId, (row as { branch_id: string | null }).branch_id);
   }
 
   return profiles.map((p) => ({
@@ -49,12 +53,25 @@ export async function listUsers(): Promise<UserListItem[]> {
     displayName: p.display_name,
     status: p.status as UserListItem["status"],
     roles: rolesByUser.get(p.id) ?? [],
+    branchId: branchByUser.get(p.id) ?? null,
     createdAt: p.created_at,
     lastSignInAt: emailMap.get(p.id)?.lastSignInAt ?? null,
   }));
 }
 
 export type RoleOption = { key: string; name: string };
+export type BranchOption = { id: string; name: string };
+
+/** Branches a role can be limited to. */
+export async function listBranchOptions(): Promise<BranchOption[]> {
+  const admin = await currentTenantClient();
+  const { data } = await admin
+    .from("branches")
+    .select("id, name")
+    .eq("is_active", true)
+    .order("name");
+  return (data ?? []) as BranchOption[];
+}
 
 export async function listRoles(): Promise<RoleOption[]> {
   const admin = await currentTenantClient();

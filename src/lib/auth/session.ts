@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/supabase/env";
 import type { Permission } from "@/lib/permissions";
 import { isPermission } from "@/lib/permissions";
+import { permissionAllowedByPlan } from "@/lib/platform/features";
 import type { AuthUser, BranchAccessScope, UserContext, UserStatus } from "@/types/auth";
 
 type ProfileRow = {
@@ -33,20 +34,33 @@ async function loadRolesAndPermissions(
   supabase: Awaited<ReturnType<typeof createClient>>,
 ): Promise<{
   tenantId: string | null;
+  canManageCatalog: boolean;
+  hasPlatformConsole: boolean;
+  disabledFeatures: string[];
   roles: string[];
   permissions: Permission[];
   roleBranches: UserRoleBranchRow[];
 }> {
-  const [tenantRpc, rolesRpc, permsRpc, branchesQuery] = await Promise.all([
+  const [tenantRpc, platformRpc, featuresRpc, rolesRpc, permsRpc, branchesQuery] = await Promise.all([
     supabase.rpc("current_tenant_id" as never),
+    supabase.rpc("current_platform_access" as never),
+    supabase.rpc("current_tenant_disabled_features" as never),
     supabase.rpc("current_user_roles"),
     supabase.rpc("current_user_permissions"),
     supabase.from("user_roles").select("branch_id").eq("user_id", userId),
   ]);
 
+  const platformPermissions = platformRpc.error
+    ? []
+    : ((platformRpc.data as unknown as { permissions: string[] } | null)?.permissions ?? []);
+
   return {
     // Fails closed: if the tenant cannot be resolved, the user has no dealership access.
     tenantId: tenantRpc.error ? null : ((tenantRpc.data as unknown as string | null) ?? null),
+    canManageCatalog: platformPermissions.includes("catalog.manage"),
+    hasPlatformConsole: platformPermissions.includes("console.access"),
+    // Only hides things in the app when it can't be read. The database still enforces the plan.
+    disabledFeatures: featuresRpc.error ? [] : asStringArray(featuresRpc.data),
     roles: rolesRpc.error ? [] : asStringArray(rolesRpc.data),
     permissions: permsRpc.error ? [] : asStringArray(permsRpc.data).filter(isPermission),
     roleBranches: branchesQuery.error ? [] : ((branchesQuery.data ?? []) as UserRoleBranchRow[]),
@@ -125,15 +139,17 @@ export const getUserContext = cache(async (): Promise<UserContext | null> => {
   const userId = claims.sub;
   const email = typeof claims.email === "string" ? claims.email : null;
 
-  const [{ data: profile, error: profileError }, { tenantId, roles, permissions, roleBranches }] =
-    await Promise.all([
+  const [
+    { data: profile, error: profileError },
+    { tenantId, canManageCatalog, hasPlatformConsole, disabledFeatures, roles, permissions, roleBranches },
+  ] = await Promise.all([
       supabase
         .from("profiles")
         .select("id, display_name, employee_code, phone, avatar_url, branch_id, status, deleted_at")
         .eq("id", userId)
         .maybeSingle(),
-      loadRolesAndPermissions(userId, supabase),
-    ]);
+    loadRolesAndPermissions(userId, supabase),
+  ]);
 
   if (profileError || !profile) return null;
   const profileRow = profile as ProfileRow;
@@ -145,6 +161,9 @@ export const getUserContext = cache(async (): Promise<UserContext | null> => {
 
   return {
     tenantId,
+    canManageCatalog,
+    hasPlatformConsole,
+    disabledFeatures,
     userId,
     profileId: profileRow.id,
     email,
@@ -156,16 +175,27 @@ export const getUserContext = cache(async (): Promise<UserContext | null> => {
     roles,
     permissions: permissions as Permission[],
     // Without an active dealership (removed, or the dealership is suspended) the user is treated
-    // as suspended: every page and API check already turns that away.
-    status: tenantId ? mapStatus(profileRow.status) : "SUSPENDED",
+    // as suspended: every page and API check already turns that away. An invited login is the
+    // exception, since platform staff have no dealership and must still accept their invitation.
+    status:
+      tenantId || profileRow.status === "invited" ? mapStatus(profileRow.status) : "SUSPENDED",
     accessibleBranchIds,
     branchScope,
   };
 });
 
+/** Platform staff with no dealership, who read as suspended but aren't. */
+export function isPlatformStaffOnly(context: UserContext) {
+  return !context.tenantId && context.hasPlatformConsole;
+}
+
 export async function requireUserContext(): Promise<UserContext> {
   const context = await getUserContext();
-  if (!context) redirect("/login");
+  // A token can outlive its account, and the proxy would send /login straight back here.
+  if (!context) redirect((await getSessionUser()) ? "/api/auth/inactive" : "/login");
+
+  // Platform staff belong to no dealership. Without this they would read as suspended below.
+  if (isPlatformStaffOnly(context)) redirect("/platform");
 
   // Signing out needs a route handler: Server Components can't clear the cookie.
   if (context.status === "SUSPENDED" || context.status === "DISABLED") {
@@ -177,7 +207,10 @@ export async function requireUserContext(): Promise<UserContext> {
 
 export async function requirePermission(permission: Permission): Promise<UserContext> {
   const context = await requireUserContext();
-  if (!context.permissions.includes(permission) && !context.roles.includes("super_admin")) {
+  if (
+    (!context.permissions.includes(permission) && !context.roles.includes("super_admin")) ||
+    !permissionAllowedByPlan(permission, context.disabledFeatures)
+  ) {
     redirect("/unauthorized");
   }
   return context;

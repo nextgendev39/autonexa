@@ -1,6 +1,6 @@
 import { firstFieldErrors } from "@/lib/validation";
 import { acquisitionExpenseSchema } from "@/lib/validation/acquisition";
-import { jsonError, jsonOk, readJsonBody, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, readJsonBody, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import {
   removeAcquisitionExpense,
   updateAcquisitionExpense,
@@ -12,6 +12,8 @@ export async function PATCH(
 ) {
   const auth = await requireApiUser();
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const body = await readJsonBody(request);
   if (!body || typeof body !== "object") {
@@ -47,6 +49,8 @@ export async function DELETE(
 ) {
   const auth = await requireApiUser();
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const { id, expenseId } = await context.params;
   const result = await removeAcquisitionExpense(id, expenseId, auth.context);

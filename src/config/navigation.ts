@@ -1,11 +1,13 @@
 import {
   Bell,
+  CreditCard,
   Building2,
   CalendarCheck,
   Car,
-  Library,
   FolderOpen,
+  Globe,
   LayoutDashboard,
+  Library,
   Settings,
   UserCog,
   Users,
@@ -62,6 +64,7 @@ export const navigation: NavGroup[] = [
     items: [
       {
         href: "/documents",
+        feature: "staff_documents",
         labelKey: "nav.documents",
         icon: FolderOpen,
         permission: "document.view",
@@ -72,6 +75,7 @@ export const navigation: NavGroup[] = [
     id: "admin",
     labelKey: "nav.groups.admin",
     items: [
+      { href: "/storefront", labelKey: "nav.storefront", icon: Globe, permission: "storefront.manage" },
       { href: "/branches", labelKey: "nav.branches", icon: Building2, permission: "branch.view" },
       { href: "/users", labelKey: "nav.users", icon: UserCog, permission: "user.manage" },
       {
@@ -79,6 +83,7 @@ export const navigation: NavGroup[] = [
         labelKey: "nav.vehicleCatalog",
         icon: Library,
         permission: "settings.manage",
+        catalogOnly: true,
       },
     ],
   },
@@ -92,6 +97,7 @@ export const navigation: NavGroup[] = [
         icon: Bell,
         permission: "notification.view",
       },
+      { href: "/billing", labelKey: "nav.billing", icon: CreditCard, permission: "billing.manage" },
       { href: "/settings", labelKey: "nav.settings", icon: Settings, permission: "settings.view" },
     ],
   },
@@ -111,12 +117,16 @@ export function filterNavigation(
   groups: NavGroup[],
   can: (permission: Permission) => boolean,
   roles: readonly string[] = [],
+  canManageCatalog = false,
+  disabledFeatures: readonly string[] = [],
 ): NavGroup[] {
   return groups
     .map((group) => ({
       ...group,
       items: group.items
         .filter((item) => !item.permission || can(item.permission))
+        .filter((item) => !item.catalogOnly || canManageCatalog)
+        .filter((item) => !item.feature || !disabledFeatures.includes(item.feature))
         .map((item) => ({ ...item, labelKey: navLabelKey(item, roles) })),
     }))
     .filter((group) => group.items.length > 0);

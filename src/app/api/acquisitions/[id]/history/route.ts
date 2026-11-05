@@ -1,4 +1,4 @@
-import { jsonError, jsonOk, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { getAcquisitionHistory } from "@/lib/acquisitions/service";
 
 export async function GET(
@@ -7,6 +7,8 @@ export async function GET(
 ) {
   const auth = await requireApiUser("acquisition.view");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const { id } = await context.params;
   const result = await getAcquisitionHistory(id);

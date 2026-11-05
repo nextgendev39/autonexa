@@ -14,11 +14,12 @@ import {
   rows,
 } from "./harness";
 import { SECOND_TENANT_ID, ZOHAAN_TENANT_ID, id, seedTenant } from "./seed";
+import { PLATFORM_FUNCTIONS, SELF_SCOPED_FUNCTIONS } from "./platform-attacks";
 
 /** Every public table must be classified; an unclassified new table fails the guard test. */
 const TENANT_TABLES: Record<
   string,
-  { key: string; seed: Parameters<typeof id>[1] | null; column?: string }
+  { key: string; seed: Parameters<typeof id>[1] | null; column?: string; scope?: string }
 > = {
   branches: { key: "id", seed: "branch" },
   branch_locations: { key: "id", seed: "location" },
@@ -42,7 +43,8 @@ const TENANT_TABLES: Record<
   notifications: { key: "id", seed: "notification" },
   push_subscriptions: { key: "id", seed: "push" },
   audit_logs: { key: "id", seed: "auditLog" },
-  system_settings: { key: "key", seed: null },
+  // Every dealership may hold this key, so "A's row" also needs the tenant to pick it out.
+  system_settings: { key: "key", seed: null, scope: `tenant_id = '${ZOHAAN_TENANT_ID}'` },
 };
 
 /** Shared across dealerships: no tenant_id, and only platform admins may change them. */
@@ -60,7 +62,36 @@ const SHARED_TABLES = [
 ];
 
 /** Platform tables introduced by the tenancy migrations. */
-const PLATFORM_TABLES = ["tenants", "tenant_members", "platform_admins", "tenant_counters"];
+const PLATFORM_TABLES = [
+  "tenants",
+  "tenant_members",
+  "platform_admins",
+  "tenant_counters",
+  // Phase 3: tested in platform.test.ts.
+  "platform_role_permissions",
+  "platform_audit_logs",
+  "plans",
+  "platform_features",
+  "plan_features",
+  "tenant_subscriptions",
+  "subscription_invoices",
+  "subscription_transactions",
+  "tenant_settings",
+  "tenant_domains",
+  // Phase 4: tested in storefront.test.ts.
+  "storefronts",
+  "storefront_enquiries",
+  "storefront_events",
+  "storefront_rate_limits",
+  // Phase 5: tested in billing.test.ts.
+  "plan_prices",
+  "billing_tax_rates",
+  "billing_entities",
+  "tenant_billing_profiles",
+  "billing_checkouts",
+  "billing_webhook_events",
+  "billing_email_outbox",
+];
 
 /** Tables with no client policies: the app reaches them through privileged server code. */
 const SERVICE_ONLY_TABLES = ["vehicle_share_links", "push_subscriptions"];
@@ -69,6 +100,11 @@ const A = { user: id("a", "profile"), tenant: ZOHAAN_TENANT_ID };
 const B = { user: id("b", "profile"), tenant: SECOND_TENANT_ID };
 const rowKey = (table: string) =>
   TENANT_TABLES[table].seed ? id("a", TENANT_TABLES[table].seed!) : "test.marker";
+/** Picks out tenant A's row by its key. */
+const targetsRow = (table: string) => {
+  const { key, scope } = TENANT_TABLES[table];
+  return `${key} = $1${scope ? ` and ${scope}` : ""}`;
+};
 
 let db: PGlite;
 
@@ -148,6 +184,8 @@ describe("guards: nothing new can skip isolation", () => {
       ...Object.keys(READ_ATTACKS),
       ...Object.keys(WRITE_ATTACKS),
       "write_audit_log",
+      ...PLATFORM_FUNCTIONS,
+      ...SELF_SCOPED_FUNCTIONS,
     ]);
     assert.deepEqual(
       callable.filter((n) => !covered.has(n)),
@@ -303,7 +341,7 @@ describe("tenant rows", () => {
     test(`${table}: another dealership cannot read it`, async () => {
       const found = await asUser(db, B.user, async () => {
         const outcome = await attempt(db, () =>
-          rows(db, `select 1 from public.${table} where ${config.key} = $1`, [rowKey(table)]),
+          rows(db, `select 1 from public.${table} where ${targetsRow(table)}`, [rowKey(table)]),
         );
         return outcome.ok ? outcome.value : [];
       });
@@ -315,7 +353,7 @@ describe("tenant rows", () => {
         const outcome = await attempt(db, () =>
           rows(
             db,
-            `update public.${table} set ${config.key} = ${config.key} where ${config.key} = $1 returning 1`,
+            `update public.${table} set ${config.key} = ${config.key} where ${targetsRow(table)} returning 1`,
             [rowKey(table)],
           ),
         );
@@ -327,7 +365,7 @@ describe("tenant rows", () => {
     test(`${table}: another dealership cannot delete it`, async () => {
       const removed = await asUser(db, B.user, async () => {
         const outcome = await attempt(db, () =>
-          rows(db, `delete from public.${table} where ${config.key} = $1 returning 1`, [
+          rows(db, `delete from public.${table} where ${targetsRow(table)} returning 1`, [
             rowKey(table),
           ]),
         );
@@ -1043,7 +1081,8 @@ describe("migrating existing Zohaan Motors data", () => {
     };
     const before = await snapshot();
 
-    await applyMigrations(legacy, "00070", null);
+    // Later phases add columns of their own, which have their own migration tests.
+    await applyMigrations(legacy, "00070", "00076");
 
     for (const table of tables) {
       const [row] = await rows<{ n: number }>(

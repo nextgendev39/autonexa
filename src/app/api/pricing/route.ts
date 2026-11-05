@@ -1,12 +1,14 @@
 import { firstFieldErrors } from "@/lib/validation";
 import { pricingListQuerySchema } from "@/lib/validation/pricing";
-import { jsonError, jsonOk, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { hasPermission } from "@/lib/permissions";
 import { listVehiclePricing } from "@/lib/pricing/service";
 
 export async function GET(request: Request) {
   const auth = await requireApiUser();
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "pricing");
+  if (offPlan) return offPlan;
 
   const can =
     hasPermission(auth.context.permissions, "pricing.view", auth.context.roles) ||

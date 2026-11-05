@@ -37,7 +37,6 @@ import {
 } from "@/components/ui/input-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
-import { usePermission } from "@/hooks/use-permission";
 import { cn } from "@/lib/utils";
 import type { CatalogMake, CatalogModel, CatalogModelYear, CatalogVariant } from "@/types/vehicle";
 
@@ -114,12 +113,11 @@ type Level = 0 | 1 | 2 | 3;
 /**
  * Brands → Models → Years → Variants as side-by-side columns: picking an entry opens the
  * next column, each with its own search and quick add. Phones show one column at a time.
+ * Also used in the platform console, which has no dealership user, so the page decides `canEdit`.
  */
-export function VehicleCatalogManager() {
+export function VehicleCatalogManager({ canEdit }: { canEdit: boolean }) {
   const t = useTranslations("settings.catalog");
   const queryClient = useQueryClient();
-  const { user } = usePermission();
-  const isSuperAdmin = user?.roles.includes("super_admin") ?? false;
 
   const [makeId, setMakeId] = useState("");
   const [modelId, setModelId] = useState("");
@@ -190,7 +188,7 @@ export function VehicleCatalogManager() {
     return {
       onToggle: (item: Item) =>
         mutation.mutate({ action: "setActive", table, id: item.id, isActive: !item.isActive }),
-      onUpdate: isSuperAdmin
+      onUpdate: canEdit
         ? (id: string, values: EditValues, done: () => void) =>
             mutation.mutate(
               { action: "update", table, id, ...values },
@@ -202,7 +200,7 @@ export function VehicleCatalogManager() {
               },
             )
         : undefined,
-      onDelete: isSuperAdmin
+      onDelete: canEdit
         ? (item: Item) => {
             if (table === "vehicle_makes" && item.id === makeId) selectMake("");
             if (table === "vehicle_models" && item.id === modelId) selectModel("");

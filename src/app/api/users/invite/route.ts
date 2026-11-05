@@ -7,6 +7,7 @@ import {
   VerificationEmailError,
 } from "@/lib/auth/email-verification-server";
 import { isMailerConfigured } from "@/lib/email/send-email";
+import { checkPlanLimit } from "@/lib/platform/limits";
 import { tenantClient } from "@/lib/server/privileged";
 import { createInvitedMember, deleteInvitedMember, isMember } from "@/lib/server/privileged/members";
 import { createClient } from "@/lib/supabase/server";
@@ -36,7 +37,7 @@ export async function POST(request: Request) {
     return fail("modules.users.errors.emailNotConfigured");
   }
 
-  const { email, firstName, lastName, roleKey } = parsed.data;
+  const { email, firstName, lastName, roleKey, branchId } = parsed.data;
 
   const admin = tenantClient(context);
 
@@ -59,6 +60,9 @@ export async function POST(request: Request) {
     return fail(resent.error === "emailFailed" ? "modules.users.errors.emailFailed" : "modules.users.errors.verificationSetup");
   }
 
+  const overLimit = await checkPlanLimit("users");
+  if (overLimit) return fail(`modules.users.errors.${overLimit.code}`);
+
   // createUser sends no email, so Supabase's own confirmation link is never sent;
   // the only email is the app's OTP below. No password yet: it's set after verifying.
   const { userId: newUserId, error: createError } = await createInvitedMember(admin, {
@@ -80,7 +84,8 @@ export async function POST(request: Request) {
   const { error: roleError } = await supabase.rpc("assign_user_role", {
     target_user_id: newUserId,
     role_key: roleKey,
-    target_branch_id: null,
+    // assign_user_role refuses a branch outside this dealership.
+    target_branch_id: branchId ?? null,
   });
   if (roleError) {
     await deleteInvitedMember(admin, newUserId);

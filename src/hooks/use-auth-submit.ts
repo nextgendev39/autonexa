@@ -36,6 +36,12 @@ export function useAuthSubmit(path: string) {
 export async function signOutClient() {
   // Stop this browser receiving the signed-out user's push alerts.
   await disablePush().catch(() => undefined);
+  // Searches can name customers. The next person in this tab may be from another dealership.
+  try {
+    window.sessionStorage.clear();
+  } catch {
+    /* storage may be blocked */
+  }
   const result = await postAuthJson("/api/auth/logout", {});
   if (typeof window !== "undefined") {
     window.location.href = result.redirectTo ?? "/login";

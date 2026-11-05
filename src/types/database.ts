@@ -110,6 +110,17 @@ export type Database = {
       system_settings: GenericTable;
       staff_documents: GenericTable;
       audit_logs: GenericTable;
+      tenants: GenericTable;
+      platform_admins: GenericTable;
+      platform_audit_logs: GenericTable;
+      plans: GenericTable;
+      platform_features: GenericTable;
+      plan_features: GenericTable;
+      tenant_subscriptions: GenericTable;
+      subscription_invoices: GenericTable;
+      subscription_transactions: GenericTable;
+      tenant_settings: GenericTable;
+      tenant_domains: GenericTable;
     };
     Views: Record<string, never>;
     Functions: {

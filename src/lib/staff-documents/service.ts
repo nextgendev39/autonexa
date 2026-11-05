@@ -1,5 +1,6 @@
 import "server-only";
 
+import { checkPlanLimit } from "@/lib/platform/limits";
 import { tenantClient } from "@/lib/server/privileged";
 import {
   EXPIRY_WARNING_DAYS,
@@ -99,6 +100,9 @@ export async function uploadStaffDocument(
 ): Promise<Result<{ id: string }>> {
   const invalid = validateStaffDocumentFile(file);
   if (invalid) return fail("invalid_file", invalid);
+
+  const overLimit = await checkPlanLimit("storage", file.size);
+  if (overLimit) return fail(overLimit.code, overLimit.message);
 
   const admin = tenantClient(context);
   const path = `${context.userId}/${crypto.randomUUID()}-${safeFileName(file.name)}`;

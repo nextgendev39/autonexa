@@ -3,6 +3,7 @@
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 
 import { hasPermission, type Permission } from "@/lib/permissions";
+import { permissionAllowedByPlan } from "@/lib/platform/features";
 import type { UserContext } from "@/types/auth";
 
 const PermissionContext = createContext<UserContext | null>(null);
@@ -30,7 +31,8 @@ export function usePermission() {
 
   return useMemo(() => {
     const can = (permission: Permission) =>
-      hasPermission(user.permissions, permission, user.roles);
+      hasPermission(user.permissions, permission, user.roles) &&
+      permissionAllowedByPlan(permission, user.disabledFeatures);
 
     const canAny = (permissions: Permission[]) => permissions.some((permission) => can(permission));
 

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { BootstrapAdminForm } from "@/components/forms/bootstrap-admin-form";
-import { isBootstrapEnabled } from "@/lib/auth/bootstrap-config";
+import { isAnyBootstrapEnabled } from "@/lib/auth/bootstrap-config";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations();
@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function BootstrapAdminPage() {
-  if (!isBootstrapEnabled()) notFound();
+  if (!isAnyBootstrapEnabled()) notFound();
 
   const t = await getTranslations();
 

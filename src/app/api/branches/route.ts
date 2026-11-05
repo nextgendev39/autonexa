@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { jsonAuthResponse, invalidJsonResponse, readJsonBody } from "@/lib/auth/http";
 import { getUserContext } from "@/lib/auth/session";
 import { listBranchesForUser } from "@/lib/branches/service";
+import { checkPlanLimit } from "@/lib/platform/limits";
 import { currentTenantClient } from "@/lib/server/privileged";
 import { firstFieldErrors } from "@/lib/validation";
 import { createBranchSchema } from "@/lib/validation/branch";
@@ -28,6 +29,11 @@ export async function POST(request: Request) {
   const parsed = createBranchSchema.safeParse(body);
   if (!parsed.success) {
     return jsonAuthResponse(authFieldErrorState(firstFieldErrors(parsed.error)));
+  }
+
+  const overLimit = await checkPlanLimit("branches");
+  if (overLimit) {
+    return jsonAuthResponse(authErrorState(`modules.branches.errors.${overLimit.code}`), { status: 403 });
   }
 
   const v = parsed.data;

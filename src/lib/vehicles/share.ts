@@ -21,7 +21,10 @@ export type ShareError = {
 
 /** People who can see selling prices can share a car, since the public page shows its price. */
 export function canShareVehicle(context: UserContext) {
-  return hasPermission(context.permissions, "vehicle.price.view", context.roles);
+  return (
+    hasPermission(context.permissions, "vehicle.price.view", context.roles) &&
+    !context.disabledFeatures.includes("vehicle_sharing")
+  );
 }
 
 /**
@@ -198,10 +201,12 @@ export const getSharedVehicle = cache(
   > => {
     if (!TOKEN_PATTERN.test(token)) return { status: "not_found" };
 
-    const admin = platformClient();
-    const { data: link } = await admin
+    // The token is the only way in, so it alone decides the dealership. Everything after this
+    // reads through a client bound to that dealership.
+    const platform = platformClient();
+    const { data: link } = await platform
       .from("vehicle_share_links")
-      .select("id, vehicle_id, created_by")
+      .select("id, vehicle_id, created_by, tenant_id")
       .eq("token", token)
       .is("revoked_at", null)
       .maybeSingle();
@@ -210,11 +215,30 @@ export const getSharedVehicle = cache(
       id: linkId,
       vehicle_id,
       created_by,
-    } = link as {
+      tenant_id: tenantId,
+    } = link as unknown as {
       id: string;
       vehicle_id: string;
       created_by: string;
+      tenant_id: string;
     };
+
+    // A suspended dealership's cars stop being public along with its staff access.
+    const { data: tenant } = await platform
+      .from("tenants" as never)
+      .select("status")
+      .eq("id", tenantId)
+      .maybeSingle();
+    if ((tenant as unknown as { status: string } | null)?.status !== "active") {
+      return { status: "unavailable" };
+    }
+    // Links made before a plan change stop too, or the switch would mean little.
+    const { data: sharingEnabled } = await platform.rpc(
+      "tenant_feature_enabled" as never,
+      { p_tenant_id: tenantId, p_feature: "vehicle_sharing" } as never,
+    );
+    if ((sharingEnabled as unknown as boolean | null) === false) return { status: "unavailable" };
+    const admin = tenantClient({ tenantId });
 
     const { data } = await admin
       .from("vehicles")
@@ -225,8 +249,8 @@ export const getSharedVehicle = cache(
         body_type, transmission, fuel_type, drive_type, engine_size, engine_cylinders, seats, doors,
         exterior_color, interior_color, origin_type, country_of_origin,
         registration_date, registration_expiry, port_location, current_selling_price, quantity,
-        branches:branch_id ( name, city, emirate, address_line_1, phone ),
-        branch_locations:location_id ( name )`,
+        branches!vehicles_branch_id_fkey ( name, city, emirate, address_line_1, phone ),
+        branch_locations!vehicles_location_id_fkey ( name )`,
       )
       .eq("id", vehicle_id)
       .is("deleted_at", null)

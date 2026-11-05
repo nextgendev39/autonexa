@@ -71,6 +71,25 @@ describe("API routes with real sessions", { skip: !configured }, () => {
     });
   }
 
+  // These join composite keys. A select PostgREST rejects shows up here as a server error, which
+  // no PGlite test can see, so each dealership's own lists must load.
+  for (const path of [
+    "/api/vehicles",
+    "/api/acquisitions",
+    "/api/bookings",
+    "/api/customers",
+    "/api/pricing",
+    "/api/documents",
+    "/api/dashboard",
+  ]) {
+    test(`${path} loads for its own dealership (control)`, async () => {
+      for (const session of [a, b]) {
+        const response = await call(session, "GET", path);
+        assert.equal(response.status, 200, await response.clone().text());
+      }
+    });
+  }
+
   const denied = [403, 404];
   test("B cannot open A's records by ID", async () => {
     for (const path of [
@@ -111,6 +130,44 @@ describe("API routes with real sessions", { skip: !configured }, () => {
     assert.ok(denied.includes(edit.status), `Edit returned ${edit.status}`);
     const resend = await call(b, "POST", `/api/users/${need("A_USER_ID")}/resend-invitation`);
     assert.ok(denied.includes(resend.status), `Resend returned ${resend.status}`);
+  });
+
+  test("B cannot limit a role to A's branch", async () => {
+    const seen = await (await call(b, "GET", "/api/users")).json();
+    const own = (seen.data ?? []).find((u: { email: string }) => u.email !== need("B_EMAIL"));
+    if (!own) return;
+    const response = await call(b, "PATCH", `/api/users/${own.id}`, { branchId: need("A_BRANCH_ID") });
+    assert.ok(response.status >= 400, `Returned ${response.status}`);
+  });
+
+  test("the catalog cannot be changed by a dealership admin", async () => {
+    const response = await call(b, "POST", "/api/settings/catalog", {
+      action: "upsertMake",
+      name: "Forged",
+      slug: "forged",
+    });
+    assert.equal(response.status, 403);
+  });
+
+  // Phase 3: each user here is a Super Admin of their own dealership.
+  for (const [method, path, body] of [
+    ["POST", "/api/platform/tenants", { name: "x" }],
+    ["PATCH", `/api/platform/tenants/${env.TENANT_TEST_A_BRANCH_ID}`, { name: "x" }],
+    ["POST", `/api/platform/tenants/${env.TENANT_TEST_A_BRANCH_ID}/status`, { status: "suspended" }],
+    ["POST", `/api/platform/tenants/${env.TENANT_TEST_A_BRANCH_ID}/owner`, {}],
+    ["POST", "/api/platform/plans", { key: "x" }],
+    ["POST", "/api/platform/admins", { email: "x@example.test" }],
+  ] as const) {
+    test(`a dealership admin is refused ${method} ${path}`, async () => {
+      const response = await call(b, method, path, body);
+      assert.equal(response.status, 403, await response.clone().text());
+    });
+  }
+
+  test("a dealership admin sent to the console lands back in their dealership", async () => {
+    const response = await call(b, "GET", "/en/platform");
+    assert.ok([302, 303, 307, 308].includes(response.status), `Returned ${response.status}`);
+    assert.match(response.headers.get("location") ?? "", /dashboard/);
   });
 
   test("a tenant ID sent by the client is ignored", async () => {

@@ -238,8 +238,8 @@ const LIST_SELECT = `
   created_by, updated_by, approved_by, approved_at, approval_note,
   rejected_by, rejected_at, rejection_reason, cancelled_at, cancel_reason,
   created_at, updated_at,
-  branches:branch_id ( id, name ),
-  vehicles:vehicle_id (
+  branches!acquisitions_branch_id_fkey ( id, name ),
+  vehicles!acquisitions_vehicle_id_fkey (
     id, stock_number, vin, make, model, variant, year, mileage, origin_type, country_of_origin
   )
 `;

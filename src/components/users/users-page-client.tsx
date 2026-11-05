@@ -40,7 +40,7 @@ import { roleLabel } from "@/components/users/role-label";
 import { UserStatusDialog, type StatusAction } from "@/components/users/user-status-dialog";
 import type { AppLocale } from "@/config/app";
 import { postAuthJson } from "@/lib/auth/client";
-import type { RoleOption, UserListItem } from "@/lib/users/service";
+import type { BranchOption, RoleOption, UserListItem } from "@/lib/users/service";
 import { cn } from "@/lib/utils";
 import { formatNumber } from "@/lib/utils/currency";
 import { formatDate } from "@/lib/utils/date";
@@ -48,6 +48,7 @@ import { formatDate } from "@/lib/utils/date";
 type Props = {
   initialUsers: UserListItem[];
   roles: RoleOption[];
+  branches: BranchOption[];
   currentUserId: string;
 };
 
@@ -75,7 +76,8 @@ const isSuperAdmin = (user: UserListItem) => user.roles.some((r) => r.key === "s
 const matchesFilter = (user: UserListItem, filter: Filter) =>
   filter === "inactive" ? user.status === "disabled" : user.status === filter;
 
-export function UsersPageClient({ initialUsers, roles, currentUserId }: Props) {
+export function UsersPageClient({ initialUsers, roles,
+  branches, currentUserId }: Props) {
   const t = useTranslations("modules.users");
   const tRoot = useTranslations();
   const locale = useLocale() as AppLocale;
@@ -224,7 +226,7 @@ export function UsersPageClient({ initialUsers, roles, currentUserId }: Props) {
       <PageHeader
         title={t("title")}
         description={t("description")}
-        actions={<InviteUserDialog roles={roles} onSuccess={refresh} />}
+        actions={<InviteUserDialog roles={roles} branches={branches} onSuccess={refresh} />}
       />
 
       {users.length === 0 ? (
@@ -406,6 +408,7 @@ export function UsersPageClient({ initialUsers, roles, currentUserId }: Props) {
         open={editOpen}
         onOpenChange={setEditOpen}
         roles={roles}
+        branches={branches}
         onSuccess={refresh}
       />
 

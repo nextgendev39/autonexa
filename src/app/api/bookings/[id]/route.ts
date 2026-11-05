@@ -1,4 +1,4 @@
-import { jsonError, jsonOk, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import {
   editBooking,
   requestCancellationHold,
@@ -12,6 +12,8 @@ import { bookingActionSchema } from "@/lib/validation/booking";
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireApiUser("reservation.view");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "bookings");
+  if (offPlan) return offPlan;
 
   const { id } = await params;
   const parsed = bookingActionSchema.safeParse(await request.json().catch(() => null));

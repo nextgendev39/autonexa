@@ -3,7 +3,7 @@ import {
   acquisitionListQuerySchema,
   createAcquisitionSchema,
 } from "@/lib/validation/acquisition";
-import { jsonError, jsonOk, readJsonBody, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, readJsonBody, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { createAcquisition, listAcquisitions } from "@/lib/acquisitions/service";
 
 function statusForCode(code: string) {
@@ -24,6 +24,8 @@ function statusForCode(code: string) {
 export async function GET(request: Request) {
   const auth = await requireApiUser("acquisition.view");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const url = new URL(request.url);
   const raw = Object.fromEntries(url.searchParams.entries());
@@ -44,6 +46,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const auth = await requireApiUser("acquisition.create");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const body = await readJsonBody(request);
   if (!body || typeof body !== "object") {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { PageHeader } from "@/components/layout/page-header";
@@ -11,7 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Page() {
-  await requirePagePermission("settings.manage");
+  const context = await requirePagePermission("settings.manage");
+  if (!context.canManageCatalog) redirect("/unauthorized");
   const t = await getTranslations();
 
   return (
@@ -20,7 +22,7 @@ export default async function Page() {
         title={t("settings.catalog.title")}
         description={t("settings.catalog.description")}
       />
-      <VehicleCatalogManager />
+      <VehicleCatalogManager canEdit={context.roles.includes("super_admin")} />
     </div>
   );
 }

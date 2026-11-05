@@ -1,3 +1,4 @@
+import { planLimitFromError } from "@/lib/platform/limits";
 import type { UserContext } from "@/types/auth";
 import type { Json } from "@/types/database";
 import type {
@@ -81,6 +82,8 @@ function asRelation<T>(value: T | T[] | null | undefined): T | null {
 }
 
 function mapDbError(error: { message?: string; code?: string }): DocumentServiceError {
+  const planLimit = planLimitFromError(error);
+  if (planLimit) return { code: "forbidden", message: planLimit.message };
   const message = (error.message ?? "").toLowerCase();
   if (
     message.includes("not authorized") ||

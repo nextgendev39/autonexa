@@ -1,4 +1,4 @@
-import { jsonError, jsonOk, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { readBookingListQuery } from "@/lib/bookings/list-query";
 import { createBooking, listBookingsPage } from "@/lib/bookings/service";
 import { invalidateBookingDeadlines, maybeRunBookingDeadlineSweep } from "@/lib/notifications/service";
@@ -9,6 +9,8 @@ import { createBookingSchema } from "@/lib/validation/booking";
 export async function GET(request: Request) {
   const auth = await requireApiUser("reservation.view");
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "bookings");
+  if (offPlan) return offPlan;
   // Apply any deadline that just passed so the list is current.
   await maybeRunBookingDeadlineSweep();
   const query = readBookingListQuery(new URL(request.url).searchParams);
@@ -21,6 +23,8 @@ export async function POST(request: Request) {
   // Booking needs reservation.create, selling straight away sale rights; the service checks which.
   const auth = await requireApiUser();
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "bookings");
+  if (offPlan) return offPlan;
 
   const body = await request.json().catch(() => null);
   const parsed = createBookingSchema.safeParse(body);

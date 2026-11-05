@@ -1,3 +1,4 @@
+import { planLimitFromError } from "@/lib/platform/limits";
 import type { UserContext } from "@/types/auth";
 import type { Json } from "@/types/database";
 import type { VehicleStatus } from "@/types/vehicle";
@@ -58,6 +59,8 @@ function canEditAnyVehicle(context: UserContext) {
 }
 
 function mapDbError(error: { message?: string; code?: string }): PhotoServiceError {
+  const planLimit = planLimitFromError(error);
+  if (planLimit) return { code: "forbidden", message: planLimit.message };
   const message = (error.message ?? "").toLowerCase();
   if (message.includes("not authorized") || message.includes("permission")) {
     return { code: "forbidden", message: "Not authorized." };

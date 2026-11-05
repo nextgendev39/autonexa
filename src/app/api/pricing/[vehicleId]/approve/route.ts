@@ -1,6 +1,6 @@
 import { firstFieldErrors } from "@/lib/validation";
 import { approvePricingSchema } from "@/lib/validation/pricing";
-import { jsonError, jsonOk, readJsonBody, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, readJsonBody, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import { hasPermission } from "@/lib/permissions";
 import { approveVehiclePricing } from "@/lib/pricing/service";
 
@@ -9,6 +9,8 @@ type RouteContext = { params: Promise<{ vehicleId: string }> };
 export async function POST(request: Request, context: RouteContext) {
   const auth = await requireApiUser();
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "pricing");
+  if (offPlan) return offPlan;
 
   const can =
     hasPermission(auth.context.permissions, "pricing.approve", auth.context.roles) ||

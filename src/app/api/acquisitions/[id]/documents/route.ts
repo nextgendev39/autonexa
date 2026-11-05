@@ -1,6 +1,6 @@
 import { firstFieldErrors } from "@/lib/validation";
 import { addAcquisitionDocumentSchema } from "@/lib/validation/acquisition-document";
-import { jsonError, jsonOk, readJsonBody, requireApiUser } from "@/lib/api/http";
+import { jsonError, jsonOk, readJsonBody, requireApiUser, planFeatureGate } from "@/lib/api/http";
 import {
   listAcquisitionDocuments,
   uploadAcquisitionDocument,
@@ -19,6 +19,8 @@ export async function GET(
 ) {
   const auth = await requireApiUser();
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const { id } = await context.params;
   const result = await listAcquisitionDocuments(id, auth.context);
@@ -34,6 +36,8 @@ export async function POST(
 ) {
   const auth = await requireApiUser();
   if ("response" in auth) return auth.response;
+  const offPlan = planFeatureGate(auth.context, "acquisitions");
+  if (offPlan) return offPlan;
 
   const body = await readJsonBody(request);
   if (!body || typeof body !== "object") {

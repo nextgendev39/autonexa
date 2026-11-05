@@ -22,7 +22,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return jsonAuthResponse({ status: "error", formError: null, fieldErrors: firstFieldErrors(parsed.error), redirectTo: null, details: null }, { status: 400 });
   }
 
-  const { email, firstName, lastName, roleKey, status } = parsed.data;
+  const { email, firstName, lastName, roleKey, status, branchId } = parsed.data;
   const admin = tenantClient(context);
 
   const { data: target } = await admin
@@ -58,20 +58,34 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   // Replace the user's role(s) with the selected one. RPCs run as the caller so
   // their super-admin checks and audit logging apply.
-  if (roleKey) {
+  if (roleKey || branchId !== undefined) {
     const { data: assignments } = await admin
       .from("user_roles")
-      .select("id, roles(key)")
+      .select("id, branch_id, roles(key)")
       .eq("user_id", id);
-    const current = (assignments ?? []) as unknown as { id: string; roles: { key: string } | null }[];
-    const alreadyOnly = current.length === 1 && current[0].roles?.key === roleKey;
+    const current = (assignments ?? []) as unknown as {
+      id: string;
+      branch_id: string | null;
+      roles: { key: string } | null;
+    }[];
+    // A change to only one of the two keeps the other as it is.
+    const nextRole = roleKey ?? current[0]?.roles?.key;
+    const nextBranch = branchId !== undefined ? branchId : (current[0]?.branch_id ?? null);
+    if (!nextRole) {
+      return jsonAuthResponse(authErrorState("modules.users.errors.updateFailed"), { status: 400 });
+    }
+    const alreadyOnly =
+      current.length === 1 &&
+      current[0].roles?.key === nextRole &&
+      current[0].branch_id === nextBranch;
 
     if (!alreadyOnly) {
       const supabase = await createClient();
       const { data: keptId, error: assignError } = await supabase.rpc("assign_user_role", {
         target_user_id: id,
-        role_key: roleKey,
-        target_branch_id: null,
+        role_key: nextRole,
+        // assign_user_role refuses a branch outside this dealership.
+        target_branch_id: nextBranch,
       });
       if (assignError) {
         return jsonAuthResponse(authErrorState("modules.users.errors.updateFailed", {}, assignError.message), { status: 400 });

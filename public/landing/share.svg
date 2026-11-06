@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title>A link sent to a buyer, opening a page about one car</title>
+<rect width="1600" height="900" fill="#15171b"/>
+<rect x="70" y="160" width="660" height="400" rx="14" fill="#1d1f25" />
+<text x="110" y="234" font-size="46" font-weight="600" fill="#eef0f3" text-anchor="start">Share this car</text>
+<text x="110" y="284" font-size="28" font-weight="400" fill="#9ea3ad" text-anchor="start">Anyone with the link can view it</text>
+<rect x="110" y="322" width="580" height="72" rx="10" fill="#15171b" />
+<text x="134" y="368" font-size="29" font-weight="400" fill="#c9cdd4" text-anchor="start">autonexa.com/share/k3v9x</text>
+<rect x="110" y="420" width="580" height="88" rx="10" fill="#eef0f3" /><text x="400.0" y="473.8" font-size="28" font-weight="600" fill="#0e0f12" text-anchor="middle">Copy link</text>
+<path d="M760 360H850" stroke="#eef0f3" stroke-width="5"/><path d="M836 338L864 360L836 382" fill="none" stroke="#eef0f3" stroke-width="5"/>
+<rect x="900" y="40" width="630" height="820" rx="14" fill="#1d1f25" />
+<rect x="930" y="70" width="570" height="320" rx="10" fill="#2a2d35" /><g transform="translate(987.0 116.0) scale(2.28)"><path d="M8 66 C8 54 20 50 38 47 L62 22 C66 18 72 16 80 16 H128 C136 16 142 18 148 23 L170 46 C186 48 194 54 194 66 V76 C194 80 192 82 188 82 H12 C10 82 8 80 8 76 Z" fill="#c9cdd4"/><path d="M70 26 C72 24 75 23 80 23 H101 V46 H50 Z M108 23 H128 C134 23 138 25 142 28 L159 46 H108 Z" fill="#15171b" opacity=".85"/><circle cx="52" cy="82" r="17" fill="#15171b"/><circle cx="52" cy="82" r="9" fill="#c9cdd4"/><circle cx="150" cy="82" r="17" fill="#15171b"/><circle cx="150" cy="82" r="9" fill="#c9cdd4"/></g>
+<text x="930" y="454" font-size="46" font-weight="600" fill="#eef0f3" text-anchor="start">Land Cruiser 2021</text>
+<text x="930" y="512" font-size="44" font-weight="700" fill="#e2b65a" text-anchor="start">AED 148,000</text>
+<rect x="930" y="544" width="180" height="56" rx="28" fill="#15171b" /><text x="1020.0" y="581.1" font-size="26" font-weight="600" fill="#9ea3ad" text-anchor="middle">48,000 km</text>
+<rect x="1126" y="544" width="130" height="56" rx="28" fill="#15171b" /><text x="1191.0" y="581.1" font-size="26" font-weight="600" fill="#9ea3ad" text-anchor="middle">Petrol</text>
+<rect x="1272" y="544" width="130" height="56" rx="28" fill="#15171b" /><text x="1337.0" y="581.1" font-size="26" font-weight="600" fill="#9ea3ad" text-anchor="middle">GCC</text>
+<text x="930" y="662" font-size="30" font-weight="400" fill="#9ea3ad" text-anchor="start">One owner, full service history.</text>
+<rect x="930" y="700" width="570" height="90" rx="10" fill="#eef0f3" /><text x="1215.0" y="754.8" font-size="28" font-weight="600" fill="#0e0f12" text-anchor="middle">Contact the dealership</text>
+<text x="1215" y="834" font-size="24" font-weight="400" fill="#9ea3ad" text-anchor="middle">No account needed</text>
+<text x="70" y="860" font-size="22" font-weight="400" fill="#454a55" text-anchor="start">Sample data</text>
+</svg>

@@ -1,0 +1,105 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <title>AutoNexa dashboard with sample data</title>
+  <rect width="1600" height="900" fill="#15171b"/>
+
+  <!-- sidebar -->
+  <rect width="280" height="900" fill="#0e0f12"/>
+  <rect x="32" y="34" width="34" height="34" rx="8" fill="#eef0f3"/>
+  <text x="49" y="58" font-size="20" font-weight="700" text-anchor="middle" fill="#0e0f12">A</text>
+  <text x="80" y="58" font-size="22" font-weight="600" fill="#eef0f3">AutoNexa</text>
+  <g font-size="19" fill="#9ea3ad">
+    <rect x="20" y="104" width="240" height="46" rx="8" fill="#2a2d35"/>
+    <text x="44" y="134" fill="#eef0f3" font-weight="600">Dashboard</text>
+    <text x="44" y="190">Inventory</text>
+    <text x="44" y="246">Acquisitions</text>
+    <text x="44" y="302">Pricing</text>
+    <text x="44" y="358">Bookings</text>
+    <text x="44" y="414">Customers</text>
+    <text x="44" y="470">Documents</text>
+    <text x="44" y="526">Branches</text>
+    <text x="44" y="582">Users</text>
+    <text x="44" y="638">Website</text>
+  </g>
+  <text x="44" y="852" font-size="15" fill="#454a55">Sample data</text>
+
+  <!-- header -->
+  <text x="328" y="66" font-size="32" font-weight="600" fill="#eef0f3">Good morning, here is today</text>
+  <text x="328" y="98" font-size="18" fill="#9ea3ad">All branches</text>
+  <rect x="1372" y="38" width="184" height="50" rx="8" fill="#eef0f3"/>
+  <text x="1464" y="70" font-size="18" font-weight="600" text-anchor="middle" fill="#0e0f12">+ Add a car</text>
+
+  <!-- KPI row -->
+  <g>
+    <rect x="328" y="128" width="290" height="150" rx="12" fill="#1d1f25"/>
+    <text x="352" y="170" font-size="18" fill="#9ea3ad">Cars in stock</text>
+    <text x="352" y="232" font-size="50" font-weight="600" fill="#eef0f3">48</text>
+    <text x="352" y="260" font-size="16" fill="#9ea3ad">9 ready for sale</text>
+
+    <rect x="637" y="128" width="290" height="150" rx="12" fill="#1d1f25"/>
+    <text x="661" y="170" font-size="18" fill="#9ea3ad">Booked</text>
+    <text x="661" y="232" font-size="50" font-weight="600" fill="#eef0f3">12</text>
+    <text x="661" y="260" font-size="16" fill="#e2b65a">3 deposits due today</text>
+
+    <rect x="946" y="128" width="290" height="150" rx="12" fill="#1d1f25"/>
+    <text x="970" y="170" font-size="18" fill="#9ea3ad">Payments outstanding</text>
+    <text x="970" y="232" font-size="44" font-weight="600" fill="#eef0f3">AED 186k</text>
+    <text x="970" y="260" font-size="16" fill="#9ea3ad">Across 7 bookings</text>
+
+    <rect x="1255" y="128" width="301" height="150" rx="12" fill="#2a2d35"/>
+    <text x="1279" y="170" font-size="18" fill="#c9cdd4">Profit this month</text>
+    <text x="1279" y="232" font-size="44" font-weight="600" fill="#eef0f3">AED 94k</text>
+    <text x="1279" y="260" font-size="16" fill="#c9cdd4">From 11 cars sold</text>
+  </g>
+
+  <!-- chart -->
+  <rect x="328" y="298" width="600" height="566" rx="12" fill="#1d1f25"/>
+  <text x="352" y="344" font-size="22" font-weight="600" fill="#eef0f3">Cars by stage</text>
+  <g font-size="18" fill="#9ea3ad">
+    <text x="352" y="408">Purchasing</text>
+    <rect x="510" y="390" width="388" height="24" rx="4" fill="#15171b"/>
+    <rect x="510" y="390" width="132" height="24" rx="4" fill="#454a55"/>
+    <text x="352" y="482">In transit</text>
+    <rect x="510" y="464" width="388" height="24" rx="4" fill="#15171b"/>
+    <rect x="510" y="464" width="96" height="24" rx="4" fill="#454a55"/>
+    <text x="352" y="556">In stock</text>
+    <rect x="510" y="538" width="388" height="24" rx="4" fill="#15171b"/>
+    <rect x="510" y="538" width="340" height="24" rx="4" fill="#eef0f3"/>
+    <text x="352" y="630">Ready for sale</text>
+    <rect x="510" y="612" width="388" height="24" rx="4" fill="#15171b"/>
+    <rect x="510" y="612" width="170" height="24" rx="4" fill="#9ea3ad"/>
+    <text x="352" y="704">Booked</text>
+    <rect x="510" y="686" width="388" height="24" rx="4" fill="#15171b"/>
+    <rect x="510" y="686" width="216" height="24" rx="4" fill="#9ea3ad"/>
+    <text x="352" y="778">Sold</text>
+    <rect x="510" y="760" width="388" height="24" rx="4" fill="#15171b"/>
+    <rect x="510" y="760" width="196" height="24" rx="4" fill="#2a2d35"/>
+  </g>
+
+  <!-- table -->
+  <rect x="946" y="298" width="610" height="566" rx="12" fill="#1d1f25"/>
+  <text x="970" y="344" font-size="22" font-weight="600" fill="#eef0f3">Needs attention</text>
+  <g font-size="18">
+    <g fill="#eef0f3">
+      <text x="970" y="412">Land Cruiser 2021</text>
+      <text x="970" y="498">Patrol 2020</text>
+      <text x="970" y="584">Camry 2022</text>
+      <text x="970" y="670">X5 2019</text>
+      <text x="970" y="756">LX 570 2019</text>
+    </g>
+    <g fill="#9ea3ad" font-size="16">
+      <text x="970" y="438">AN-00142 · Dubai</text>
+      <text x="970" y="524">AN-00138 · Dubai</text>
+      <text x="970" y="610">AN-00151 · Sharjah</text>
+      <text x="970" y="696">AN-00129 · Dubai</text>
+      <text x="970" y="782">AN-00147 · Sharjah</text>
+    </g>
+    <g font-size="15" text-anchor="middle" font-weight="600">
+      <rect x="1320" y="394" width="212" height="36" rx="18" fill="#7a5d22"/><text x="1426" y="418" fill="#eef0f3">Deposit due today</text>
+      <rect x="1320" y="480" width="212" height="36" rx="18" fill="#2a2d35"/><text x="1426" y="504" fill="#eef0f3">Ready for sale</text>
+      <rect x="1320" y="566" width="212" height="36" rx="18" fill="#7a5d22"/><text x="1426" y="590" fill="#eef0f3">Price needs approval</text>
+      <rect x="1320" y="652" width="212" height="36" rx="18" fill="#454a55"/><text x="1426" y="676" fill="#eef0f3">Purchase to approve</text>
+      <rect x="1320" y="738" width="212" height="36" rx="18" fill="#2a2d35"/><text x="1426" y="762" fill="#eef0f3">Payment received</text>
+    </g>
+    <g stroke="#2a2d35"><path d="M970 458h562M970 544h562M970 630h562M970 716h562"/></g>
+  </g>
+</svg>

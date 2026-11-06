@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title>Notifications about deposits, approvals and enquiries</title>
+<rect width="1200" height="900" fill="#15171b"/>
+<text x="44" y="82" font-size="52" font-weight="600" fill="#eef0f3" text-anchor="start">Notifications</text>
+<rect x="986" y="40" width="170" height="58" rx="29" fill="#7a5d22" /><text x="1071.0" y="79.5" font-size="30" font-weight="600" fill="#eef0f3" text-anchor="middle">4 new</text>
+<rect x="44" y="120" width="1112" height="172" rx="14" fill="#1d1f25" />
+<circle cx="112" cy="206" r="34" fill="#7a5d22"/>
+<circle cx="112" cy="206" r="11" fill="#eef0f3"/>
+<text x="176" y="196" font-size="42" font-weight="600" fill="#eef0f3" text-anchor="start">Deposit due today</text>
+<text x="176" y="248" font-size="31" font-weight="400" fill="#9ea3ad" text-anchor="start">Land Cruiser 2021, Booking BK-00214</text>
+<text x="1130" y="196" font-size="28" font-weight="400" fill="#9ea3ad" text-anchor="end">10 min</text>
+<rect x="44" y="310" width="1112" height="172" rx="14" fill="#1d1f25" />
+<circle cx="112" cy="396" r="34" fill="#454a55"/>
+<circle cx="112" cy="396" r="11" fill="#eef0f3"/>
+<text x="176" y="386" font-size="42" font-weight="600" fill="#eef0f3" text-anchor="start">Price needs approval</text>
+<text x="176" y="438" font-size="31" font-weight="400" fill="#9ea3ad" text-anchor="start">Camry 2022 is below its minimum price</text>
+<text x="1130" y="386" font-size="28" font-weight="400" fill="#9ea3ad" text-anchor="end">1 hr</text>
+<rect x="44" y="500" width="1112" height="172" rx="14" fill="#1d1f25" />
+<circle cx="112" cy="586" r="34" fill="#2a2d35"/>
+<circle cx="112" cy="586" r="11" fill="#eef0f3"/>
+<text x="176" y="576" font-size="42" font-weight="600" fill="#eef0f3" text-anchor="start">New website enquiry</text>
+<text x="176" y="628" font-size="31" font-weight="400" fill="#9ea3ad" text-anchor="start">A buyer asked about Patrol 2020</text>
+<text x="1130" y="576" font-size="28" font-weight="400" fill="#9ea3ad" text-anchor="end">2 hr</text>
+<rect x="44" y="690" width="1112" height="172" rx="14" fill="#1d1f25" />
+<circle cx="112" cy="776" r="34" fill="#2a2d35"/>
+<circle cx="112" cy="776" r="11" fill="#eef0f3"/>
+<text x="176" y="766" font-size="42" font-weight="600" fill="#eef0f3" text-anchor="start">Purchase approved</text>
+<text x="176" y="818" font-size="31" font-weight="400" fill="#9ea3ad" text-anchor="start">ACQ-00087 can now be received</text>
+<text x="1130" y="766" font-size="28" font-weight="400" fill="#9ea3ad" text-anchor="end">Today</text>
+<text x="44" y="888" font-size="22" font-weight="400" fill="#454a55" text-anchor="start">Sample data</text>
+</svg>

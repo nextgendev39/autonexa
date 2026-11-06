@@ -22,7 +22,7 @@ function gate(request: NextRequest, response: NextResponse, user: AuthUser | nul
 
   const { pathname } = request.nextUrl;
 
-  if (!user && (isProtectedPath(pathname) || pathname === "/")) {
+  if (!user && isProtectedPath(pathname)) {
     return redirectTo(request, response, "/login");
   }
 

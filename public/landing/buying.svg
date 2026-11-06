@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title>A purchase waiting for approval, with every cost listed</title>
+<rect width="1200" height="900" fill="#15171b"/>
+<text x="44" y="78" font-size="46" font-weight="600" fill="#eef0f3" text-anchor="start">Purchase ACQ-00087</text>
+<rect x="796" y="40" width="360" height="56" rx="28" fill="#7a5d22" /><text x="976.0" y="77.8" font-size="28" font-weight="600" fill="#eef0f3" text-anchor="middle">Pending Approval</text>
+<rect x="44" y="112" width="1112" height="130" rx="14" fill="#1d1f25" />
+<rect x="66" y="130" width="150" height="94" rx="10" fill="#15171b" /><g transform="translate(81.0 147.0) scale(0.6)"><path d="M8 66 C8 54 20 50 38 47 L62 22 C66 18 72 16 80 16 H128 C136 16 142 18 148 23 L170 46 C186 48 194 54 194 66 V76 C194 80 192 82 188 82 H12 C10 82 8 80 8 76 Z" fill="#9ea3ad"/><path d="M70 26 C72 24 75 23 80 23 H101 V46 H50 Z M108 23 H128 C134 23 138 25 142 28 L159 46 H108 Z" fill="#15171b" opacity=".85"/><circle cx="52" cy="82" r="17" fill="#15171b"/><circle cx="52" cy="82" r="9" fill="#9ea3ad"/><circle cx="150" cy="82" r="17" fill="#15171b"/><circle cx="150" cy="82" r="9" fill="#9ea3ad"/></g>
+<text x="246" y="170" font-size="36" font-weight="600" fill="#eef0f3" text-anchor="start">Land Cruiser 2021</text>
+<text x="246" y="212" font-size="27" font-weight="400" fill="#9ea3ad" text-anchor="start">Supplier: Sharjah Auto Auction</text>
+<rect x="44" y="260" width="1112" height="430" rx="14" fill="#1d1f25" />
+<text x="76" y="322" font-size="32" font-weight="400" fill="#9ea3ad" text-anchor="start">Purchase price</text>
+<text x="1124" y="322" font-size="32" font-weight="500" fill="#eef0f3" text-anchor="end">AED 118,000</text>
+<path d="M76 346H1124" stroke="#2a2d35" stroke-width="2"/>
+<text x="76" y="392" font-size="32" font-weight="400" fill="#9ea3ad" text-anchor="start">Shipping</text>
+<text x="1124" y="392" font-size="32" font-weight="500" fill="#eef0f3" text-anchor="end">AED 4,200</text>
+<path d="M76 416H1124" stroke="#2a2d35" stroke-width="2"/>
+<text x="76" y="462" font-size="32" font-weight="400" fill="#9ea3ad" text-anchor="start">Customs</text>
+<text x="1124" y="462" font-size="32" font-weight="500" fill="#eef0f3" text-anchor="end">AED 5,600</text>
+<path d="M76 486H1124" stroke="#2a2d35" stroke-width="2"/>
+<text x="76" y="532" font-size="32" font-weight="400" fill="#9ea3ad" text-anchor="start">Repairs</text>
+<text x="1124" y="532" font-size="32" font-weight="500" fill="#eef0f3" text-anchor="end">AED 2,400</text>
+<path d="M76 556H1124" stroke="#2a2d35" stroke-width="2"/>
+<text x="76" y="640" font-size="38" font-weight="600" fill="#eef0f3" text-anchor="start">Total cost</text>
+<text x="1124" y="640" font-size="44" font-weight="700" fill="#eef0f3" text-anchor="end">AED 130,200</text>
+<rect x="44" y="716" width="544" height="84" rx="10" fill="#eef0f3" /><text x="316.0" y="767.8" font-size="28" font-weight="600" fill="#0e0f12" text-anchor="middle">Approve</text>
+<rect x="612" y="716" width="544" height="84" rx="10" fill="#454a55" /><text x="884.0" y="767.8" font-size="28" font-weight="600" fill="#eef0f3" text-anchor="middle">Reject</text>
+<text x="1164" y="860" font-size="22" font-weight="400" fill="#454a55" text-anchor="end">Sample data</text>
+</svg>

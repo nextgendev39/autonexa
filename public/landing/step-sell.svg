@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" width="800" height="1200" font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title>A sold car showing the profit it made</title>
+<rect width="800" height="1200" fill="#15171b"/>
+<text x="50" y="104" font-size="58" font-weight="700" fill="#eef0f3" text-anchor="start">Sale</text>
+<rect x="50" y="136" width="700" height="84" rx="42" fill="#2a2d35" /><text x="400.0" y="192.7" font-size="42" font-weight="600" fill="#eef0f3" text-anchor="middle">Sold</text>
+<rect x="50" y="248" width="700" height="340" rx="10" fill="#2a2d35" /><g transform="translate(145.0 290.5) scale(2.55)"><path d="M8 66 C8 54 20 50 38 47 L62 22 C66 18 72 16 80 16 H128 C136 16 142 18 148 23 L170 46 C186 48 194 54 194 66 V76 C194 80 192 82 188 82 H12 C10 82 8 80 8 76 Z" fill="#c9cdd4"/><path d="M70 26 C72 24 75 23 80 23 H101 V46 H50 Z M108 23 H128 C134 23 138 25 142 28 L159 46 H108 Z" fill="#15171b" opacity=".85"/><circle cx="52" cy="82" r="17" fill="#15171b"/><circle cx="52" cy="82" r="9" fill="#c9cdd4"/><circle cx="150" cy="82" r="17" fill="#15171b"/><circle cx="150" cy="82" r="9" fill="#c9cdd4"/></g>
+<text x="50" y="680" font-size="42" font-weight="400" fill="#9ea3ad" text-anchor="start">Paid</text><text x="750" y="680" font-size="46" font-weight="600" fill="#eef0f3" text-anchor="end">AED 148k</text><path d="M50 708H750" stroke="#2a2d35" stroke-width="2"/>
+<text x="50" y="780" font-size="42" font-weight="400" fill="#9ea3ad" text-anchor="start">Cost</text><text x="750" y="780" font-size="46" font-weight="600" fill="#eef0f3" text-anchor="end">AED 130k</text><path d="M50 808H750" stroke="#2a2d35" stroke-width="2"/>
+<text x="50" y="920" font-size="54" font-weight="600" fill="#eef0f3" text-anchor="start">Profit</text>
+<text x="750" y="930" font-size="72" font-weight="700" fill="#e2b65a" text-anchor="end">AED 18,000</text>
+<text x="400" y="1070" font-size="34" font-weight="400" fill="#454a55" text-anchor="middle">Sample data</text>
+</svg>

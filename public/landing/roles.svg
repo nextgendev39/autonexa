@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000" font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title>Team members with their role and branch</title>
+<rect width="1000" height="1000" fill="#15171b"/>
+<text x="40" y="80" font-size="58" font-weight="600" fill="#eef0f3" text-anchor="start">Users</text>
+<text x="960" y="80" font-size="26" font-weight="400" fill="#454a55" text-anchor="end">Sample data</text>
+<rect x="40" y="120" width="920" height="196" rx="14" fill="#1d1f25" />
+<circle cx="124" cy="218" r="58" fill="#2a2d35"/>
+<text x="124" y="236" font-size="52" font-weight="600" fill="#eef0f3" text-anchor="middle">S</text>
+<text x="214" y="200" font-size="44" font-weight="600" fill="#eef0f3" text-anchor="start">Sara K.</text>
+<text x="214" y="258" font-size="34" font-weight="400" fill="#9ea3ad" text-anchor="start">All branches</text>
+<rect x="600" y="186" width="330" height="64" rx="32" fill="#15171b" /><text x="765.0" y="228.5" font-size="30" font-weight="600" fill="#c9cdd4" text-anchor="middle">Super Admin</text>
+<rect x="40" y="334" width="920" height="196" rx="14" fill="#1d1f25" />
+<circle cx="124" cy="432" r="58" fill="#454a55"/>
+<text x="124" y="450" font-size="52" font-weight="600" fill="#eef0f3" text-anchor="middle">O</text>
+<text x="214" y="414" font-size="44" font-weight="600" fill="#eef0f3" text-anchor="start">Omar H.</text>
+<text x="214" y="472" font-size="34" font-weight="400" fill="#9ea3ad" text-anchor="start">All branches</text>
+<rect x="600" y="400" width="330" height="64" rx="32" fill="#15171b" /><text x="765.0" y="442.5" font-size="30" font-weight="600" fill="#c9cdd4" text-anchor="middle">Accountant</text>
+<rect x="40" y="548" width="920" height="196" rx="14" fill="#1d1f25" />
+<circle cx="124" cy="646" r="58" fill="#7a5d22"/>
+<text x="124" y="664" font-size="52" font-weight="600" fill="#eef0f3" text-anchor="middle">L</text>
+<text x="214" y="628" font-size="44" font-weight="600" fill="#eef0f3" text-anchor="start">Lina M.</text>
+<text x="214" y="686" font-size="34" font-weight="400" fill="#9ea3ad" text-anchor="start">Dubai</text>
+<rect x="600" y="614" width="330" height="64" rx="32" fill="#15171b" /><text x="765.0" y="656.5" font-size="30" font-weight="600" fill="#c9cdd4" text-anchor="middle">Sales Executive</text>
+<rect x="40" y="762" width="920" height="196" rx="14" fill="#1d1f25" />
+<circle cx="124" cy="860" r="58" fill="#454a55"/>
+<text x="124" y="878" font-size="52" font-weight="600" fill="#eef0f3" text-anchor="middle">Y</text>
+<text x="214" y="842" font-size="44" font-weight="600" fill="#eef0f3" text-anchor="start">Yusuf A.</text>
+<text x="214" y="900" font-size="34" font-weight="400" fill="#9ea3ad" text-anchor="start">Sharjah</text>
+<rect x="600" y="828" width="330" height="64" rx="32" fill="#15171b" /><text x="765.0" y="870.5" font-size="30" font-weight="600" fill="#c9cdd4" text-anchor="middle">Logistics</text>
+</svg>

@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { PlusIcon } from "lucide-react";
 import { useId, useState } from "react";
 
@@ -39,22 +39,24 @@ export function FaqList({ items }: { items: LandingCopy["faq"]["items"] }) {
                 </motion.span>
               </button>
             </h3>
-            <AnimatePresence initial={false}>
-              {expanded ? (
-                <motion.div
-                  id={`${id}-a-${index}`}
-                  role="region"
-                  aria-labelledby={`${id}-q-${index}`}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.35, ease }}
-                  className="overflow-hidden"
-                >
-                  <p className="text-muted-foreground px-5 pb-5 text-pretty sm:px-6">{item.a}</p>
-                </motion.div>
-              ) : null}
-            </AnimatePresence>
+            {/*
+              A CSS grid-rows transition, not Framer's height: "auto". Framer measures auto heights
+              by calling scrollTo(), which stops a phone's momentum scroll and jumps the page.
+            */}
+            <div
+              id={`${id}-a-${index}`}
+              role="region"
+              aria-labelledby={`${id}-q-${index}`}
+              inert={!expanded}
+              className={cn(
+                "grid transition-[grid-template-rows,opacity] duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
+                expanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+              )}
+            >
+              <div className="min-h-0 overflow-hidden">
+                <p className="text-muted-foreground px-5 pb-5 text-pretty sm:px-6">{item.a}</p>
+              </div>
+            </div>
           </StaggerItem>
         );
       })}

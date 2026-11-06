@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { TriangleAlertIcon } from "lucide-react";
 
-import { CountUp, ease, type LandingCopy } from "@/components/landing/motion";
+import { CountUp, ease, revealMargin, type LandingCopy } from "@/components/landing/motion";
 import { cn } from "@/lib/utils";
 
 /** Sample figures in AED. The flagged car sits below its minimum price. */
@@ -25,7 +25,7 @@ export function ProfitChart({ copy }: { copy: LandingCopy["profit"] }) {
     <motion.div
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "0px 0px -15% 0px" }}
+      viewport={{ once: true, margin: revealMargin }}
       transition={{ duration: 0.8, ease }}
       className="border-border bg-card relative overflow-hidden rounded-lg border p-5 shadow-lg sm:p-7"
     >

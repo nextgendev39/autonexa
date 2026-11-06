@@ -12,7 +12,7 @@ import {
   type MotionValue,
   type Variants,
 } from "framer-motion";
-import { useEffect, useRef, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 
 import type en from "../../../messages/en.json";
 
@@ -28,6 +28,25 @@ export function LandingMotionConfig({ children }: { children: ReactNode }) {
       {children}
     </MotionConfig>
   );
+}
+
+/**
+ * Reveal as soon as a little of the element is on screen. A deeper margin leaves blank gaps
+ * while a phone is flick-scrolling, since content waits to be well inside the viewport.
+ */
+export const revealMargin = "0px 0px -40px 0px";
+
+/** Whether a media query matches. False on the server and the first render, so markup matches. */
+export function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(false);
+  useEffect(() => {
+    const list = matchMedia(query);
+    const update = () => setMatches(list.matches);
+    update();
+    list.addEventListener("change", update);
+    return () => list.removeEventListener("change", update);
+  }, [query]);
+  return matches;
 }
 
 const revealVariants: Variants = {
@@ -47,7 +66,7 @@ export function Reveal({
       className={className}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "0px 0px -12% 0px" }}
+      viewport={{ once: true, margin: revealMargin }}
       variants={revealVariants}
       transition={{ delay }}
       {...props}
@@ -75,7 +94,7 @@ export function Stagger({
       className={className}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+      viewport={{ once: true, margin: revealMargin }}
       variants={{ hidden: {}, show: { transition: { staggerChildren: step } } }}
     >
       {children}

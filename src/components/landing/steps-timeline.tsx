@@ -3,7 +3,7 @@
 import { motion, useScroll, useSpring } from "framer-motion";
 import { useRef } from "react";
 
-import { ease, type LandingCopy } from "@/components/landing/motion";
+import { ease, revealMargin, type LandingCopy } from "@/components/landing/motion";
 import { ThemedImage } from "@/components/landing/themed-image";
 
 /** Five steps on one line that draws itself as the visitor scrolls through them. */
@@ -40,7 +40,7 @@ export function StepsTimeline({ copy }: { copy: LandingCopy["how"] }) {
           key={step.name}
           initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+          viewport={{ once: true, margin: revealMargin }}
           transition={{ duration: 0.7, ease, delay: index * 0.1 }}
           className="relative ps-14 lg:row-span-5 lg:grid lg:grid-rows-subgrid lg:ps-0"
         >

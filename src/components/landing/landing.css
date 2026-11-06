@@ -11,8 +11,26 @@ html:has(.landing) body {
   overflow-x: clip;
 }
 
+/*
+ * Clip sideways overflow on the page itself too. Phone browsers don't reliably honour clipping
+ * on the root, and any leak lets the page pan sideways under a finger.
+ */
+.landing {
+  overflow-x: clip;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html:has(.landing) {
     scroll-behavior: smooth;
+  }
+}
+
+/*
+ * The showroom glows are huge, heavily blurred circles. Animating them makes a phone redraw the
+ * blur every frame, which stutters and flickers while scrolling, so phones and tablets keep them still.
+ */
+@media (max-width: 1023.98px) {
+  .landing .animate-drift {
+    animation: none;
   }
 }

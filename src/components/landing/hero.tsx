@@ -4,7 +4,7 @@ import { motion, useScroll, useSpring, useTransform } from "framer-motion";
 import { ArrowRightIcon, CheckIcon, PlayCircleIcon } from "lucide-react";
 import { useRef } from "react";
 
-import { ease, type LandingCopy } from "@/components/landing/motion";
+import { ease, useMediaQuery, type LandingCopy } from "@/components/landing/motion";
 import { ThemedPicture } from "@/components/landing/themed-image";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,10 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
   const glowY = useTransform(progress, [0, 1], ["0%", "40%"]);
   const textY = useTransform(progress, [0, 0.5], [0, -60]);
   const textOpacity = useTransform(progress, [0, 0.4], [1, 0]);
+  // Phones get a still hero. There the scroll-linked tilt, parallax and fade trail the finger
+  // through momentum scrolling, so the page seems to jump, and the tall phone screenshot
+  // visibly grows as it flattens.
+  const scrollEffects = useMediaQuery("(min-width: 768px)");
 
   const words = copy.title.split(" ");
   const highlightFrom = Math.max(0, words.length - 2);
@@ -36,7 +40,7 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
     >
       {/* Showroom lighting: gold and chrome glows over the carbon weave. */}
       <motion.div
-        style={{ y: glowY }}
+        style={scrollEffects ? { y: glowY } : undefined}
         className="pointer-events-none absolute inset-0 -z-10"
         aria-hidden
       >
@@ -63,7 +67,7 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
       />
 
       <motion.div
-        style={{ y: textY, opacity: textOpacity }}
+        style={scrollEffects ? { y: textY, opacity: textOpacity } : undefined}
         className="mx-auto max-w-4xl px-4 text-center sm:px-6"
       >
         <motion.p
@@ -161,7 +165,7 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
           transition={{ duration: 1.1, ease, delay: 0.5 }}
         >
           <motion.figure
-            style={{ rotateX, scale, transformOrigin: "50% 0%" }}
+            style={scrollEffects ? { rotateX, scale, transformOrigin: "50% 0%" } : undefined}
             className="border-sidebar-border bg-sidebar relative rounded-lg border p-1.5 shadow-[0_40px_120px_-30px_color-mix(in_oklch,var(--sidebar-primary)_40%,transparent)] sm:p-2"
           >
             <div className="flex items-center gap-1.5 px-2 pt-1 pb-2.5" aria-hidden>
@@ -178,7 +182,7 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
               width={1920}
               height={1200}
               fetchPriority="high"
-              className="w-full rounded-[3px]"
+              className="w-full rounded-[3px] max-sm:aspect-[780/1688]"
             />
             <figcaption className="sr-only">{copy.note}</figcaption>
           </motion.figure>

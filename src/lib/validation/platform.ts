@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { demoRequestStatuses } from "@/lib/platform/demo-requests";
 import { emailSchema } from "@/lib/validation/index";
 
 const required = z.string().trim().min(1);
@@ -162,4 +163,11 @@ export const planPriceSchema = z.object({
   currency: billingCurrency,
   monthly: z.number().positive().max(1_000_000_000).nullable(),
   yearly: z.number().positive().max(1_000_000_000).nullable(),
+});
+
+export const demoRequestUpdateSchema = z.object({
+  status: z.enum(demoRequestStatuses).optional(),
+  staffNotes: z.string().max(4000).optional(),
+  // null unlinks the dealership; leaving it out keeps it.
+  dealershipId: z.uuid().nullable().optional(),
 });

@@ -49,6 +49,9 @@ const statusStyles: Record<string, string> = {
   workshop: "bg-sky-700/12 text-sky-950 dark:bg-sky-300/15 dark:text-sky-100",
   new: "bg-sky-700/12 text-sky-950 dark:bg-sky-300/15 dark:text-sky-100",
   contacted: "bg-amber-700/12 text-amber-950 dark:bg-amber-300/15 dark:text-amber-100",
+  demo_booked: "bg-indigo-700/12 text-indigo-950 dark:bg-indigo-300/15 dark:text-indigo-100",
+  converted: "bg-emerald-700/12 text-emerald-950 dark:bg-emerald-400/15 dark:text-emerald-100",
+  lost: "bg-stone-600/12 text-stone-900 dark:bg-stone-300/15 dark:text-stone-100",
   qualified: "bg-emerald-700/12 text-emerald-950 dark:bg-emerald-400/15 dark:text-emerald-100",
   confirmed: "bg-emerald-700/12 text-emerald-950 dark:bg-emerald-400/15 dark:text-emerald-100",
 };

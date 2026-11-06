@@ -2982,7 +2982,8 @@
       "catalog": "Vehicle catalog",
       "admins": "Platform staff",
       "audit": "Audit log",
-      "storefronts": "Websites"
+      "storefronts": "Websites",
+      "demoRequests": "Demo requests"
     },
     "common": {
       "cancel": "Cancel",
@@ -3028,7 +3029,12 @@
       "webhook_received": "Received",
       "webhook_processed": "Processed",
       "webhook_failed": "Failed",
-      "webhook_ignored": "Ignored"
+      "webhook_ignored": "Ignored",
+      "new": "New",
+      "contacted": "Contacted",
+      "demo_booked": "Demo booked",
+      "converted": "Converted",
+      "lost": "Lost"
     },
     "cycle": {
       "monthly": "Monthly",
@@ -3295,6 +3301,38 @@
       "pricesHint": "Plans are priced in their own currency under Plans. Set these to sell in India. A plan with no price can't be bought in INR.",
       "inrMonthly": "Monthly (INR)",
       "inrYearly": "Yearly (INR)"
+    },
+    "demoRequests": {
+      "title": "Demo requests",
+      "description": "Everyone who asked for a demo on the landing page. Follow each one up and see who already has a login.",
+      "filter": "Filter by status",
+      "open": "Open",
+      "all": "All",
+      "none": "No demo requests here.",
+      "received": "Received",
+      "contact": "Who",
+      "reach": "Contact",
+      "account": "AutoNexa login",
+      "status": "Status",
+      "notEmailed": "Not emailed",
+      "notEmailedHint": "The notification email didn't go out. The request is only here.",
+      "stock": "{stock} cars in stock",
+      "hasAccount": "Has a login",
+      "noAccount": "No login yet",
+      "lastSignIn": "Last signed in {date}",
+      "neverSignedIn": "Never signed in",
+      "followUp": "Follow up",
+      "followUpHint": "Track where this lead is, and link the dealership once they sign up.",
+      "dealership": "Dealership",
+      "noDealership": "Not linked",
+      "theirNotes": "Their notes",
+      "staffNotes": "Team notes",
+      "staffNotesHint": "Calls, the demo date, what they need…",
+      "kpiNew": "New",
+      "kpiInProgress": "In progress",
+      "kpiConverted": "Converted",
+      "kpiWithAccount": "Already have a login",
+      "kpiWithAccountHint": "Their email matches an AutoNexa user"
     }
   },
   "storefront": {
@@ -3958,7 +3996,7 @@
       "secondary": "See how it works",
       "caption": "Buying · Stock · Bookings · Profit",
       "place": "Made for dealerships in the UAE",
-      "alt": "The AutoNexa dashboard showing cars in stock, bookings, outstanding payments, monthly profit, cars by stage and a list of cars that need attention",
+      "alt": "The AutoNexa dashboard: this month's sales, new and active bookings, money still to collect, and sales by month",
       "claim": "Open it in the morning and see what is in stock, what is booked, what is owed and what you made.",
       "facts": ["English and Arabic", "Works on your phone", "One or many branches"],
       "note": "Illustration with sample data",
@@ -3982,37 +4020,55 @@
     },
     "features": {
       "caption": "What it does",
-      "title": "The three jobs every dealership does, in one system.",
-      "intro": "Most dealerships keep these in separate spreadsheets and group chats. In AutoNexa they share the same record for each car, so a change in one shows up everywhere.",
+      "title": "Every part of the sale, in one system.",
+      "intro": "Most dealerships keep these in separate spreadsheets and group chats. In AutoNexa they share one record for each car, so a change in one place shows up everywhere.",
       "usedBy": "Used by",
       "replaces": "Replaces",
       "rows": [
         {
           "name": "Stock control",
-          "lead": "Every car, with its photos, documents and status, always up to date.",
-          "text": "Add a car once, choosing the make and model from a ready catalog. Everyone then sees the same status as it moves from arrival to ready for sale to sold.",
+          "lead": "Every car, its status, location and price, always up to date.",
+          "text": "Add a car once, choosing the make and model from a ready catalog. See at a glance how much of your stock is in transit, ready for sale, booked or sold, and filter by status, branch or model.",
           "usedBy": "Stock and sales teams",
           "replaces": "Stock spreadsheets",
           "image": "stock",
-          "alt": "The inventory screen listing cars with their status"
+          "alt": "The inventory screen with the stock pipeline and a list of cars, their status, location and price"
         },
         {
           "name": "Bookings and sales",
           "lead": "Reserve a car, take a deposit and always know when payment is due.",
-          "text": "Set your deposit and payment deadlines. AutoNexa tracks them, alerts your team, and takes cancellations and refunds through an approval step.",
+          "text": "Set your deposit and full-payment deadlines. AutoNexa shows what is paid and what is left to collect, flags bookings that need attention, and cancels holds with no deposit unless a manager agrees to keep them.",
           "usedBy": "Sales and accounts",
           "replaces": "Paper receipts and reminders",
           "image": "booking",
-          "alt": "A booking showing the deposit paid, the balance due and the payment deadline"
+          "alt": "The bookings screen showing what each customer has paid, what is left to collect and when it is due"
         },
         {
           "name": "Buying and costs",
-          "lead": "Record each purchase, get it approved and keep every cost on the car.",
-          "text": "Purchases go through approval before the car is received. Each expense is attached to the car, so you know its true cost before you set a price.",
+          "lead": "Record each purchase and keep every cost on the car.",
+          "text": "Each purchase keeps its price, source and every expense, from shipping to customs and inspection. You know a car's true cost before you set a price.",
           "usedBy": "Buyers and managers",
           "replaces": "Invoices in folders",
           "image": "buying",
-          "alt": "A purchase waiting for approval, with every cost listed and approve and reject buttons"
+          "alt": "A car's purchase record with its price, total cost and where the cost comes from"
+        },
+        {
+          "name": "Pricing and profit",
+          "lead": "Set a minimum, target and advertised price, and see the profit first.",
+          "text": "One line shows the car's cost, minimum price, discount room and asking price. Selling below the minimum needs a manager, and every price change is kept with who made it.",
+          "usedBy": "Managers and owners",
+          "replaces": "Guessing the margin",
+          "image": "pricing",
+          "alt": "A car's pricing screen with total cost, minimum and target price, expected profit and the price corridor"
+        },
+        {
+          "name": "Customers",
+          "lead": "Every buyer, with their bookings and their sales executive.",
+          "text": "Call, WhatsApp or email a customer in one tap. See who is buying right now, who joined this month and who has not booked yet, and book them a car from their card.",
+          "usedBy": "Sales executives",
+          "replaces": "Phone contacts and notebooks",
+          "image": "customers",
+          "alt": "Customer cards with phone, email, sales executive and number of bookings"
         }
       ]
     },
@@ -4033,38 +4089,59 @@
       "items": [
         {
           "name": "Your own website",
-          "desc": "Publish your stock to a dealership website on your own address. Enquiries from buyers come straight into AutoNexa.",
+          "desc": "Publish your stock to a dealership website on your own address. Buyers search and save cars, and their enquiries come straight into AutoNexa.",
           "tags": ["Website", "Enquiries"],
           "image": "website",
-          "alt": "A dealership website showing cars for sale with an enquire button"
-        },
-        {
-          "name": "Documents in one place",
-          "desc": "Keep files on the car, the purchase or the staff member they belong to, instead of in someone’s inbox.",
-          "tags": ["Vehicles", "Staff"],
-          "image": "documents",
-          "alt": "A list of documents, each kept on the car it belongs to"
+          "alt": "A dealership website with a car search and featured cars"
         },
         {
           "name": "Share a car with one link",
-          "desc": "Send a buyer a simple page with the car’s photos and details. They don’t need an account to open it.",
-          "tags": ["Public link", "No login"],
+          "desc": "Send a buyer a page with the car's photos, details and price, straight to WhatsApp. They don't need an account, and costs are never shown.",
+          "tags": ["Public link", "WhatsApp"],
           "image": "share",
-          "alt": "A share link and the page a buyer sees when they open it"
+          "alt": "The share dialog with a link for the customer and a WhatsApp button"
+        },
+        {
+          "name": "Staff documents",
+          "desc": "Each person keeps their Emirates ID, visa, licence and contract in one private place, and you see what is about to expire.",
+          "tags": ["Staff", "Expiry dates"],
+          "image": "documents",
+          "alt": "Staff documents with their expiry dates and a warning for those expiring soon"
         },
         {
           "name": "The right access for each person",
-          "desc": "Give each person a role and branch, so they see and do only what their job needs.",
+          "desc": "Give each person a role and branch, so they see and do only what their job needs. Invite new staff by email.",
           "tags": ["Roles", "Branches"],
           "image": "roles",
-          "alt": "Team members, each with their role and branch"
+          "alt": "The users screen with each person's role, status and last sign-in"
         },
         {
           "name": "Alerts that find you",
-          "desc": "Your team gets a notification when something needs them, including on their phone.",
-          "tags": ["In the app", "On your phone"],
+          "desc": "New bookings, overdue payments, cars ready for sale and requests to approve reach the right people, in the app and on their phone.",
+          "tags": ["In the app", "Push alerts"],
           "image": "alerts",
-          "alt": "Notifications about a deposit, a price approval, an enquiry and a purchase"
+          "alt": "Notifications about a new booking, an overdue payment, a request to approve and a car ready for sale"
+        },
+        {
+          "name": "The full history of every car",
+          "desc": "Every status change, price change and edit is recorded with who did it and when.",
+          "tags": ["Audit log", "Status history"],
+          "image": "history",
+          "alt": "A car's status history and activity log"
+        },
+        {
+          "name": "Arabic and English",
+          "desc": "Each person picks their language. In Arabic, every screen reads right to left.",
+          "tags": ["العربية", "English"],
+          "image": "arabic",
+          "alt": "The inventory screen in Arabic, laid out right to left"
+        },
+        {
+          "name": "Works on your phone",
+          "desc": "Add AutoNexa to your home screen and work from the showroom floor, with the screens your team uses most one tap away.",
+          "tags": ["iPhone and Android", "Home screen"],
+          "image": "phone",
+          "alt": "The dashboard and bookings screens on two phones"
         }
       ]
     },
@@ -4077,7 +4154,38 @@
         "Access set by role and by branch",
         "An audit log of who changed what"
       ],
-      "alt": "Two dealerships kept apart by a locked wall, above an audit log of who changed what"
+      "alt": "Two dealerships' private workspaces kept apart by a lock, above an audit log of who changed what",
+      "visual": {
+        "workspaceA": "Al Noor Motors",
+        "workspaceB": "Gulf Auto",
+        "private": "Private workspace",
+        "cars": "Cars",
+        "customers": "Customers",
+        "sales": "Sales",
+        "wall": "Kept apart by the database, not just by the screens",
+        "audit": "Audit log",
+        "sample": "Sample data",
+        "rows": [
+          {
+            "who": "Khalid Rahman",
+            "role": "Super Admin",
+            "what": "Changed the price of AN-01042",
+            "when": "10:42"
+          },
+          {
+            "who": "Sara Ali",
+            "role": "Sales · Dubai",
+            "what": "Booked a Lexus LX 600 for Fatima Zahra",
+            "when": "09:15"
+          },
+          {
+            "who": "Nadia Karim",
+            "role": "Accountant",
+            "what": "Recorded a payment on BK-00214",
+            "when": "Yesterday"
+          }
+        ]
+      }
     },
     "how": {
       "caption": "How it works",
@@ -4089,31 +4197,31 @@
           "name": "Buy",
           "text": "Record the purchase and its documents. A manager approves it.",
           "image": "step-buy",
-          "alt": "A purchase pending approval, with its price and documents"
+          "alt": "A car's purchase record with its price and total cost"
         },
         {
           "name": "Prepare",
           "text": "Receive the car, add expenses and photos, and mark it ready for sale.",
           "image": "step-prepare",
-          "alt": "A car ready for sale, with its expenses and photos"
+          "alt": "The inventory list with cars in transit, ready for sale and booked"
         },
         {
           "name": "Price",
           "text": "Set the selling and minimum price with the full cost in front of you.",
           "image": "step-price",
-          "alt": "A car's cost, minimum price, selling price and profit"
+          "alt": "A car's total cost, minimum and target price, and expected profit"
         },
         {
           "name": "Book",
           "text": "Reserve it for a buyer, take the deposit and let AutoNexa watch the deadline.",
           "image": "step-book",
-          "alt": "A booking with the deposit paid and the balance due in two days"
+          "alt": "The bookings screen on a phone, with what is paid and still to collect"
         },
         {
           "name": "Sell",
           "text": "Take the final payment, close the sale and see what the car made.",
           "image": "step-sell",
-          "alt": "A sold car showing a profit of AED 18,000"
+          "alt": "The dashboard on a phone with this month's sales"
         }
       ],
       "hint": "One record, five steps"
@@ -4165,7 +4273,45 @@
       ],
       "offer": "Choose a plan that fits the size of your dealership.",
       "offerCta": "See the plans",
-      "alt": "Spreadsheets, group chats and receipt books replaced by one record for each car"
+      "alt": "A spreadsheet, a group chat and a receipt book replaced by one AutoNexa record showing where the car is, the deposit, when payment is due and the expected profit",
+      "visual": {
+        "before": "Before",
+        "after": "With AutoNexa",
+        "sources": [
+          {
+            "name": "stock_final_v3.xlsx",
+            "question": "Where is the car?"
+          },
+          {
+            "name": "Sales group chat · 214 new",
+            "question": "Who promised what?"
+          },
+          {
+            "name": "Receipt book, page 41",
+            "question": "Was it paid?"
+          }
+        ],
+        "car": "2023 Toyota Land Cruiser GXR V6",
+        "status": "Booked",
+        "facts": [
+          {
+            "label": "Location",
+            "value": "Dubai · Al Quoz yard"
+          },
+          {
+            "label": "Deposit",
+            "value": "AED 30,000 paid"
+          },
+          {
+            "label": "Full payment",
+            "value": "Due in 12 days"
+          },
+          {
+            "label": "Expected profit",
+            "value": "AED 37,600"
+          }
+        ]
+      }
     },
     "plans": {
       "caption": "Plans",

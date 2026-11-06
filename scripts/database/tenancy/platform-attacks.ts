@@ -15,6 +15,7 @@ export const PLATFORM_CALLS: Record<string, string> = {
   platform_record_event: `select public.platform_record_event('forged', 'tenants', '${id("a", "branch")}')`,
   platform_set_storefront_disabled: `select public.platform_set_storefront_disabled('${ZOHAAN_TENANT_ID}', true, 'x')`,
   platform_prepare_refund: `select public.platform_prepare_refund('${PLAN}', 1)`,
+  platform_update_demo_request: `select public.platform_update_demo_request('${PLAN}', 'converted', 'x', '${ZOHAAN_TENANT_ID}')`,
   storefront_set_vehicle_published: `select public.storefront_set_vehicle_published('${id("a", "vehicle")}', true)`,
   storefront_set_vehicle_details: `select public.storefront_set_vehicle_details('${id("a", "vehicle")}', 'x', array['y'])`,
 };

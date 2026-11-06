@@ -36,7 +36,13 @@ function getTransporter() {
   return transporter;
 }
 
-export async function sendEmail(message: { to: string; subject: string; html: string; text: string }) {
+export async function sendEmail(message: {
+  to: string;
+  subject: string;
+  html: string;
+  text: string;
+  replyTo?: string;
+}) {
   const { fromEmail, fromName } = smtpConfig();
   await getTransporter().sendMail({ from: { name: fromName, address: fromEmail }, ...message });
 }

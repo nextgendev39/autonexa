@@ -91,6 +91,8 @@ const PLATFORM_TABLES = [
   "billing_checkouts",
   "billing_webhook_events",
   "billing_email_outbox",
+  // Landing demo requests: tested in demo-requests.test.ts.
+  "demo_requests",
 ];
 
 /** Tables with no client policies: the app reaches them through privileged server code. */

@@ -55,7 +55,7 @@ export function DemoForm({ copy }: { copy: Copy }) {
       const response = await fetch("/api/landing/demo", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, locale: document.documentElement.lang }),
       });
       if (response.status === 400) {
         setStatus({ state: "error", message: copy.invalid });

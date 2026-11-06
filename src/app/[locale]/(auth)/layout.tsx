@@ -40,15 +40,15 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
           className="absolute inset-x-0 bottom-0 -z-10 h-1/2 [background-image:linear-gradient(var(--sidebar-primary)_1px,transparent_1px),linear-gradient(90deg,var(--sidebar-primary)_1px,transparent_1px)] [mask-image:linear-gradient(to_top,black,transparent)] [background-size:56px_56px] opacity-[0.08] [transform:perspective(500px)_rotateX(60deg)] [transform-origin:bottom]"
           aria-hidden
         />
-        <BrandMark className="text-sidebar-foreground animate-rise [&_span]:text-base" />
+        <BrandMark tone="dark" className="animate-rise [&_img]:h-10" />
         <div className="stagger [--stagger:120ms]">
           <Image
-            src="/brand/logo-mark.png"
+            src="/brand/mark-dark.png"
             alt=""
-            width={112}
-            height={112}
+            width={421}
+            height={256}
             priority
-            className="animate-float mb-8 size-28 rounded-lg drop-shadow-[0_18px_40px_color-mix(in_oklch,var(--sidebar-primary)_45%,transparent)]"
+            className="animate-float mb-8 h-24 w-auto drop-shadow-[0_18px_40px_color-mix(in_oklch,var(--sidebar-primary)_45%,transparent)]"
           />
           <p className="text-sidebar-primary border-sidebar-primary/30 bg-sidebar-primary/10 inline-flex rounded-full border px-3 py-1 text-xs font-medium tracking-[0.14em] uppercase">
             {t("app.region")}

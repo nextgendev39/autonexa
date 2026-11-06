@@ -173,7 +173,7 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
             className="relative order-first lg:order-none"
           >
             <div
-              className="bg-brand-soft absolute -inset-4 -z-10 rounded-lg blur-2xl"
+              className="bg-brand-soft absolute -inset-4 -z-10 hidden rounded-lg blur-2xl lg:block"
               aria-hidden
             />
             <div className="border-border bg-sidebar relative aspect-[4/3] overflow-hidden rounded-lg border p-1.5 shadow-lg">

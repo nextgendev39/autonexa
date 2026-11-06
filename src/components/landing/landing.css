@@ -19,6 +19,13 @@ html:has(.landing) body {
   overflow-x: clip;
 }
 
+/* iOS before 16 has no clip. Hidden only costs desktop-only sticky blocks there. */
+@supports not (overflow-x: clip) {
+  .landing {
+    overflow-x: hidden;
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html:has(.landing) {
     scroll-behavior: smooth;
@@ -26,11 +33,12 @@ html:has(.landing) body {
 }
 
 /*
- * The showroom glows are huge, heavily blurred circles. Animating them makes a phone redraw the
- * blur every frame, which stutters and flickers while scrolling, so phones and tablets keep them still.
+ * The showroom glows: soft circles in the current text colour. They are radial gradients, not
+ * blurred discs. iOS Safari redraws big blur filters slowly, so they stuttered, flickered and
+ * left blank patches while scrolling an iPhone.
  */
-@media (max-width: 1023.98px) {
-  .landing .animate-drift {
-    animation: none;
-  }
+.landing-glow {
+  border-radius: 9999px;
+  background-image: radial-gradient(closest-side, currentColor, transparent);
+  pointer-events: none;
 }

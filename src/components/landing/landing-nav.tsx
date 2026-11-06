@@ -44,7 +44,7 @@ export function LandingNav({ copy }: { copy: LandingCopy["nav"] }) {
         className={cn(
           "mx-auto flex h-14 max-w-6xl items-center gap-4 rounded-lg border px-3 transition-all duration-300 sm:px-4",
           scrolled || open
-            ? "border-border bg-background/80 shadow-md backdrop-blur-xl"
+            ? "border-border bg-background/95 shadow-md sm:bg-background/80 sm:backdrop-blur-xl"
             : "text-sidebar-foreground border-transparent bg-transparent",
         )}
       >
@@ -115,7 +115,7 @@ export function LandingNav({ copy }: { copy: LandingCopy["nav"] }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.98 }}
             transition={{ duration: 0.25, ease }}
-            className="border-border bg-background/95 mx-auto mt-2 max-w-6xl rounded-lg border p-3 shadow-lg backdrop-blur-xl lg:hidden"
+            className="border-border bg-background/95 mx-auto mt-2 max-w-6xl rounded-lg border p-3 shadow-lg sm:backdrop-blur-xl lg:hidden"
           >
             <ul className="grid gap-1">
               {links.map((link, index) => (

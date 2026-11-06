@@ -44,8 +44,8 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
         className="pointer-events-none absolute inset-0 -z-10"
         aria-hidden
       >
-        <div className="bg-sidebar-primary/25 animate-drift absolute start-1/2 top-24 size-[44rem] -translate-x-1/2 rounded-full blur-[140px] rtl:translate-x-1/2" />
-        <div className="bg-chrome/15 animate-drift absolute -end-32 top-1/3 size-96 rounded-full blur-[120px] [animation-delay:-7s]" />
+        <div className="landing-glow text-sidebar-primary/30 animate-drift absolute start-1/2 top-12 size-[52rem] -translate-x-1/2 rtl:translate-x-1/2" />
+        <div className="landing-glow text-chrome/20 animate-drift absolute -end-48 top-1/4 size-[34rem] [animation-delay:-7s]" />
       </motion.div>
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden" aria-hidden>
         {[14, 30, 48, 63, 78].map((top, index) => (
@@ -62,7 +62,7 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
         ))}
       </div>
       <div
-        className="absolute inset-x-0 bottom-0 -z-10 h-2/3 [transform-origin:bottom] [transform:perspective(600px)_rotateX(60deg)] [background-image:linear-gradient(var(--sidebar-primary)_1px,transparent_1px),linear-gradient(90deg,var(--sidebar-primary)_1px,transparent_1px)] [mask-image:linear-gradient(to_top,black,transparent)] [background-size:64px_64px] opacity-[0.07]"
+        className="absolute inset-x-0 bottom-0 -z-10 hidden h-2/3 [transform-origin:bottom] md:block [transform:perspective(600px)_rotateX(60deg)] [background-image:linear-gradient(var(--sidebar-primary)_1px,transparent_1px),linear-gradient(90deg,var(--sidebar-primary)_1px,transparent_1px)] [mask-image:linear-gradient(to_top,black,transparent)] [background-size:64px_64px] opacity-[0.07]"
         aria-hidden
       />
 

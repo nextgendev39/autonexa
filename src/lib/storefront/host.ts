@@ -18,10 +18,13 @@ export function normalizeHost(raw: string | null | undefined) {
   return VALID_HOST.test(host) && host.length <= 253 ? host : null;
 }
 
-export function hostSettingsFromEnv(env: Record<string, string | undefined> = process.env): HostSettings {
+export function hostSettingsFromEnv(
+  env: Record<string, string | undefined> = process.env,
+): HostSettings {
   const appHosts = ["localhost", "127.0.0.1"];
   try {
-    if (env.NEXT_PUBLIC_SITE_URL) appHosts.push(new URL(env.NEXT_PUBLIC_SITE_URL).hostname.toLowerCase());
+    if (env.NEXT_PUBLIC_SITE_URL)
+      appHosts.push(new URL(env.NEXT_PUBLIC_SITE_URL).hostname.toLowerCase());
   } catch {
     /* An invalid URL simply adds nothing. */
   }
@@ -49,7 +52,10 @@ export function isReservedDomain(domain: string, settings: HostSettings) {
   const host = normalizeHost(domain);
   if (!host) return true;
   if (settings.appHosts.some((pattern) => matches(host, pattern))) return true;
-  return Boolean(settings.baseDomain) && (host === settings.baseDomain || host.endsWith(`.${settings.baseDomain}`));
+  return (
+    Boolean(settings.baseDomain) &&
+    (host === settings.baseDomain || host.endsWith(`.${settings.baseDomain}`))
+  );
 }
 
 export const SITE_LOCALES = ["en", "ar"] as const;
@@ -77,7 +83,7 @@ export function routeStorefrontPath(pathname: string): SiteRoute {
   const locale: SiteLocale = explicitLocale ? (first as SiteLocale) : "en";
   const path = explicitLocale ? `/${rest.join("/")}` : pathname;
   // Only the website's own pages. Everything else that exists in the app stays out of reach.
-  const allowed = /^\/$|^\/vehicles\/?$|^\/vehicles\/[^/]+\/?$|^\/contact\/?$/;
+  const allowed = /^\/$|^\/vehicles\/?$|^\/vehicles\/[^/]+\/?$|^\/contact\/?$|^\/saved\/?$/;
   if (!allowed.test(path)) return { kind: "not_found" };
   return { kind: "page", locale, explicitLocale, path };
 }
@@ -87,7 +93,8 @@ export const internalSitePath = (locale: SiteLocale, path: string) =>
   `/${locale}/site${path === "/" ? "" : path}`;
 
 /** Website pages are internal: on the staff app's host they don't exist. */
-export const isInternalSitePath = (pathname: string) => /^\/(?:(?:en|ar)\/)?site(?:\/|$)/.test(pathname);
+export const isInternalSitePath = (pathname: string) =>
+  /^\/(?:(?:en|ar)\/)?site(?:\/|$)/.test(pathname);
 
 /** The public address of a website page. */
 export function sitePath(locale: string, path: string, defaultLocale = "en") {

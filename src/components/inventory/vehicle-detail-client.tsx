@@ -41,6 +41,7 @@ import {
   VehicleHero,
 } from "@/components/inventory/vehicle-insights";
 import { ShareVehicleButton } from "@/components/inventory/share-vehicle-button";
+import { StorefrontListingToggle } from "@/components/inventory/storefront-listing-toggle";
 import { VehicleSaleActions } from "@/components/inventory/vehicle-sale-actions";
 import { SoldTag } from "@/components/inventory/vehicle-sold-tag";
 import { usePermission } from "@/hooks/use-permission";
@@ -445,6 +446,8 @@ export function VehicleDetailClient({
 
       {/* Leaves the screen when the tab bar sticks to the top. */}
       <div ref={setHeaderEnd} aria-hidden className="-mt-5 h-px" />
+
+      <StorefrontListingToggle vehicle={vehicle} />
 
       <Tabs defaultValue={resolvedTab} className="gap-4">
         <div

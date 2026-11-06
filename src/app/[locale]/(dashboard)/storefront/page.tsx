@@ -25,19 +25,27 @@ export default async function Page() {
   const canAnalytics = !off.includes("storefront_analytics");
   const canViewEnquiries = hasPermission(context.permissions, "customer.view", context.roles);
   const canBooking =
-    !off.includes("bookings") && hasPermission(context.permissions, "reservation.create", context.roles);
+    !off.includes("bookings") &&
+    hasPermission(context.permissions, "reservation.create", context.roles);
 
   const supabase = await createClient();
-  const [storefront, vehicles, domains, enquiries, analytics, salespeople, tenant, settings] = await Promise.all([
-    getStorefront(context),
-    listManagedVehicles(),
-    listManagedDomains(),
-    canViewEnquiries ? listEnquiries() : Promise.resolve([]),
-    canAnalytics ? getAnalytics() : Promise.resolve(null),
-    canBooking ? listBookingSalespeople() : Promise.resolve([]),
-    supabase.from("tenants" as never).select("slug").maybeSingle(),
-    supabase.from("tenant_settings" as never).select("currency").maybeSingle(),
-  ]);
+  const [storefront, managed, domains, enquiries, analytics, salespeople, tenant, settings] =
+    await Promise.all([
+      getStorefront(context),
+      listManagedVehicles(),
+      listManagedDomains(),
+      canViewEnquiries ? listEnquiries() : Promise.resolve([]),
+      canAnalytics ? getAnalytics() : Promise.resolve(null),
+      canBooking ? listBookingSalespeople() : Promise.resolve([]),
+      supabase
+        .from("tenants" as never)
+        .select("slug")
+        .maybeSingle(),
+      supabase
+        .from("tenant_settings" as never)
+        .select("currency")
+        .maybeSingle(),
+    ]);
   const slug = (tenant.data as unknown as { slug: string } | null)?.slug;
   const base = process.env.NEXT_PUBLIC_STOREFRONT_BASE_DOMAIN?.trim();
 
@@ -47,7 +55,8 @@ export default async function Page() {
       address={slug && base ? `${slug}.${base}` : null}
       cnameTarget={process.env.NEXT_PUBLIC_STOREFRONT_CNAME_TARGET?.trim() || null}
       currency={(settings.data as unknown as { currency: string } | null)?.currency ?? "AED"}
-      vehicles={vehicles}
+      vehicles={managed.vehicles}
+      detailsReady={managed.detailsReady}
       domains={domains}
       enquiries={enquiries}
       analytics={analytics}

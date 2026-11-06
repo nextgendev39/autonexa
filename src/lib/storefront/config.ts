@@ -7,8 +7,20 @@ import { z } from "zod";
 const text = (max: number) => z.string().trim().max(max);
 const localized = (max: number) => z.object({ en: text(max).optional(), ar: text(max).optional() });
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/);
-const https = z.string().trim().max(300).regex(/^https:\/\/[^\s"'<>]+$/);
-const assetPath = z.string().max(200).regex(/^[0-9a-f-]{36}\/[a-zA-Z0-9._-]+$/);
+const https = z
+  .string()
+  .trim()
+  .max(300)
+  .regex(/^https:\/\/[^\s"'<>]+$/);
+const assetPath = z
+  .string()
+  .max(200)
+  .regex(/^[0-9a-f-]{36}\/[a-zA-Z0-9._-]+$/);
+/** A page on the dealership's own site, such as "/vehicles?body=suv". Never another address. */
+export const SITE_LINK = /^\/(?:vehicles|contact|saved)?(?:\?[a-zA-Z0-9=&_%+.-]{0,200})?$/;
+const siteLink = z.string().trim().max(240).regex(SITE_LINK);
+
+export const MAX_PROMOS = 3;
 
 export const SECTION_KEYS = ["hero", "featured", "inventory", "about", "contact"] as const;
 export type SectionKey = (typeof SECTION_KEYS)[number];
@@ -35,9 +47,23 @@ export const storefrontConfigSchema = z.object({
       email: z.email().max(200).optional().or(z.literal("")),
       address: localized(300).optional(),
       hours: localized(200).optional(),
+      /** A maps link the dealership pastes in, opened in a new tab. Never embedded. */
+      mapUrl: https.optional().or(z.literal("")),
     })
     .default({}),
-  social: z.object(Object.fromEntries(SOCIAL_KEYS.map((key) => [key, https.optional().or(z.literal(""))]))).default({}),
+  promos: z
+    .array(
+      z.object({
+        title: localized(80).default({}),
+        text: localized(200).default({}),
+        href: siteLink.optional().or(z.literal("")),
+      }),
+    )
+    .max(MAX_PROMOS)
+    .default([]),
+  social: z
+    .object(Object.fromEntries(SOCIAL_KEYS.map((key) => [key, https.optional().or(z.literal(""))])))
+    .default({}),
   seo: z
     .object({
       title: localized(70).optional(),
@@ -85,7 +111,10 @@ export function readableOn(color: string) {
   return luminance > 0.4 ? "#000000" : "#ffffff";
 }
 
-export function assetUrl(path: string | null | undefined, supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL) {
+export function assetUrl(
+  path: string | null | undefined,
+  supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL,
+) {
   if (!path || !supabaseUrl) return null;
   return `${supabaseUrl.replace(/\/$/, "")}/storage/v1/object/public/storefront-assets/${path}`;
 }

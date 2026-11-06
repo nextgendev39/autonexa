@@ -6,6 +6,12 @@
 export const PUBLIC_VEHICLE_COLUMNS =
   "id, stock_number, year, make, model, variant, custom_variant, mileage, mileage_unit, market_type, condition, status, body_type, transmission, fuel_type, drive_type, engine_size, engine_cylinders, seats, doors, exterior_color, interior_color, origin_type, country_of_origin, quantity, current_selling_price, created_at, branches!vehicles_branch_id_fkey ( name, city, emirate, phone ), vehicle_pricing ( advertised_price, target_selling_price )";
 
+/**
+ * What the listing says, read on its own (see 00085) so the rest of a page still works on a
+ * database that doesn't have these columns yet.
+ */
+export const LISTING_DETAIL_COLUMNS = "id, storefront_description, storefront_features";
+
 /** Words that must never appear in what's read for the public, or in what's sent to it. */
 export const NEVER_PUBLIC = [
   "minimum_selling_price",
@@ -50,8 +56,15 @@ export type PublicVehicleRow = {
   country_of_origin: string | null;
   quantity: number | null;
   current_selling_price: number | string | null;
+  storefront_description?: string | null;
+  storefront_features?: string[] | null;
   created_at: string;
-  branches: { name: string; city: string | null; emirate: string | null; phone: string | null } | null;
+  branches: {
+    name: string;
+    city: string | null;
+    emirate: string | null;
+    phone: string | null;
+  } | null;
   vehicle_pricing:
     | { advertised_price: number | string | null; target_selling_price: number | string | null }
     | { advertised_price: number | string | null; target_selling_price: number | string | null }[]
@@ -84,12 +97,23 @@ export type PublicVehicle = {
   countryOfOrigin: string | null;
   quantity: number;
   price: number | null;
-  branch: { name: string; city: string | null; emirate: string | null; phone: string | null } | null;
+  /** Written for the website. Never the internal description. */
+  description: string | null;
+  features: string[];
+  listedAt: string;
+  branch: {
+    name: string;
+    city: string | null;
+    emirate: string | null;
+    phone: string | null;
+  } | null;
   photos: { id: string; url: string }[];
 };
 
 /** Same order as public.vehicle_public_price(). Never the minimum. */
-export function publicPrice(row: Pick<PublicVehicleRow, "current_selling_price" | "vehicle_pricing">) {
+export function publicPrice(
+  row: Pick<PublicVehicleRow, "current_selling_price" | "vehicle_pricing">,
+) {
   const pricing = Array.isArray(row.vehicle_pricing) ? row.vehicle_pricing[0] : row.vehicle_pricing;
   return (
     [row.current_selling_price, pricing?.advertised_price, pricing?.target_selling_price]
@@ -98,7 +122,10 @@ export function publicPrice(row: Pick<PublicVehicleRow, "current_selling_price" 
   );
 }
 
-export function toPublicVehicle(row: PublicVehicleRow, photos: { id: string; url: string }[] = []): PublicVehicle {
+export function toPublicVehicle(
+  row: PublicVehicleRow,
+  photos: { id: string; url: string }[] = [],
+): PublicVehicle {
   const variant = row.variant ?? row.custom_variant;
   return {
     stockNumber: row.stock_number,
@@ -126,8 +153,18 @@ export function toPublicVehicle(row: PublicVehicleRow, photos: { id: string; url
     countryOfOrigin: row.country_of_origin,
     quantity: row.quantity ?? 1,
     price: publicPrice(row),
+    description: row.storefront_description?.trim() || null,
+    features: (row.storefront_features ?? []).filter(
+      (feature) => typeof feature === "string" && feature.trim(),
+    ),
+    listedAt: row.created_at,
     branch: row.branches
-      ? { name: row.branches.name, city: row.branches.city, emirate: row.branches.emirate, phone: row.branches.phone }
+      ? {
+          name: row.branches.name,
+          city: row.branches.city,
+          emirate: row.branches.emirate,
+          phone: row.branches.phone,
+        }
       : null,
     photos,
   };
@@ -137,20 +174,36 @@ export function toPublicVehicle(row: PublicVehicleRow, photos: { id: string; url
 // Listing query, from the URL. Anything unexpected is dropped rather than passed along.
 // ---------------------------------------------------------------------------
 
-export const LISTING_SORTS = ["newest", "price_asc", "price_desc", "year_desc", "mileage_asc"] as const;
+export const LISTING_SORTS = [
+  "newest",
+  "popular",
+  "price_asc",
+  "price_desc",
+  "year_desc",
+  "mileage_asc",
+] as const;
 export type ListingSort = (typeof LISTING_SORTS)[number];
 export const PAGE_SIZE = 12;
+
+export const CONDITIONS = ["new", "used"] as const;
+export const AVAILABILITY = ["available", "reserved"] as const;
 
 export type ListingQuery = {
   q: string;
   make: string | null;
+  model: string | null;
   body: string | null;
   fuel: string | null;
   transmission: string | null;
+  engine: string | null;
+  city: string | null;
+  condition: (typeof CONDITIONS)[number] | null;
+  availability: (typeof AVAILABILITY)[number] | null;
   yearMin: number | null;
   yearMax: number | null;
   priceMin: number | null;
   priceMax: number | null;
+  mileageMax: number | null;
   sort: ListingSort;
   page: number;
 };
@@ -162,21 +215,75 @@ const whole = (value: string | undefined, max: number) => {
 };
 /** Letters, numbers, spaces and hyphens: nothing that means anything in a filter expression. */
 export const cleanTerm = (value: string | undefined) =>
-  (value ?? "").replace(/[^\p{L}\p{N} -]/gu, " ").replace(/\s+/g, " ").trim().slice(0, 60);
+  (value ?? "")
+    .replace(/[^\p{L}\p{N} -]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 60);
+/** Engine sizes are written like "2.5L" or "1.6 Turbo", so a dot is allowed here and nowhere else. */
+const cleanEngine = (value: string | undefined) =>
+  (value ?? "")
+    .replace(/[^\p{L}\p{N} .-]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 30);
+const oneOf = <T extends string>(options: readonly T[], value: string | undefined) =>
+  options.includes(value as T) ? (value as T) : null;
 
-export function parseListingQuery(params: Record<string, string | string[] | undefined>): ListingQuery {
+export function parseListingQuery(
+  params: Record<string, string | string[] | undefined>,
+): ListingQuery {
   const sort = first(params.sort) as ListingSort;
   return {
     q: cleanTerm(first(params.q)),
     make: cleanTerm(first(params.make)) || null,
+    model: cleanTerm(first(params.model)) || null,
     body: cleanTerm(first(params.body)) || null,
     fuel: cleanTerm(first(params.fuel)) || null,
     transmission: cleanTerm(first(params.transmission)) || null,
+    engine: cleanEngine(first(params.engine)) || null,
+    city: cleanTerm(first(params.city)) || null,
+    condition: oneOf(CONDITIONS, first(params.condition)),
+    availability: oneOf(AVAILABILITY, first(params.availability)),
     yearMin: whole(first(params.yearMin), 2100),
     yearMax: whole(first(params.yearMax), 2100),
     priceMin: whole(first(params.priceMin), 1_000_000_000),
     priceMax: whole(first(params.priceMax), 1_000_000_000),
+    mileageMax: whole(first(params.mileageMax), 10_000_000),
     sort: LISTING_SORTS.includes(sort) ? sort : "newest",
     page: Math.max(1, whole(first(params.page), 100_000) ?? 1),
   };
+}
+
+/** The query as URL parameters, leaving out defaults, so every result has one clean address. */
+export function listingSearchParams(query: Partial<ListingQuery>) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value === null || value === undefined || value === "") continue;
+    if (key === "sort" && value === "newest") continue;
+    if (key === "page" && value === 1) continue;
+    params.set(key, String(value));
+  }
+  return params;
+}
+
+/** How many filters are set, for the "Filters (3)" button on phones. */
+export function activeFilterCount(query: ListingQuery) {
+  const keys: (keyof ListingQuery)[] = [
+    "make",
+    "model",
+    "body",
+    "fuel",
+    "transmission",
+    "engine",
+    "city",
+    "condition",
+    "availability",
+    "yearMin",
+    "yearMax",
+    "priceMin",
+    "priceMax",
+    "mileageMax",
+  ];
+  return keys.filter((key) => query[key] !== null && query[key] !== "").length;
 }

@@ -4,7 +4,11 @@ import { createBooking } from "@/lib/bookings/service";
 import { listSalesExecutives, SALESPERSON_ROLES } from "@/lib/bookings/service";
 import { planLimitFromError } from "@/lib/platform/limit-errors";
 import { tenantClient } from "@/lib/server/privileged";
-import { parseStorefrontConfig, storefrontConfigSchema, type StorefrontConfig } from "@/lib/storefront/config";
+import {
+  parseStorefrontConfig,
+  storefrontConfigSchema,
+  type StorefrontConfig,
+} from "@/lib/storefront/config";
 import { hostSettingsFromEnv, isReservedDomain } from "@/lib/storefront/host";
 import { verifyDomain } from "@/lib/storefront/domains";
 import { sniffImage } from "@/lib/storefront/image";
@@ -23,10 +27,15 @@ const fail = (code: string, message: string, status = 400): Failure => ({ code, 
 const fromDb = (error: { code?: string; message?: string }): Failure => {
   const planLimit = planLimitFromError(error);
   if (planLimit) return fail(planLimit.code, planLimit.message, 403);
-  if (error.code === "42501") return fail("forbidden", "You do not have permission to do this.", 403);
+  if (error.code === "42501")
+    return fail("forbidden", "You do not have permission to do this.", 403);
   if (error.code === "23505") return fail("duplicate", "You've already added this.", 409);
   if (error.message === "storefront_disabled") {
-    return fail("storefront_disabled", "AutoNexa has taken this website offline. Contact support.", 403);
+    return fail(
+      "storefront_disabled",
+      "AutoNexa has taken this website offline. Contact support.",
+      403,
+    );
   }
   return fail("db_error", error.message ?? "Database error", 500);
 };
@@ -38,6 +47,11 @@ export type ManagedVehicle = {
   status: string;
   price: number | null;
   published: boolean;
+  /** Listed and ready for sale or reserved, so visitors can see it right now. */
+  live: boolean;
+  createdAt: string;
+  description: string | null;
+  features: string[];
 };
 export type ManagedDomain = {
   id: string;
@@ -99,32 +113,55 @@ export async function getStorefront(context: UserContext) {
 
 export async function saveDraft(context: UserContext, body: unknown) {
   const parsed = storefrontConfigSchema.safeParse(body);
-  if (!parsed.success) return { error: fail("validation", "Please correct the highlighted fields.") };
+  if (!parsed.success)
+    return { error: fail("validation", "Please correct the highlighted fields.") };
   // Files must be this dealership's own, or a design could point at another's.
   const owner = `${context.tenantId}/`;
   for (const path of [parsed.data.logoPath, parsed.data.bannerPath]) {
-    if (path && !path.startsWith(owner)) return { error: fail("forbidden", "That file isn't yours.", 403) };
+    if (path && !path.startsWith(owner))
+      return { error: fail("forbidden", "That file isn't yours.", 403) };
   }
   const supabase = await createClient();
-  const { error } = await supabase
+  const values = { draft_config: parsed.data, updated_by: context.userId };
+  // Not an upsert: that would also write tenant_id on conflict, and staff may only change
+  // draft_config and updated_by (00080's column grants), so Postgres refuses the whole statement.
+  const update = () =>
+    supabase
+      .from("storefronts" as never)
+      .update(values as never)
+      .eq("tenant_id", context.tenantId as never)
+      .select("tenant_id");
+  const updated = await update();
+  if (updated.error) return { error: fromDb(updated.error) };
+  if ((updated.data ?? []).length > 0) return { error: null };
+
+  // The first save makes the row.
+  const inserted = await supabase
     .from("storefronts" as never)
-    .upsert({ tenant_id: context.tenantId, draft_config: parsed.data, updated_by: context.userId } as never, {
-      onConflict: "tenant_id",
-    });
-  return { error: error ? fromDb(error) : null };
+    .insert({ tenant_id: context.tenantId, ...values } as never);
+  if (inserted.error?.code === "23505") {
+    // Another save made it a moment ago: write over that one instead.
+    const retry = await update();
+    return { error: retry.error ? fromDb(retry.error) : null };
+  }
+  return { error: inserted.error ? fromDb(inserted.error) : null };
 }
 
 export async function setPublished(action: "publish" | "unpublish") {
   const supabase = await createClient();
-  const { error } = await supabase.rpc((action === "publish" ? "storefront_publish" : "storefront_unpublish") as never);
-  if (error?.code === "P0002") return { error: fail("nothing_to_publish", "Save your design first.", 409) };
+  const { error } = await supabase.rpc(
+    (action === "publish" ? "storefront_publish" : "storefront_unpublish") as never,
+  );
+  if (error?.code === "P0002")
+    return { error: fail("nothing_to_publish", "Save your design first.", 409) };
   return { error: error ? fromDb(error) : null };
 }
 
 const MAX_ASSET_BYTES = 5 * 1024 * 1024;
 
 export async function uploadAsset(context: UserContext, file: File, kind: "logo" | "banner") {
-  if (file.size > MAX_ASSET_BYTES) return { path: null, error: fail("too_large", "Images can be up to 5 MB.") };
+  if (file.size > MAX_ASSET_BYTES)
+    return { path: null, error: fail("too_large", "Images can be up to 5 MB.") };
   const bytes = new Uint8Array(await file.arrayBuffer());
   const image = sniffImage(bytes);
   if (!image) return { path: null, error: fail("invalid_file", "Use a JPEG, PNG or WebP image.") };
@@ -137,18 +174,33 @@ export async function uploadAsset(context: UserContext, file: File, kind: "logo"
   return { path, error: null };
 }
 
-export async function listManagedVehicles() {
+/** Cars that can never be listed again. Everything else in stock can be switched on ahead of time. */
+const NOT_LISTABLE = ["sold", "delivered", "archived"];
+const LIVE_STATUSES = new Set(["ready_for_sale", "reserved"]);
+
+/**
+ * Every active car, so a dealership can switch cars on before they're ready: they appear on the
+ * website once ready for sale. Listing text is read separately and is empty until 00085 is applied.
+ */
+export async function listManagedVehicles(): Promise<{
+  vehicles: ManagedVehicle[];
+  detailsReady: boolean;
+}> {
   const supabase = await createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("vehicles")
     .select(
-      "id, stock_number, year, make, model, status, current_selling_price, storefront_published, vehicle_pricing ( advertised_price, target_selling_price )",
+      "id, stock_number, year, make, model, status, current_selling_price, storefront_published, created_at, vehicle_pricing ( advertised_price, target_selling_price )",
     )
-    .in("status", ["ready_for_sale", "reserved"])
+    .not("status", "in", `(${NOT_LISTABLE.join(",")})`)
     .is("deleted_at", null)
     .order("created_at", { ascending: false })
     .limit(500);
-  return ((data ?? []) as unknown as (Pick<PublicVehicleRow, "current_selling_price" | "vehicle_pricing"> & {
+  if (error) console.error("[storefront] could not list cars", error.message);
+  const rows = (data ?? []) as unknown as (Pick<
+    PublicVehicleRow,
+    "current_selling_price" | "vehicle_pricing"
+  > & {
     id: string;
     stock_number: string;
     year: number;
@@ -156,16 +208,48 @@ export async function listManagedVehicles() {
     model: string;
     status: string;
     storefront_published: boolean;
-  })[]).map(
-    (row): ManagedVehicle => ({
+    created_at: string;
+  })[];
+
+  const details = new Map<
+    string,
+    { storefront_description: string | null; storefront_features: string[] | null }
+  >();
+  let detailsReady = true;
+  if (rows.length) {
+    const { data: extra, error: detailsError } = await supabase
+      .from("vehicles")
+      .select("id, storefront_description, storefront_features" as never)
+      .in(
+        "id",
+        rows.map((row) => row.id),
+      );
+    if (detailsError) detailsReady = false;
+    for (const row of (extra ?? []) as unknown as {
+      id: string;
+      storefront_description: string | null;
+      storefront_features: string[] | null;
+    }[]) {
+      details.set(row.id, row);
+    }
+  }
+
+  const vehicles = rows
+    .map((row): ManagedVehicle => ({
       id: row.id,
       stockNumber: row.stock_number,
       title: [row.year, row.make, row.model].filter(Boolean).join(" "),
       status: row.status,
+      createdAt: row.created_at,
       price: publicPrice(row),
       published: row.storefront_published,
-    }),
-  );
+      live: row.storefront_published && LIVE_STATUSES.has(row.status),
+      description: details.get(row.id)?.storefront_description ?? null,
+      features: details.get(row.id)?.storefront_features ?? [],
+    }))
+    // Cars on sale first: those are the ones visitors can see.
+    .sort((a, b) => Number(LIVE_STATUSES.has(b.status)) - Number(LIVE_STATUSES.has(a.status)));
+  return { vehicles, detailsReady };
 }
 
 export async function setVehicleListing(vehicleId: string, published: boolean) {
@@ -177,12 +261,29 @@ export async function setVehicleListing(vehicleId: string, published: boolean) {
   return { error: error ? fromDb(error) : null };
 }
 
+/** What the listing says on the website. Cleaned again by the database, which also checks permission. */
+export async function setVehicleDetails(
+  vehicleId: string,
+  description: string | null,
+  features: string[],
+) {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc(
+    "storefront_set_vehicle_details" as never,
+    { p_vehicle_id: vehicleId, p_description: description, p_features: features } as never,
+  );
+  return { error: error ? fromDb(error) : null };
+}
+
 const DOMAIN_COLUMNS =
   "id, domain, is_primary, verification_status, ssl_status, verification_token, last_checked_at, last_error";
 
 export async function listManagedDomains() {
   const supabase = await createClient();
-  const { data } = await supabase.from("tenant_domains" as never).select(DOMAIN_COLUMNS).order("domain");
+  const { data } = await supabase
+    .from("tenant_domains" as never)
+    .select(DOMAIN_COLUMNS)
+    .order("domain");
   return (data ?? []) as unknown as ManagedDomain[];
 }
 
@@ -199,7 +300,11 @@ export async function addDomain(context: UserContext, domain: string) {
 
 export async function removeDomain(id: string) {
   const supabase = await createClient();
-  const { error, data } = await supabase.from("tenant_domains" as never).delete().eq("id", id).select("id");
+  const { error, data } = await supabase
+    .from("tenant_domains" as never)
+    .delete()
+    .eq("id", id)
+    .select("id");
   if (error) return { error: fromDb(error) };
   return { error: data?.length ? null : fail("not_found", "Not found.", 404) };
 }
@@ -263,9 +368,12 @@ export async function confirmBookingRequest(
     vehicle_id: string | null;
   } | null;
   if (!enquiry) return { error: fail("not_found", "Not found.", 404) };
-  if (enquiry.status === "converted") return { error: fail("already_converted", "This is already a booking.", 409) };
+  if (enquiry.status === "converted")
+    return { error: fail("already_converted", "This is already a booking.", 409) };
   if (!enquiry.customer_id || !enquiry.vehicle_id) {
-    return { error: fail("not_available", "The car or customer on this request no longer exists.", 409) };
+    return {
+      error: fail("not_available", "The car or customer on this request no longer exists.", 409),
+    };
   }
 
   const parsed = createBookingSchema.safeParse({
@@ -277,7 +385,8 @@ export async function confirmBookingRequest(
     deposit: values.deposit,
     quantity: 1,
   });
-  if (!parsed.success) return { error: fail("validation", "Please correct the highlighted fields.") };
+  if (!parsed.success)
+    return { error: fail("validation", "Please correct the highlighted fields.") };
 
   const result = await createBooking(parsed.data, context);
   if (result.error) {
@@ -293,7 +402,11 @@ export async function confirmBookingRequest(
 
   const { error: linkError } = await supabase
     .from("storefront_enquiries" as never)
-    .update({ status: "converted", reservation_id: result.data.id, handled_by: context.userId } as never)
+    .update({
+      status: "converted",
+      reservation_id: result.data.id,
+      handled_by: context.userId,
+    } as never)
     .eq("id", id);
   if (linkError) console.error("[storefront] booking made, enquiry not linked", linkError.message);
   // A conversion is real business, so a failed count mustn't undo the booking.
@@ -306,7 +419,10 @@ export async function confirmBookingRequest(
 
 export async function getAnalytics(days = 30) {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("storefront_analytics" as never, { p_days: days } as never);
+  const { data, error } = await supabase.rpc(
+    "storefront_analytics" as never,
+    { p_days: days } as never,
+  );
   return error ? null : ((data as unknown as Analytics | null) ?? null);
 }
 

@@ -140,6 +140,8 @@ export type VehicleDetail = VehicleListItem & {
   variantId: string | null;
   customVariant: string | null;
   archivedAt: string | null;
+  /** "Show on storefront": listed on the dealership website once ready for sale. */
+  storefrontPublished: boolean;
   createdBy: string | null;
   updatedBy: string | null;
   createdByName: string | null;

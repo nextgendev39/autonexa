@@ -103,6 +103,7 @@ type VehicleRow = {
   has_minimum_price: boolean | null;
   split_from_id: string | null;
   archived_at: string | null;
+  storefront_published?: boolean | null;
   created_by: string | null;
   updated_by: string | null;
   created_at: string;
@@ -269,7 +270,7 @@ const LIST_SELECT = `
   seats, doors, drive_type, origin_type, country_of_origin, condition, market_type, visible_to_staff, branch_id, location_id,
   source, status, purchase_date, registration_date, registration_expiry, description,
   current_selling_price, make_id, model_id, model_year_id, variant_id, custom_variant,
-  quantity, port_location, has_minimum_price, split_from_id, archived_at, created_by, updated_by, created_at, updated_at, deleted_at,
+  quantity, port_location, has_minimum_price, split_from_id, archived_at, storefront_published, created_by, updated_by, created_at, updated_at, deleted_at,
   branches!vehicles_branch_id_fkey ( id, name ),
   branch_locations!vehicles_location_id_fkey ( id, name )
 `;
@@ -630,6 +631,7 @@ export async function getVehicle(
     variantId: row.variant_id,
     customVariant: row.custom_variant,
     archivedAt: row.archived_at,
+    storefrontPublished: row.storefront_published === true,
     createdBy: row.created_by,
     updatedBy: row.updated_by,
     createdByName,

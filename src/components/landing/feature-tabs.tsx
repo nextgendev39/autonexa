@@ -8,7 +8,14 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { BoxesIcon, CalendarCheckIcon, ReceiptIcon, TagIcon, UsersIcon } from "lucide-react";
+import {
+  BoxesIcon,
+  CalendarCheckIcon,
+  ChevronDownIcon,
+  ReceiptIcon,
+  TagIcon,
+  UsersIcon,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { ease, type LandingCopy } from "@/components/landing/motion";
@@ -72,10 +79,26 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
     setActive((current) => (current === next ? current : next));
   });
 
-  function select(index: number) {
+  function select(index: number, tab: HTMLElement) {
+    if (!desktop) {
+      // Phones stack the tabs as an accordion, so opening one collapses the one above it and
+      // would pull the tapped tab up out from under the finger. iOS Safari has no scroll
+      // anchoring to correct that, so hold the tab still while the rows animate.
+      const before = tab.getBoundingClientRect().top;
+      setActive(index);
+      // About 600ms at 60fps: the 400ms row transition plus some slack.
+      let frames = 36;
+      const hold = () => {
+        const drift = tab.getBoundingClientRect().top - before;
+        if (Math.abs(drift) > 0.5) scrollBy({ top: drift, behavior: "instant" });
+        if (--frames > 0) requestAnimationFrame(hold);
+      };
+      requestAnimationFrame(hold);
+      return;
+    }
     setActive(index);
     const element = track.current;
-    if (!desktop || !element) return;
+    if (!element) return;
     const top = element.getBoundingClientRect().top + scrollY;
     const distance = element.offsetHeight - innerHeight;
     scrollTo({ top: top + ((index + 0.5) / count) * distance });
@@ -102,12 +125,12 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
                   type="button"
                   aria-selected={selected}
                   aria-controls="feature-panel"
-                  onClick={() => select(index)}
+                  onClick={(event) => select(index, event.currentTarget)}
                   className={cn(
-                    "group relative overflow-hidden rounded-lg border p-5 text-start transition-colors duration-300",
+                    "group relative overflow-hidden rounded-lg border p-4 text-start transition-colors duration-300 sm:p-5",
                     selected
                       ? "border-brand/40 bg-card shadow-md"
-                      : "hover:bg-card/60 border-transparent",
+                      : "hover:bg-card/60 max-lg:border-border max-lg:bg-card/50 border-transparent",
                   )}
                 >
                   <div className="flex items-start gap-4">
@@ -122,7 +145,16 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
                       <Icon className="size-5" />
                     </span>
                     <div className="min-w-0">
-                      <h3 className="text-lg font-semibold">{item.name}</h3>
+                      <h3 className="flex items-start justify-between gap-3 text-lg font-semibold">
+                        {item.name}
+                        <ChevronDownIcon
+                          aria-hidden
+                          className={cn(
+                            "text-muted-foreground mt-1 size-5 shrink-0 transition-transform duration-300 lg:hidden",
+                            selected && "rotate-180",
+                          )}
+                        />
+                      </h3>
                       <p className="text-muted-foreground mt-1 text-sm text-pretty">{item.lead}</p>
                       {/*
                         A CSS grid-rows transition, not Framer's height: "auto". Framer measures auto
@@ -158,6 +190,27 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
                       </div>
                     </div>
                   </div>
+                  {/* Phones show the screenshot in the open tab, where the visitor just tapped. */}
+                  <div
+                    aria-hidden
+                    className={cn(
+                      "grid transition-[grid-template-rows,opacity] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none lg:hidden",
+                      selected ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                    )}
+                  >
+                    <div className="min-h-0 overflow-hidden">
+                      <div className="border-border bg-sidebar mt-4 overflow-hidden rounded-md border p-1">
+                        <ThemedImage
+                          name={item.image}
+                          alt=""
+                          width={1600}
+                          height={1200}
+                          loading="lazy"
+                          className="aspect-[4/3] w-full rounded-[3px] object-cover object-top"
+                        />
+                      </div>
+                    </div>
+                  </div>
                   {selected && desktop ? (
                     <TabProgress progress={scrollYProgress} index={index} count={count} />
                   ) : null}
@@ -170,10 +223,10 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
             id="feature-panel"
             role="tabpanel"
             aria-labelledby={`feature-tab-${active}`}
-            className="relative order-first lg:order-none"
+            className="relative hidden lg:block"
           >
             <div
-              className="bg-brand-soft absolute -inset-4 -z-10 hidden rounded-lg blur-2xl lg:block"
+              className="bg-brand-soft absolute -inset-4 -z-10 rounded-lg blur-2xl"
               aria-hidden
             />
             <div className="border-border bg-sidebar relative aspect-[4/3] overflow-hidden rounded-lg border p-1.5 shadow-lg">

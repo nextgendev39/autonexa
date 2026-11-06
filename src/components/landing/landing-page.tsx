@@ -249,7 +249,7 @@ export async function LandingPage() {
             className="bg-carbon text-sidebar-foreground relative isolate overflow-hidden py-20 sm:py-28"
           >
             <div
-              className="bg-sidebar-primary/20 animate-drift absolute -start-40 top-1/4 -z-10 size-[30rem] rounded-full blur-[130px]"
+              className="landing-glow text-sidebar-primary/25 animate-drift absolute -start-56 top-1/6 -z-10 size-[38rem]"
               aria-hidden
             />
             <div className={cn(container, "grid items-center gap-12 lg:grid-cols-2 lg:gap-16")}>
@@ -453,7 +453,7 @@ export async function LandingPage() {
           <section id="demo" className="scroll-mt-20 px-3 pb-20 sm:px-4 sm:pb-28">
             <div className="bg-carbon text-sidebar-foreground relative isolate mx-auto max-w-6xl overflow-hidden rounded-lg px-5 py-14 sm:px-10 sm:py-16 lg:px-14">
               <div
-                className="bg-sidebar-primary/25 animate-drift absolute -end-32 -top-32 -z-10 size-[28rem] rounded-full blur-[120px]"
+                className="landing-glow text-sidebar-primary/30 animate-drift absolute -end-48 -top-48 -z-10 size-[36rem]"
                 aria-hidden
               />
               <div className="grid gap-12 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:gap-14">

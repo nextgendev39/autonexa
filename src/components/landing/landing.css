@@ -1,0 +1,18 @@
+/*
+ * The app locks html and body so its panes scroll on their own. The landing page scrolls the
+ * document instead, which scroll-linked motion and the mobile browser chrome both expect.
+ * Next.js keeps global stylesheets after navigating away, so this only applies while .landing exists.
+ */
+html:has(.landing),
+html:has(.landing) body {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:has(.landing) {
+    scroll-behavior: smooth;
+  }
+}

@@ -16,9 +16,27 @@ export const enquirySchema = z.object({
 });
 
 export const publishSchema = z.object({ action: z.enum(["publish", "unpublish"]) });
-export const vehicleListingSchema = z.object({ published: z.boolean() });
+/** Listing on or off, and what the listing says. Send any of them; the rest is left as it is. */
+export const vehicleListingSchema = z
+  .object({
+    published: z.boolean().optional(),
+    description: z.string().trim().max(4000).nullable().optional(),
+    features: z.array(z.string().trim().max(80)).max(40).optional(),
+  })
+  .refine(
+    (value) =>
+      value.published !== undefined ||
+      value.description !== undefined ||
+      value.features !== undefined,
+  )
+  // The text and the features are saved together, so sending one can't wipe the other.
+  .refine((value) => (value.description === undefined) === (value.features === undefined));
 export const storefrontDomainSchema = z.object({
-  domain: z.string().trim().toLowerCase().regex(/^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/),
+  domain: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^([a-z0-9]([a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/),
 });
 export const enquiryStatusSchema = z.object({ status: z.enum(["new", "contacted", "closed"]) });
 export const confirmBookingSchema = z.object({

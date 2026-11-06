@@ -52,6 +52,21 @@ export async function hitRateLimit(key: string, max: number, windowSeconds: numb
   return (data as unknown as boolean) === true;
 }
 
+/** Views per listed car over the last month. Counts only, never who looked. */
+export async function vehiclePopularity(tenantId: string) {
+  const { data, error } = await rpc("storefront_vehicle_popularity", { p_tenant_id: tenantId, p_days: 30 });
+  if (error) {
+    console.error("[storefront] popularity unavailable", error.message);
+    return new Map<string, number>();
+  }
+  return new Map(
+    ((data ?? []) as unknown as { vehicle_id: string; views: number | string }[]).map((row) => [
+      row.vehicle_id,
+      Number(row.views),
+    ]),
+  );
+}
+
 export async function submitEnquiry(input: {
   site: Pick<ResolvedSite, "tenantId" | "host">;
   vehicleId: string | null;

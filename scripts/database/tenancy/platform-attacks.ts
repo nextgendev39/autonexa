@@ -16,6 +16,7 @@ export const PLATFORM_CALLS: Record<string, string> = {
   platform_set_storefront_disabled: `select public.platform_set_storefront_disabled('${ZOHAAN_TENANT_ID}', true, 'x')`,
   platform_prepare_refund: `select public.platform_prepare_refund('${PLAN}', 1)`,
   storefront_set_vehicle_published: `select public.storefront_set_vehicle_published('${id("a", "vehicle")}', true)`,
+  storefront_set_vehicle_details: `select public.storefront_set_vehicle_details('${id("a", "vehicle")}', 'x', array['y'])`,
 };
 
 export const PLATFORM_FUNCTIONS = Object.keys(PLATFORM_CALLS);

@@ -3302,7 +3302,19 @@
       "label": "Website",
       "vehicles": "Cars",
       "contact": "Contact",
-      "switchLanguage": "العربية"
+      "switchLanguage": "العربية",
+      "home": "Home",
+      "used": "Used cars",
+      "new": "New cars",
+      "saved": "Saved",
+      "menu": "Menu",
+      "close": "Close",
+      "browseAll": "Browse all cars",
+      "allCars": "All cars",
+      "shop": "Shop",
+      "byBody": "By body type",
+      "byBrand": "Popular brands",
+      "search": "Search cars"
     },
     "units": {
       "km": "km",
@@ -3313,12 +3325,50 @@
       "featured": "Featured cars",
       "latest": "Latest arrivals",
       "viewAll": "View all",
-      "about": "About {name}"
+      "about": "About {name}",
+      "searchTitle": "Find your next car",
+      "searchMake": "Any make",
+      "searchModel": "Any model",
+      "searchBody": "Any body type",
+      "searchPrice": "Any price",
+      "searchUpTo": "Up to {price}",
+      "searchButton": "Search {count, plural, one {# car} other {# cars}}",
+      "brands": "Browse by brand",
+      "bodies": "Browse by body type",
+      "newCars": "New cars",
+      "usedCars": "Used cars",
+      "highlightCars": "Cars in stock",
+      "highlightBrands": "Brands",
+      "highlightNew": "New cars",
+      "highlightUsed": "Used cars",
+      "recent": "Recently viewed",
+      "why": "Why buy from us",
+      "whyInspected": "Every car checked",
+      "whyInspectedText": "Each car is prepared and checked by our team before it goes on sale.",
+      "whyPrice": "Clear prices",
+      "whyPriceText": "The price you see is the price we list, with no hidden extras.",
+      "whyContact": "Quick replies",
+      "whyContactText": "Call, WhatsApp or send an enquiry and our team gets straight back to you.",
+      "carsCount": "{count, plural, one {# car} other {# cars}}",
+      "allCars": "All cars"
     },
     "contact": {
       "title": "Contact us",
       "none": "Contact details will appear here soon.",
-      "whatsapp": "Chat on WhatsApp"
+      "whatsapp": "Chat on WhatsApp",
+      "hours": "Opening hours",
+      "address": "Showroom",
+      "map": "Open in Maps",
+      "call": "Call us",
+      "email": "Email us",
+      "follow": "Follow us",
+      "quickLinks": "Quick links",
+      "visit": "Visit our showroom",
+      "formTitle": "Send us a message",
+      "intro": "Questions about a car, a trade-in or a test drive? Call, message us on WhatsApp, or send a note and our team will get back to you.",
+      "directions": "Get directions",
+      "reachUs": "Ways to reach us",
+      "formHint": "Tell us what you're looking for. We usually reply within one working day."
     },
     "social": {
       "instagram": "Instagram",
@@ -3344,7 +3394,8 @@
         "price_asc": "Price: low to high",
         "price_desc": "Price: high to low",
         "year_desc": "Year: newest",
-        "mileage_asc": "Mileage: lowest"
+        "mileage_asc": "Mileage: lowest",
+        "popular": "Most popular"
       },
       "any": "Any",
       "apply": "Apply",
@@ -3354,7 +3405,25 @@
       "pages": "Pages",
       "previous": "Previous",
       "next": "Next",
-      "pageOf": "Page {page} of {pages}"
+      "pageOf": "Page {page} of {pages}",
+      "model": "Model",
+      "engine": "Engine",
+      "city": "Location",
+      "condition": "Condition",
+      "availability": "Availability",
+      "priceMin": "Min price",
+      "yearMax": "Year to",
+      "mileageMax": "Max mileage",
+      "price": "Price",
+      "year": "Year",
+      "filters": "Filters",
+      "filtersCount": "Filters ({count})",
+      "showResults": "Show {count, plural, one {# car} other {# cars}}",
+      "reset": "Reset filters",
+      "suggestions": "Suggestions",
+      "results": "Search results",
+      "noneHint": "Try removing a filter or searching for something else.",
+      "page": "Page {page}"
     },
     "vehicle": {
       "back": "Back to all cars",
@@ -3363,7 +3432,26 @@
       "photoNumber": "Photo {number}",
       "reserved": "Reserved",
       "reservedHint": "This car is currently reserved. You can still ask about it.",
-      "priceOnRequest": "Price on request"
+      "priceOnRequest": "Price on request",
+      "overview": "Overview",
+      "description": "Description",
+      "features": "Key features",
+      "dealer": "Sold by",
+      "call": "Call",
+      "whatsapp": "WhatsApp",
+      "enquire": "Enquire",
+      "share": "Share",
+      "copied": "Link copied",
+      "save": "Save",
+      "saved": "Saved",
+      "similar": "Similar cars",
+      "available": "Available now",
+      "openGallery": "Open photo {number} of {total}",
+      "closeGallery": "Close photos",
+      "previousPhoto": "Previous photo",
+      "nextPhoto": "Next photo",
+      "whatsappMessage": "Hello, I'm interested in the {title} ({stock}) I saw on your website: {url}",
+      "branch": "Location"
     },
     "specs": {
       "year": "Year",
@@ -3379,7 +3467,14 @@
       "exterior": "Exterior",
       "interior": "Interior",
       "origin": "Origin",
-      "reference": "Reference"
+      "reference": "Reference",
+      "make": "Make",
+      "model": "Model",
+      "variant": "Trim",
+      "grade": "Vehicle condition",
+      "regionalSpecs": "Regional specs",
+      "engineGroup": "Engine and drivetrain",
+      "bodyGroup": "Body and interior"
     },
     "enquiry": {
       "title": "Ask about this",
@@ -3397,7 +3492,74 @@
       "notAvailable": "Sorry, this car can't be requested online right now. Please contact us.",
       "tooMany": "Too many requests. Please try again later.",
       "invalid": "Please check your details, including the phone number.",
-      "failed": "That didn't send. Please try again."
+      "failed": "That didn't send. Please try again.",
+      "previewSent": "Preview: your form was checked and works. Nothing was sent, and no customer was created."
+    },
+    "values": {
+      "fuel": {
+        "petrol": "Petrol",
+        "diesel": "Diesel",
+        "hybrid": "Hybrid",
+        "electric": "Electric",
+        "other": "Other"
+      },
+      "transmission": {
+        "automatic": "Automatic",
+        "manual": "Manual",
+        "cvt": "CVT",
+        "other": "Other"
+      },
+      "drive": {
+        "fwd": "Front-wheel drive",
+        "rwd": "Rear-wheel drive",
+        "awd": "All-wheel drive",
+        "four_wd": "4x4",
+        "other": "Other"
+      },
+      "condition": {
+        "new": "New",
+        "used": "Used"
+      },
+      "body": {
+        "sedan": "Sedan",
+        "suv": "SUV",
+        "crossover": "Crossover",
+        "hatchback": "Hatchback",
+        "coupe": "Coupe",
+        "convertible": "Convertible",
+        "pickup": "Pickup",
+        "van": "Van",
+        "wagon": "Wagon",
+        "sports_car": "Sports car",
+        "other": "Other"
+      },
+      "availability": {
+        "available": "Available now",
+        "reserved": "Reserved"
+      },
+      "grade": {
+        "excellent": "Excellent",
+        "good": "Good",
+        "fair": "Fair",
+        "poor": "Needs work"
+      },
+      "originType": {
+        "gcc": "GCC specs",
+        "imported": "Imported",
+        "unknown": "Not known"
+      }
+    },
+    "saved": {
+      "title": "Saved cars",
+      "intro": "Cars you saved on this device.",
+      "none": "You haven't saved any cars yet.",
+      "noneHint": "Tap the heart on any car to keep it here.",
+      "clear": "Clear all",
+      "deviceNote": "Saved on this device only."
+    },
+    "footer": {
+      "rights": "All rights reserved.",
+      "poweredBy": "Powered by AutoNexa"
     }
   },
   "storefrontAdmin": {
@@ -3446,9 +3608,9 @@
       "sections": "Home page sections",
       "sectionsHint": "Choose what appears, and in what order.",
       "section": {
-        "hero": "Banner and headline",
+        "hero": "Banner, headline and search",
         "featured": "Featured cars",
-        "inventory": "Latest arrivals",
+        "inventory": "Brands, body types and latest arrivals",
         "about": "About you",
         "contact": "Contact details"
       },
@@ -3475,12 +3637,26 @@
       "seo": "Search and sharing",
       "seoHint": "How your site appears on search engines and when shared.",
       "seoTitle": "Page title",
-      "seoDescription": "Description"
+      "seoDescription": "Description",
+      "hours": "Opening hours (English)",
+      "hoursAr": "Opening hours (Arabic)",
+      "hoursHint": "For example: Sat–Thu 9am–9pm, Fri 4pm–9pm",
+      "mapUrl": "Map link",
+      "mapHint": "Paste the share link from Google Maps or Apple Maps, starting with https://",
+      "promos": "Promotional banners",
+      "promosHint": "Up to 3 banners under the search, such as an offer or a body type to browse.",
+      "promoTitle": "Title",
+      "promoText": "Text",
+      "promoLink": "Link on your site",
+      "promoLinkHint": "Optional. For example /vehicles?body=suv or /contact",
+      "addPromo": "Add banner",
+      "removePromo": "Remove banner",
+      "promoNumber": "Banner {number}"
     },
     "vehicles": {
       "title": "Cars on your website",
-      "hint": "Listed cars show when ready for sale or reserved, and leave by themselves when sold. Costs, minimum prices, VINs and notes are never shown.",
-      "none": "No cars are ready for sale.",
+      "hint": "Switch on any car in stock. It shows on your website while it's ready for sale or reserved, and leaves by itself when sold or archived. Costs, minimum prices, VINs and notes are never shown.",
+      "none": "You have no cars in stock yet.",
       "car": "Car",
       "reference": "Reference",
       "price": "Public price",
@@ -3489,8 +3665,59 @@
       "noPrice": "On request",
       "listAria": "List {title} on the website",
       "statuses": {
-        "ready": "Ready for sale",
-        "reserved": "Reserved"
+        "ready_for_sale": "Ready for sale",
+        "reserved": "Reserved",
+        "acquired": "Acquired",
+        "under_inspection": "Under inspection",
+        "inspection_failed": "Failed inspection",
+        "under_repair": "Under repair",
+        "returned": "Returned",
+        "other": "In stock"
+      },
+      "details": "Listing",
+      "edit": "Edit listing",
+      "editTitle": "What the listing says: {title}",
+      "publicDescription": "Description for buyers",
+      "publicDescriptionHint": "Shown on the website. Your internal description is never shown.",
+      "features": "Key features and equipment",
+      "featuresHint": "One per line, such as Sunroof or 360° camera. Up to 40.",
+      "save": "Save listing",
+      "hasDetails": "Description added",
+      "noDetails": "No description",
+      "liveNow": "On your website now",
+      "waiting": "Shows once ready for sale",
+      "hidden": "Not on your website",
+      "detailsPending": "Available after the database update",
+      "selected": "{count} selected",
+      "showSelected": "Show on website",
+      "hideSelected": "Remove from website",
+      "clearSelection": "Clear selection",
+      "selectAll": "Select all shown cars",
+      "selectOne": "Select {title}",
+      "bulkShown": "{count, plural, one {# car is} other {# cars are}} now switched on.",
+      "bulkHidden": "{count, plural, one {# car was} other {# cars were}} removed from your website.",
+      "bulkFailed": "{count, plural, one {# car} other {# cars}} couldn't be changed. Try again.",
+      "filters": {
+        "visibility": "Show",
+        "all": "All",
+        "live": "On website",
+        "waiting": "Waiting",
+        "hidden": "Not listed",
+        "search": "Search by make, model or reference",
+        "stage": "Stock stage",
+        "anyStage": "Any stage",
+        "preparing": "Still being prepared",
+        "details": "Listing text",
+        "anyDetails": "Any listing text",
+        "sort": "Sort",
+        "newest": "Newest first",
+        "oldest": "Oldest first",
+        "priceDesc": "Price: high to low",
+        "priceAsc": "Price: low to high",
+        "name": "Name A–Z",
+        "showing": "Showing {shown} of {total}",
+        "reset": "Reset filters",
+        "none": "No cars match these filters."
       }
     },
     "enquiries": {
@@ -3559,6 +3786,26 @@
       "conversionsHint": "Requests your team confirmed.",
       "topVehicles": "Most viewed cars",
       "none": "No views yet."
+    },
+    "inventory": {
+      "label": "Show on storefront",
+      "on": "Listed on your website",
+      "off": "Not on your website",
+      "hint": "Appears while the car is ready for sale or reserved, and leaves by itself when sold or archived. Costs, minimum price, VIN and notes are never shown.",
+      "manage": "Edit website listing"
+    },
+    "overview": {
+      "offline": "Taken offline by AutoNexa",
+      "publishedOn": "Live since {date}",
+      "notLive": "Visitors can't see your website until you publish.",
+      "copy": "Copy address",
+      "copied": "Address copied",
+      "open": "Open website",
+      "onSite": "On website",
+      "waiting": "Waiting to go live",
+      "newEnquiries": "New enquiries",
+      "visitors": "Visitors, 30 days",
+      "visitorsLocked": "Growth plan and above"
     }
   },
   "billing": {
@@ -3683,6 +3930,365 @@
       "review": "We received a payment that needs checking. We'll be in touch, and there's no need to pay again.",
       "notPaid": "This payment wasn't completed. Nothing has changed on your plan.",
       "back": "Back to Billing"
+    }
+  },
+  "landing": {
+    "meta": {
+      "title": "AutoNexa | Car dealership management software",
+      "description": "AutoNexa runs your used car dealership from one system: buying, stock, pricing, bookings, sales and profit on every car. In English and Arabic."
+    },
+    "nav": {
+      "home": "AutoNexa, back to the top",
+      "main": "Main",
+      "features": "What it does",
+      "how": "How it works",
+      "profit": "Profit",
+      "plans": "Plans",
+      "faq": "Questions",
+      "signIn": "Sign in",
+      "demo": "Book a demo",
+      "menu": "Menu",
+      "close": "Close",
+      "otherLanguage": "العربية"
+    },
+    "opening": {
+      "title": "Run your whole car dealership from one screen.",
+      "lede": "AutoNexa is software for used car dealerships. Track every car from purchase to sale, see what each one earns, and give your whole team one place to work.",
+      "primary": "Book a demo",
+      "secondary": "See how it works",
+      "caption": "Buying · Stock · Bookings · Profit",
+      "place": "Made for dealerships in the UAE",
+      "alt": "The AutoNexa dashboard showing cars in stock, bookings, outstanding payments, monthly profit, cars by stage and a list of cars that need attention",
+      "claim": "Open it in the morning and see what is in stock, what is booked, what is owed and what you made.",
+      "facts": ["English and Arabic", "Works on your phone", "One or many branches"],
+      "note": "Illustration with sample data",
+      "chips": [
+        {
+          "label": "Cars in stock",
+          "value": "48",
+          "hint": "9 ready for sale"
+        },
+        {
+          "label": "Profit this month",
+          "value": "AED 94k",
+          "hint": "From 11 cars sold"
+        },
+        {
+          "label": "Deposits due today",
+          "value": "3",
+          "hint": "Your team is reminded"
+        }
+      ]
+    },
+    "features": {
+      "caption": "What it does",
+      "title": "The three jobs every dealership does, in one system.",
+      "intro": "Most dealerships keep these in separate spreadsheets and group chats. In AutoNexa they share the same record for each car, so a change in one shows up everywhere.",
+      "usedBy": "Used by",
+      "replaces": "Replaces",
+      "rows": [
+        {
+          "name": "Stock control",
+          "lead": "Every car, with its photos, documents and status, always up to date.",
+          "text": "Add a car once, choosing the make and model from a ready catalog. Everyone then sees the same status as it moves from arrival to ready for sale to sold.",
+          "usedBy": "Stock and sales teams",
+          "replaces": "Stock spreadsheets",
+          "image": "stock",
+          "alt": "The inventory screen listing cars with their status"
+        },
+        {
+          "name": "Bookings and sales",
+          "lead": "Reserve a car, take a deposit and always know when payment is due.",
+          "text": "Set your deposit and payment deadlines. AutoNexa tracks them, alerts your team, and takes cancellations and refunds through an approval step.",
+          "usedBy": "Sales and accounts",
+          "replaces": "Paper receipts and reminders",
+          "image": "booking",
+          "alt": "A booking showing the deposit paid, the balance due and the payment deadline"
+        },
+        {
+          "name": "Buying and costs",
+          "lead": "Record each purchase, get it approved and keep every cost on the car.",
+          "text": "Purchases go through approval before the car is received. Each expense is attached to the car, so you know its true cost before you set a price.",
+          "usedBy": "Buyers and managers",
+          "replaces": "Invoices in folders",
+          "image": "buying",
+          "alt": "A purchase waiting for approval, with every cost listed and approve and reject buttons"
+        }
+      ]
+    },
+    "profit": {
+      "caption": "Profit",
+      "title": "See what each car really makes.",
+      "body": "AutoNexa takes the selling price and subtracts the purchase and every recorded cost, so profit is worked out for you, car by car. Set a minimum price and anything below it stops for a manager’s approval.",
+      "car": "Car",
+      "expected": "Expected profit",
+      "aed": "AED",
+      "flag": "Below minimum price: needs manager approval",
+      "foot": "Sample figures, to show how the screen works."
+    },
+    "more": {
+      "caption": "Everything around the sale",
+      "title": "The rest of the dealership is in here too.",
+      "cta": "Book a demo",
+      "items": [
+        {
+          "name": "Your own website",
+          "desc": "Publish your stock to a dealership website on your own address. Enquiries from buyers come straight into AutoNexa.",
+          "tags": ["Website", "Enquiries"],
+          "image": "website",
+          "alt": "A dealership website showing cars for sale with an enquire button"
+        },
+        {
+          "name": "Documents in one place",
+          "desc": "Keep files on the car, the purchase or the staff member they belong to, instead of in someone’s inbox.",
+          "tags": ["Vehicles", "Staff"],
+          "image": "documents",
+          "alt": "A list of documents, each kept on the car it belongs to"
+        },
+        {
+          "name": "Share a car with one link",
+          "desc": "Send a buyer a simple page with the car’s photos and details. They don’t need an account to open it.",
+          "tags": ["Public link", "No login"],
+          "image": "share",
+          "alt": "A share link and the page a buyer sees when they open it"
+        },
+        {
+          "name": "The right access for each person",
+          "desc": "Give each person a role and branch, so they see and do only what their job needs.",
+          "tags": ["Roles", "Branches"],
+          "image": "roles",
+          "alt": "Team members, each with their role and branch"
+        },
+        {
+          "name": "Alerts that find you",
+          "desc": "Your team gets a notification when something needs them, including on their phone.",
+          "tags": ["In the app", "On your phone"],
+          "image": "alerts",
+          "alt": "Notifications about a deposit, a price approval, an enquiry and a purchase"
+        }
+      ]
+    },
+    "trust": {
+      "caption": "Your data",
+      "title": "Your dealership’s records stay yours.",
+      "body": "Each dealership gets its own private workspace. Records are kept apart by the database itself, not only by what the screens show, so another dealership on AutoNexa can’t reach yours.",
+      "facts": [
+        "Records separated at the database level",
+        "Access set by role and by branch",
+        "An audit log of who changed what"
+      ],
+      "alt": "Two dealerships kept apart by a locked wall, above an audit log of who changed what"
+    },
+    "how": {
+      "caption": "How it works",
+      "title": "Follow one car from purchase to sale.",
+      "intro": "This is the whole idea of AutoNexa: one record follows the car through five steps, and each person adds their part.",
+      "stepLabel": "Step",
+      "steps": [
+        {
+          "name": "Buy",
+          "text": "Record the purchase and its documents. A manager approves it.",
+          "image": "step-buy",
+          "alt": "A purchase pending approval, with its price and documents"
+        },
+        {
+          "name": "Prepare",
+          "text": "Receive the car, add expenses and photos, and mark it ready for sale.",
+          "image": "step-prepare",
+          "alt": "A car ready for sale, with its expenses and photos"
+        },
+        {
+          "name": "Price",
+          "text": "Set the selling and minimum price with the full cost in front of you.",
+          "image": "step-price",
+          "alt": "A car's cost, minimum price, selling price and profit"
+        },
+        {
+          "name": "Book",
+          "text": "Reserve it for a buyer, take the deposit and let AutoNexa watch the deadline.",
+          "image": "step-book",
+          "alt": "A booking with the deposit paid and the balance due in two days"
+        },
+        {
+          "name": "Sell",
+          "text": "Take the final payment, close the sale and see what the car made.",
+          "image": "step-sell",
+          "alt": "A sold car showing a profit of AED 18,000"
+        }
+      ],
+      "hint": "One record, five steps"
+    },
+    "team": {
+      "caption": "Your team",
+      "title": "Everyone sees their own job.",
+      "cta": "Book a demo",
+      "cards": [
+        {
+          "role": "Owner",
+          "sees": "Profit across every branch, and a record of each change.",
+          "label": "The big picture"
+        },
+        {
+          "role": "Manager",
+          "sees": "Purchases and prices waiting for approval, all in one queue.",
+          "label": "Approvals"
+        },
+        {
+          "role": "Logistics",
+          "sees": "Where every car is, and what still has to happen to it.",
+          "label": "Stock"
+        },
+        {
+          "role": "Sales executive",
+          "sees": "What is available to sell today, and their own bookings.",
+          "label": "Selling"
+        },
+        {
+          "role": "Accountant",
+          "sees": "Deposits, payments and costs, attached to the right car.",
+          "label": "Money"
+        },
+        {
+          "role": "Your buyers",
+          "sees": "Your cars on your website, and a link to any car you send them.",
+          "label": "Outside the team"
+        }
+      ]
+    },
+    "why": {
+      "caption": "Why it matters",
+      "statement": "Spreadsheets lose track of cars, and group chats lose track of promises. AutoNexa keeps every car, customer and dirham in one place, so your whole team works from the same numbers.",
+      "rules": [
+        "Nobody has to ask where a car is.",
+        "No deposit deadline gets forgotten.",
+        "You know a car’s profit before you agree a price."
+      ],
+      "offer": "Choose a plan that fits the size of your dealership.",
+      "offerCta": "See the plans",
+      "alt": "Spreadsheets, group chats and receipt books replaced by one record for each car"
+    },
+    "plans": {
+      "caption": "Plans",
+      "title": "Plans that grow with your dealership.",
+      "intro": "Plans differ by how many people, branches and cars you run. Tell us your size in a demo and we’ll give you a price.",
+      "users": "Users",
+      "branches": "Branches",
+      "vehicles": "Cars",
+      "storage": "Storage",
+      "unlimited": "Unlimited",
+      "cta": "Ask for a price",
+      "items": [
+        {
+          "name": "Starter",
+          "desc": "For a single small showroom.",
+          "users": "5",
+          "branches": "1",
+          "vehicles": "50",
+          "storage": "2 GB",
+          "features": ["Buying", "Pricing", "Bookings and sales"]
+        },
+        {
+          "name": "Growth",
+          "desc": "For a growing dealership.",
+          "users": "15",
+          "branches": "3",
+          "vehicles": "200",
+          "storage": "10 GB",
+          "features": ["Everything in Starter", "Public share links"]
+        },
+        {
+          "name": "Professional",
+          "desc": "For established multi-branch dealerships.",
+          "users": "50",
+          "branches": "10",
+          "vehicles": "1,000",
+          "storage": "50 GB",
+          "features": ["Everything in Growth", "Staff documents"]
+        },
+        {
+          "name": "Enterprise",
+          "desc": "For large dealership groups.",
+          "users": "",
+          "branches": "",
+          "vehicles": "",
+          "storage": "",
+          "features": ["Everything in Professional", "No limits"]
+        }
+      ],
+      "popular": "Most popular"
+    },
+    "faq": {
+      "caption": "Questions",
+      "title": "What dealers ask first.",
+      "items": [
+        {
+          "q": "Who is AutoNexa for?",
+          "a": "Used car dealerships, from a single showroom to groups with several branches. It’s built around how dealerships in the UAE work, including prices in AED."
+        },
+        {
+          "q": "Does it work in Arabic?",
+          "a": "Yes. The whole system works in English and Arabic, and each person can choose their language."
+        },
+        {
+          "q": "Can my team use it on their phones?",
+          "a": "Yes. It works in the browser on a phone, and it can send notifications there too."
+        },
+        {
+          "q": "How do we get started?",
+          "a": "Book a demo. We’ll walk you through it, set up your dealership’s workspace, and you then invite your team."
+        },
+        {
+          "q": "Can we have more than one branch?",
+          "a": "Yes. You can run several branches together and control which people can see which branch. The number of branches depends on your plan."
+        },
+        {
+          "q": "How much does it cost?",
+          "a": "It depends on the plan that fits your number of users, branches and cars. Ask in your demo and we’ll give you a price."
+        }
+      ]
+    },
+    "demo": {
+      "caption": "Book a demo",
+      "title": "See it with your own dealership in mind.",
+      "body": "Tell us a little about your dealership and we’ll contact you to arrange a time.",
+      "name": "Your name",
+      "phone": "Phone",
+      "email": "Email",
+      "dealership": "Dealership name",
+      "stock": "Cars in stock",
+      "stockOptions": ["Up to 50", "51 to 200", "201 to 1,000", "More than 1,000"],
+      "notes": "Anything we should know",
+      "submit": "Request a demo",
+      "sending": "Sending…",
+      "sent": "Thank you. We’ve got your request and will be in touch soon.",
+      "invalid": "Please add your name and a phone number or email address.",
+      "failed": "We couldn’t send your request. Please try again in a moment.",
+      "nextTitle": "What happens next",
+      "next": [
+        {
+          "title": "We contact you",
+          "text": "We agree a time that suits you."
+        },
+        {
+          "title": "We show you AutoNexa",
+          "text": "You see how it would work for your dealership."
+        },
+        {
+          "title": "We set up your workspace",
+          "text": "You invite your team and add your cars."
+        }
+      ],
+      "account": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "footer": {
+      "product": "Product",
+      "account": "Account",
+      "language": "Language",
+      "signIn": "Sign in",
+      "tagline": "Car dealership management software.",
+      "rights": "© 2026 AutoNexa",
+      "made": "Made for dealerships in the UAE"
     }
   }
 }

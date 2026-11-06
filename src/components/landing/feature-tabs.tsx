@@ -1,0 +1,196 @@
+"use client";
+
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+  type MotionValue,
+} from "framer-motion";
+import { BoxesIcon, CalendarCheckIcon, ReceiptIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
+import { ease, type LandingCopy } from "@/components/landing/motion";
+import { cn } from "@/lib/utils";
+
+const icons = [BoxesIcon, CalendarCheckIcon, ReceiptIcon];
+const DESKTOP = "(min-width: 1024px)";
+
+/** Wide screens pin the tabs and let scrolling step through them; phones just tap. */
+function useDesktop() {
+  const [desktop, setDesktop] = useState(false);
+  useEffect(() => {
+    const query = matchMedia(DESKTOP);
+    const update = () => setDesktop(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+  return desktop;
+}
+
+/** How far the visitor has scrolled through one tab's share of the track, 0 to 1. */
+function TabProgress({
+  progress,
+  index,
+  count,
+}: {
+  progress: MotionValue<number>;
+  index: number;
+  count: number;
+}) {
+  const scaleX = useTransform(progress, [index / count, (index + 1) / count], [0, 1], {
+    clamp: true,
+  });
+  return (
+    <motion.span
+      style={{ scaleX }}
+      className="bg-gold absolute inset-x-0 bottom-0 h-0.5 origin-left rtl:origin-right"
+      aria-hidden
+    />
+  );
+}
+
+/**
+ * The three core jobs as tabs. On wide screens the block stays pinned while the visitor scrolls,
+ * and each stretch of scrolling selects the next tab; clicking a tab scrolls to its stretch.
+ */
+export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
+  const track = useRef<HTMLDivElement>(null);
+  const desktop = useDesktop();
+  const [active, setActive] = useState(0);
+  const rows = copy.rows;
+  const count = rows.length;
+  const row = rows[active];
+
+  const { scrollYProgress } = useScroll({ target: track, offset: ["start start", "end end"] });
+  useMotionValueEvent(scrollYProgress, "change", (value) => {
+    if (!desktop) return;
+    const next = Math.min(count - 1, Math.max(0, Math.floor(value * count)));
+    setActive((current) => (current === next ? current : next));
+  });
+
+  function select(index: number) {
+    setActive(index);
+    const element = track.current;
+    if (!desktop || !element) return;
+    const top = element.getBoundingClientRect().top + scrollY;
+    const distance = element.offsetHeight - innerHeight;
+    scrollTo({ top: top + ((index + 0.5) / count) * distance });
+  }
+
+  return (
+    // The track's extra height is the scroll distance: about three quarters of a screen per tab.
+    <div
+      ref={track}
+      className="relative mt-12 lg:mt-0 lg:h-[calc(var(--tabs)*75svh+100svh)]"
+      style={{ "--tabs": count } as React.CSSProperties}
+    >
+      <div className="lg:sticky lg:top-0 lg:flex lg:h-svh lg:items-center lg:pt-16">
+        <div className="grid w-full gap-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-12">
+          <div role="tablist" aria-orientation="vertical" className="grid content-start gap-3">
+            {rows.map((item, index) => {
+              const Icon = icons[index % icons.length];
+              const selected = index === active;
+              return (
+                <button
+                  key={item.name}
+                  id={`feature-tab-${index}`}
+                  role="tab"
+                  type="button"
+                  aria-selected={selected}
+                  aria-controls="feature-panel"
+                  onClick={() => select(index)}
+                  className={cn(
+                    "group relative overflow-hidden rounded-lg border p-5 text-start transition-colors duration-300",
+                    selected
+                      ? "border-brand/40 bg-card shadow-md"
+                      : "hover:bg-card/60 border-transparent",
+                  )}
+                >
+                  <div className="flex items-start gap-4">
+                    <span
+                      className={cn(
+                        "flex size-10 shrink-0 items-center justify-center rounded-lg transition-colors duration-300",
+                        selected
+                          ? "bg-gold text-brand-foreground"
+                          : "bg-muted text-muted-foreground",
+                      )}
+                    >
+                      <Icon className="size-5" />
+                    </span>
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-semibold">{item.name}</h3>
+                      <p className="text-muted-foreground mt-1 text-sm text-pretty">{item.lead}</p>
+                      <AnimatePresence initial={false}>
+                        {selected ? (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.4, ease }}
+                            className="overflow-hidden"
+                          >
+                            <p className="mt-3 text-sm text-pretty">{item.text}</p>
+                            <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                              <div className="bg-muted/60 rounded-md p-3">
+                                <dt className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                                  {copy.usedBy}
+                                </dt>
+                                <dd className="mt-1 font-medium">{item.usedBy}</dd>
+                              </div>
+                              <div className="bg-muted/60 rounded-md p-3">
+                                <dt className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                                  {copy.replaces}
+                                </dt>
+                                <dd className="mt-1 font-medium line-through decoration-[color-mix(in_oklch,var(--destructive)_60%,transparent)]">
+                                  {item.replaces}
+                                </dd>
+                              </div>
+                            </dl>
+                          </motion.div>
+                        ) : null}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                  {selected && desktop ? (
+                    <TabProgress progress={scrollYProgress} index={index} count={count} />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            id="feature-panel"
+            role="tabpanel"
+            aria-labelledby={`feature-tab-${active}`}
+            className="relative order-first lg:order-none"
+          >
+            <div
+              className="bg-brand-soft absolute -inset-4 -z-10 rounded-lg blur-2xl"
+              aria-hidden
+            />
+            <div className="border-border bg-sidebar relative aspect-[4/3] overflow-hidden rounded-lg border p-1.5 shadow-lg">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.img
+                  key={row.image}
+                  src={`/landing/${row.image}.svg`}
+                  alt={row.alt}
+                  width={1200}
+                  height={900}
+                  initial={{ opacity: 0, y: 24, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -24, scale: 0.97 }}
+                  transition={{ duration: 0.55, ease }}
+                  className="size-full object-contain"
+                />
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" width="900" height="1200" font-family="Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+<title>Spreadsheets, group chats and receipt books replaced by one record for each car</title>
+<rect width="900" height="1200" fill="#15171b"/>
+<text x="50" y="86" font-size="52" font-weight="600" fill="#9ea3ad" text-anchor="start">Before</text>
+<text x="850" y="84" font-size="26" font-weight="400" fill="#454a55" text-anchor="end">Sample data</text>
+<rect x="50" y="116" width="800" height="90" rx="10" fill="#1d1f25" opacity=".75"/>
+<text x="82" y="174" font-size="36" font-weight="400" fill="#9ea3ad" text-anchor="start">stock_final_v3.xlsx</text>
+<rect x="50" y="222" width="800" height="90" rx="10" fill="#1d1f25" opacity=".75"/>
+<text x="82" y="280" font-size="36" font-weight="400" fill="#9ea3ad" text-anchor="start">Sales group chat: 214 new</text>
+<rect x="50" y="328" width="800" height="90" rx="10" fill="#1d1f25" opacity=".75"/>
+<text x="82" y="386" font-size="36" font-weight="400" fill="#9ea3ad" text-anchor="start">Receipt book, page 41</text>
+<path d="M450 450V520" stroke="#eef0f3" stroke-width="6"/><path d="M420 500L450 536L480 500" fill="none" stroke="#eef0f3" stroke-width="6"/>
+<text x="50" y="610" font-size="52" font-weight="600" fill="#eef0f3" text-anchor="start">With AutoNexa</text>
+<rect x="50" y="640" width="800" height="510" rx="16" fill="#2a2d35" />
+<rect x="84" y="672" width="732" height="200" rx="10" fill="#15171b" /><g transform="translate(300.0 697.0) scale(1.5)"><path d="M8 66 C8 54 20 50 38 47 L62 22 C66 18 72 16 80 16 H128 C136 16 142 18 148 23 L170 46 C186 48 194 54 194 66 V76 C194 80 192 82 188 82 H12 C10 82 8 80 8 76 Z" fill="#c9cdd4"/><path d="M70 26 C72 24 75 23 80 23 H101 V46 H50 Z M108 23 H128 C134 23 138 25 142 28 L159 46 H108 Z" fill="#15171b" opacity=".85"/><circle cx="52" cy="82" r="17" fill="#15171b"/><circle cx="52" cy="82" r="9" fill="#c9cdd4"/><circle cx="150" cy="82" r="17" fill="#15171b"/><circle cx="150" cy="82" r="9" fill="#c9cdd4"/></g>
+<text x="84" y="932" font-size="42" font-weight="600" fill="#eef0f3" text-anchor="start">Land Cruiser 2021</text>
+<text x="84" y="996" font-size="36" font-weight="400" fill="#c9cdd4" text-anchor="start">Status</text>
+<text x="816" y="996" font-size="36" font-weight="600" fill="#eef0f3" text-anchor="end">Booked</text>
+<text x="84" y="1048" font-size="36" font-weight="400" fill="#c9cdd4" text-anchor="start">Deposit</text>
+<text x="816" y="1048" font-size="36" font-weight="600" fill="#eef0f3" text-anchor="end">Paid</text>
+<text x="84" y="1100" font-size="36" font-weight="400" fill="#c9cdd4" text-anchor="start">Profit</text>
+<text x="816" y="1100" font-size="36" font-weight="600" fill="#eef0f3" text-anchor="end">AED 18,000</text>
+</svg>

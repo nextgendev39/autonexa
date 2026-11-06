@@ -3,10 +3,12 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 
+import { SiteMotion } from "@/components/storefront/reveal";
 import { SiteShell } from "@/components/storefront/site-shell";
 import { assetUrl, pick } from "@/lib/storefront/config";
 import { sitePath } from "@/lib/storefront/host";
-import { getSite, requireSite } from "@/lib/storefront/site";
+import { getSite, requireSite, siteClient } from "@/lib/storefront/site";
+import { listingFacets } from "@/lib/storefront/vehicles";
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getSite();
@@ -14,7 +16,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const logo = assetUrl(site.config.logoPath);
   const title = pick(site.config.seo.title, locale) || site.displayName;
-  const description = pick(site.config.seo.description, locale) || pick(site.config.tagline, locale) || undefined;
+  const description =
+    pick(site.config.seo.description, locale) || pick(site.config.tagline, locale) || undefined;
   return {
     metadataBase: new URL(`https://${site.host}`),
     title: { default: title, template: `%s · ${site.displayName}` },
@@ -37,9 +40,18 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   const other = locale === "ar" ? "en" : "ar";
   const href = (path: string) => sitePath(locale, path, site.defaultLocale);
+  const facets = await listingFacets(siteClient(site));
   return (
-    <SiteShell name={site.displayName} config={site.config} href={href} switchHref={sitePath(other, "/", site.defaultLocale)}>
-      {children}
-    </SiteShell>
+    <SiteMotion>
+      <SiteShell
+        name={site.displayName}
+        config={site.config}
+        href={href}
+        switchHref={sitePath(other, "/", site.defaultLocale)}
+        facets={facets}
+      >
+        {children}
+      </SiteShell>
+    </SiteMotion>
   );
 }

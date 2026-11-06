@@ -1,3 +1,4 @@
+import { emailLogoHtml } from "@/lib/email/brand";
 import { sendEmail } from "@/lib/email/send-email";
 
 function escapeHtml(value: string) {
@@ -90,8 +91,8 @@ export function verificationOtpEmail({
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:32px 16px">
       <tr><td align="center">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border-radius:12px;overflow:hidden">
-          <tr><td style="background:#000000;padding:20px 32px">
-            <p style="margin:0;font-size:16px;font-weight:700;letter-spacing:4px;color:#d4af6a">AUTONEXA</p>
+          <tr><td style="background:#000000;padding:18px 32px">
+            ${emailLogoHtml()}
           </td></tr>
           <tr><td style="padding:32px">
             <p style="margin:0 0 8px;font-size:22px;font-weight:600">${copy.heading}</p>

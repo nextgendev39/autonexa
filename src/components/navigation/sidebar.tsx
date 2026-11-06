@@ -46,7 +46,7 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         aria-hidden
       />
       <div className={cn("flex h-16 items-center gap-2 px-4", collapsed && "justify-center px-2")}>
-        <BrandMark showName={!collapsed} className="text-sidebar-foreground" />
+        <BrandMark showName={!collapsed} tone="dark" />
       </div>
       <div
         className="via-sidebar-primary/40 mx-4 h-px bg-linear-to-r from-transparent to-transparent"

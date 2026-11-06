@@ -1,10 +1,10 @@
 "use client";
 
-/* eslint-disable @next/next/no-img-element -- Static SVG screens with fixed sizes. */
 import { motion, useScroll, useSpring } from "framer-motion";
 import { useRef } from "react";
 
 import { ease, type LandingCopy } from "@/components/landing/motion";
+import { ThemedImage } from "@/components/landing/themed-image";
 
 /** Five steps on one line that draws itself as the visitor scrolls through them. */
 export function StepsTimeline({ copy }: { copy: LandingCopy["how"] }) {
@@ -13,7 +13,12 @@ export function StepsTimeline({ copy }: { copy: LandingCopy["how"] }) {
   const line = useSpring(scrollYProgress, { stiffness: 90, damping: 25 });
 
   return (
-    <ol ref={ref} className="relative mt-14 grid gap-10 lg:mt-20 lg:grid-cols-5 lg:gap-5">
+    // On wide screens each step is a subgrid over five shared rows (number, label, name, text,
+    // screen), so the screens line up however long each step's text runs.
+    <ol
+      ref={ref}
+      className="relative mt-14 grid gap-10 lg:mt-20 lg:grid-cols-5 lg:gap-x-5 lg:gap-y-0"
+    >
       {/* The track: vertical on phones, horizontal on wide screens. */}
       <span
         className="bg-border absolute start-5 top-0 bottom-0 w-px lg:start-0 lg:end-0 lg:top-5 lg:bottom-auto lg:h-px lg:w-auto"
@@ -37,7 +42,7 @@ export function StepsTimeline({ copy }: { copy: LandingCopy["how"] }) {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "0px 0px -10% 0px" }}
           transition={{ duration: 0.7, ease, delay: index * 0.1 }}
-          className="relative ps-14 lg:ps-0"
+          className="relative ps-14 lg:row-span-5 lg:grid lg:grid-rows-subgrid lg:ps-0"
         >
           <motion.span
             initial={{ scale: 0.4, opacity: 0 }}
@@ -56,15 +61,15 @@ export function StepsTimeline({ copy }: { copy: LandingCopy["how"] }) {
           <motion.figure
             whileHover={{ y: -6 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            className="border-border bg-sidebar mt-5 max-w-60 overflow-hidden rounded-lg border p-1 shadow-sm lg:max-w-none"
+            className="border-border bg-sidebar mt-5 max-w-60 self-start overflow-hidden rounded-lg border p-1 shadow-sm lg:max-w-none"
           >
-            <img
-              src={`/landing/${step.image}.svg`}
+            <ThemedImage
+              name={step.image}
               alt={step.alt}
-              width={800}
-              height={1200}
+              width={780}
+              height={1170}
               loading="lazy"
-              className="aspect-[2/3] w-full rounded-[3px] object-cover"
+              className="aspect-[2/3] w-full rounded-[3px] object-cover object-top"
             />
           </motion.figure>
         </motion.li>

@@ -10,6 +10,7 @@ import {
   removeDealershipOwner,
   removeStaffLogin,
 } from "@/lib/server/privileged/platform";
+import type { DemoRequestRow, DemoRequestStatus } from "@/lib/platform/demo-requests";
 import { createClient } from "@/lib/supabase/server";
 
 /**
@@ -896,4 +897,32 @@ export async function savePlanPrices(values: { planId: string; currency: string;
     if (error) return { error };
   }
   return { error: null };
+}
+
+// ---------------------------------------------------------------------------
+// Demo requests from the landing page
+// ---------------------------------------------------------------------------
+
+export async function listDemoRequests() {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("platform_demo_requests" as never);
+  return list<DemoRequestRow>(data);
+}
+
+export async function updateDemoRequest(
+  id: string,
+  values: { status?: DemoRequestStatus; staffNotes?: string; dealershipId?: string | null },
+): Promise<Result> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc(
+    "platform_update_demo_request" as never,
+    {
+      p_id: id,
+      p_status: values.status ?? null,
+      p_staff_notes: values.staffNotes ?? null,
+      p_tenant_id: values.dealershipId ?? null,
+      p_clear_tenant: values.dealershipId === null,
+    } as never,
+  );
+  return { error };
 }

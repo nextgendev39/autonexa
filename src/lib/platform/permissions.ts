@@ -16,6 +16,8 @@ export const platformPermissions = [
   "roles.manage",
   "storefronts.view",
   "storefronts.manage",
+  "demo_requests.view",
+  "demo_requests.manage",
 ] as const;
 
 export type PlatformPermission = (typeof platformPermissions)[number];

@@ -37,11 +37,11 @@ export function VehiclePhotoPlaceholder({
       />
       {small ? null : (
         <Image
-          src="/brand/logo-mark.png"
+          src="/brand/mark-dark.png"
           alt=""
-          width={40}
-          height={40}
-          className={cn("relative opacity-80", size === "lg" ? "size-10" : "size-7")}
+          width={421}
+          height={256}
+          className={cn("relative w-auto opacity-80", size === "lg" ? "h-10" : "h-7")}
         />
       )}
       <CarOutline className={cn("text-brand/70 relative", small ? "w-4/5" : size === "lg" ? "w-1/2" : "w-3/5")} />

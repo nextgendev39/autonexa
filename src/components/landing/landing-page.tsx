@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element -- Static SVG screens with fixed sizes; next/image adds nothing. */
 import {
   ArrowRightIcon,
   BellRingIcon,
@@ -11,8 +10,10 @@ import {
   FileTextIcon,
   GlobeIcon,
   HistoryIcon,
+  LanguagesIcon,
   Link2Icon,
   ShieldCheckIcon,
+  SmartphoneIcon,
   SparklesIcon,
   TruckIcon,
   UserCogIcon,
@@ -38,6 +39,9 @@ import {
 } from "@/components/landing/motion";
 import { ProfitChart } from "@/components/landing/profit-chart";
 import { StepsTimeline } from "@/components/landing/steps-timeline";
+import { ThemedImage } from "@/components/landing/themed-image";
+import { TrustVisual } from "@/components/landing/trust-visual";
+import { WhyVisual } from "@/components/landing/why-visual";
 import { BrandMark } from "@/components/shared/brand-mark";
 import { buttonVariants } from "@/components/ui/button";
 import { appConfig } from "@/config/app";
@@ -46,7 +50,16 @@ import { cn } from "@/lib/utils";
 
 import "./landing.css";
 
-const moreIcons: LucideIcon[] = [GlobeIcon, FileTextIcon, Link2Icon, UserCogIcon, BellRingIcon];
+const moreIcons: LucideIcon[] = [
+  GlobeIcon,
+  Link2Icon,
+  FileTextIcon,
+  UserCogIcon,
+  BellRingIcon,
+  HistoryIcon,
+  LanguagesIcon,
+  SmartphoneIcon,
+];
 const teamIcons: LucideIcon[] = [
   CrownIcon,
   ClipboardCheckIcon,
@@ -138,7 +151,8 @@ export async function LandingPage() {
               <Stagger className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-6" step={0.1}>
                 {copy.more.items.map((item, index) => {
                   const Icon = moreIcons[index % moreIcons.length];
-                  const wide = index >= 3;
+                  // Rows of three, two, then three: the middle pair gets more room.
+                  const wide = index === 3 || index === 4;
                   return (
                     <StaggerItem
                       as="article"
@@ -150,13 +164,13 @@ export async function LandingPage() {
                       )}
                     >
                       <div className="bg-sidebar overflow-hidden p-2">
-                        <img
-                          src={`/landing/${item.image}.svg`}
+                        <ThemedImage
+                          name={item.image}
                           alt={item.alt}
-                          width={1200}
-                          height={900}
+                          width={1600}
+                          height={1200}
                           loading="lazy"
-                          className="aspect-[16/10] w-full object-contain transition-transform duration-700 ease-(--ease-out-expo) group-hover:scale-[1.04]"
+                          className="aspect-[16/10] w-full rounded-[3px] object-cover object-top transition-transform duration-700 ease-(--ease-out-expo) group-hover:scale-[1.04]"
                         />
                       </div>
                       <div className="flex flex-1 gap-4 p-5">
@@ -240,15 +254,8 @@ export async function LandingPage() {
             />
             <div className={cn(container, "grid items-center gap-12 lg:grid-cols-2 lg:gap-16")}>
               <Reveal className="order-last lg:order-first">
-                <figure className="border-sidebar-border bg-sidebar overflow-hidden rounded-lg border p-1.5 shadow-[0_30px_80px_-30px_color-mix(in_oklch,var(--sidebar-primary)_35%,transparent)]">
-                  <img
-                    src="/landing/separate.svg"
-                    alt={copy.trust.alt}
-                    width={1600}
-                    height={1000}
-                    loading="lazy"
-                    className="w-full rounded-[3px]"
-                  />
+                <figure className="border-sidebar-border bg-sidebar text-sidebar-foreground overflow-hidden rounded-lg border shadow-[0_30px_80px_-30px_color-mix(in_oklch,var(--sidebar-primary)_35%,transparent)]">
+                  <TrustVisual copy={copy.trust.visual} alt={copy.trust.alt} />
                 </figure>
               </Reveal>
               <div>
@@ -301,7 +308,7 @@ export async function LandingPage() {
                   className="font-heading mt-6 text-2xl leading-snug font-semibold tracking-tight text-balance sm:text-3xl lg:text-4xl"
                 />
               </div>
-              <div className="grid content-end gap-6">
+              <div className="grid min-w-0 content-end gap-6">
                 <Stagger as="ul" className="grid gap-3" step={0.1}>
                   {copy.why.rules.map((rule) => (
                     <StaggerItem as="li" key={rule} className="flex items-start gap-3">
@@ -312,16 +319,9 @@ export async function LandingPage() {
                     </StaggerItem>
                   ))}
                 </Stagger>
-                <Reveal delay={0.2}>
-                  <figure className="border-border bg-sidebar overflow-hidden rounded-lg border p-1 shadow-md">
-                    <img
-                      src="/landing/one-place.svg"
-                      alt={copy.why.alt}
-                      width={900}
-                      height={1200}
-                      loading="lazy"
-                      className="w-full rounded-[3px]"
-                    />
+                <Reveal delay={0.2} className="min-w-0">
+                  <figure className="border-border bg-card/60 overflow-hidden rounded-lg border shadow-md">
+                    <WhyVisual copy={copy.why.visual} alt={copy.why.alt} />
                   </figure>
                 </Reveal>
               </div>
@@ -515,7 +515,7 @@ export async function LandingPage() {
             )}
           >
             <div>
-              <BrandMark className="[&_span]:text-base" />
+              <BrandMark className="[&_img]:h-10" />
               <p className="text-muted-foreground mt-3 max-w-xs text-sm">{copy.footer.tagline}</p>
             </div>
             <FooterColumn title={copy.footer.product}>

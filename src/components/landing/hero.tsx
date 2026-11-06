@@ -5,6 +5,7 @@ import { ArrowRightIcon, CheckIcon, PlayCircleIcon } from "lucide-react";
 import { useRef } from "react";
 
 import { ease, type LandingCopy } from "@/components/landing/motion";
+import { ThemedPicture } from "@/components/landing/themed-image";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -169,17 +170,16 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
               <span className="size-2.5 rounded-full bg-[oklch(0.72_0.15_150)]" />
               <span className="bg-sidebar-accent mx-auto hidden h-4 w-72 rounded sm:block" />
             </div>
-            <picture>
-              <source media="(max-width: 639.98px)" srcSet="/landing/dashboard-phone.svg" />
-              <img
-                src="/landing/dashboard.svg"
-                alt={copy.alt}
-                width={1600}
-                height={900}
-                fetchPriority="high"
-                className="w-full rounded-[3px]"
-              />
-            </picture>
+            <ThemedPicture
+              name="dashboard"
+              phoneName="dashboard-phone"
+              phoneSize={{ width: 780, height: 1688 }}
+              alt={copy.alt}
+              width={1920}
+              height={1200}
+              fetchPriority="high"
+              className="w-full rounded-[3px]"
+            />
             <figcaption className="sr-only">{copy.note}</figcaption>
           </motion.figure>
 

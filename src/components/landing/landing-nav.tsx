@@ -49,7 +49,7 @@ export function LandingNav({ copy }: { copy: LandingCopy["nav"] }) {
         )}
       >
         <a href="#top" aria-label={copy.home} dir="ltr">
-          <BrandMark />
+          <BrandMark tone={scrolled || open ? "auto" : "dark"} />
         </a>
 
         <nav aria-label={copy.main} className="ms-4 hidden lg:block">

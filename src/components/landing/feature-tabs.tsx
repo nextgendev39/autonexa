@@ -8,13 +8,14 @@ import {
   useTransform,
   type MotionValue,
 } from "framer-motion";
-import { BoxesIcon, CalendarCheckIcon, ReceiptIcon } from "lucide-react";
+import { BoxesIcon, CalendarCheckIcon, ReceiptIcon, TagIcon, UsersIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { ease, type LandingCopy } from "@/components/landing/motion";
+import { ThemedImage } from "@/components/landing/themed-image";
 import { cn } from "@/lib/utils";
 
-const icons = [BoxesIcon, CalendarCheckIcon, ReceiptIcon];
+const icons = [BoxesIcon, CalendarCheckIcon, ReceiptIcon, TagIcon, UsersIcon];
 const DESKTOP = "(min-width: 1024px)";
 
 /** Wide screens pin the tabs and let scrolling step through them; phones just tap. */
@@ -81,10 +82,10 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
   }
 
   return (
-    // The track's extra height is the scroll distance: about three quarters of a screen per tab.
+    // The track's extra height is the scroll distance: a little over half a screen per tab.
     <div
       ref={track}
-      className="relative mt-12 lg:mt-0 lg:h-[calc(var(--tabs)*75svh+100svh)]"
+      className="relative mt-12 lg:mt-0 lg:h-[calc(var(--tabs)*60svh+100svh)]"
       style={{ "--tabs": count } as React.CSSProperties}
     >
       <div className="lg:sticky lg:top-0 lg:flex lg:h-svh lg:items-center lg:pt-16">
@@ -123,35 +124,38 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
                     <div className="min-w-0">
                       <h3 className="text-lg font-semibold">{item.name}</h3>
                       <p className="text-muted-foreground mt-1 text-sm text-pretty">{item.lead}</p>
-                      <AnimatePresence initial={false}>
-                        {selected ? (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.4, ease }}
-                            className="overflow-hidden"
-                          >
-                            <p className="mt-3 text-sm text-pretty">{item.text}</p>
-                            <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                              <div className="bg-muted/60 rounded-md p-3">
-                                <dt className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                                  {copy.usedBy}
-                                </dt>
-                                <dd className="mt-1 font-medium">{item.usedBy}</dd>
-                              </div>
-                              <div className="bg-muted/60 rounded-md p-3">
-                                <dt className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                                  {copy.replaces}
-                                </dt>
-                                <dd className="mt-1 font-medium line-through decoration-[color-mix(in_oklch,var(--destructive)_60%,transparent)]">
-                                  {item.replaces}
-                                </dd>
-                              </div>
-                            </dl>
-                          </motion.div>
-                        ) : null}
-                      </AnimatePresence>
+                      {/*
+                        A CSS grid-rows transition, not Framer's height: "auto". Framer measures auto
+                        heights by calling scrollTo(), which cancels a smooth anchor scroll passing
+                        through the pinned track.
+                      */}
+                      <div
+                        aria-hidden={!selected}
+                        className={cn(
+                          "grid transition-[grid-template-rows,opacity] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
+                          selected ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                        )}
+                      >
+                        <div className="min-h-0 overflow-hidden">
+                          <p className="mt-3 text-sm text-pretty">{item.text}</p>
+                          <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                            <div className="bg-muted/60 rounded-md p-3">
+                              <dt className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                                {copy.usedBy}
+                              </dt>
+                              <dd className="mt-1 font-medium">{item.usedBy}</dd>
+                            </div>
+                            <div className="bg-muted/60 rounded-md p-3">
+                              <dt className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                                {copy.replaces}
+                              </dt>
+                              <dd className="mt-1 font-medium line-through decoration-[color-mix(in_oklch,var(--destructive)_60%,transparent)]">
+                                {item.replaces}
+                              </dd>
+                            </div>
+                          </dl>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   {selected && desktop ? (
@@ -174,18 +178,22 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
             />
             <div className="border-border bg-sidebar relative aspect-[4/3] overflow-hidden rounded-lg border p-1.5 shadow-lg">
               <AnimatePresence mode="popLayout" initial={false}>
-                <motion.img
+                <motion.div
                   key={row.image}
-                  src={`/landing/${row.image}.svg`}
-                  alt={row.alt}
-                  width={1200}
-                  height={900}
                   initial={{ opacity: 0, y: 24, scale: 0.97 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: -24, scale: 0.97 }}
                   transition={{ duration: 0.55, ease }}
-                  className="size-full object-contain"
-                />
+                  className="size-full"
+                >
+                  <ThemedImage
+                    name={row.image}
+                    alt={row.alt}
+                    width={1600}
+                    height={1200}
+                    className="size-full rounded-[3px] object-cover object-top"
+                  />
+                </motion.div>
               </AnimatePresence>
             </div>
           </div>

@@ -17,6 +17,7 @@ import {
   UsersIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 import { ease, type LandingCopy } from "@/components/landing/motion";
 import { ThemedImage } from "@/components/landing/themed-image";
@@ -83,17 +84,13 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
     if (!desktop) {
       // Phones stack the tabs as an accordion, so opening one collapses the one above it and
       // would pull the tapped tab up out from under the finger. iOS Safari has no scroll
-      // anchoring to correct that, so hold the tab still while the rows animate.
+      // anchoring, and correcting the scroll frame by frame while the rows animate makes the
+      // page shake there. So the old tab closes at once (no transition below desktop), and the
+      // scroll is corrected in the same task, before the browser paints anything.
       const before = tab.getBoundingClientRect().top;
-      setActive(index);
-      // About 600ms at 60fps: the 400ms row transition plus some slack.
-      let frames = 36;
-      const hold = () => {
-        const drift = tab.getBoundingClientRect().top - before;
-        if (Math.abs(drift) > 0.5) scrollBy({ top: drift, behavior: "instant" });
-        if (--frames > 0) requestAnimationFrame(hold);
-      };
-      requestAnimationFrame(hold);
+      flushSync(() => setActive(index));
+      const drift = tab.getBoundingClientRect().top - before;
+      if (Math.abs(drift) > 0.5) scrollBy({ top: drift, behavior: "instant" });
       return;
     }
     setActive(index);
@@ -165,7 +162,11 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
                         aria-hidden={!selected}
                         className={cn(
                           "grid transition-[grid-template-rows,opacity] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
-                          selected ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                          // Below desktop only opening animates; closing is instant so select() can
+                          // correct the scroll in one go.
+                          selected
+                            ? "grid-rows-[1fr] opacity-100"
+                            : "grid-rows-[0fr] opacity-0 max-lg:transition-none",
                         )}
                       >
                         <div className="min-h-0 overflow-hidden">
@@ -195,7 +196,9 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
                     aria-hidden
                     className={cn(
                       "grid transition-[grid-template-rows,opacity] duration-400 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none lg:hidden",
-                      selected ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                      selected
+                        ? "grid-rows-[1fr] opacity-100"
+                        : "grid-rows-[0fr] opacity-0 max-lg:transition-none",
                     )}
                   >
                     <div className="min-h-0 overflow-hidden">

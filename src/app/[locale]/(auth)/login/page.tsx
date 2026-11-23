@@ -33,7 +33,7 @@ export default async function LoginPage({
       </div>
       {reset === "success" ? (
         <Alert role="status">
-          <CircleCheckIcon className="text-emerald-600 dark:text-emerald-400" />
+          <CircleCheckIcon className="text-success" />
           <AlertDescription>{t("auth.reset.success")}</AlertDescription>
         </Alert>
       ) : null}

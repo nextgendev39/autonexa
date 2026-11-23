@@ -61,7 +61,11 @@ function BookingSubject({ booking }: { booking: BookingListItem }) {
   );
 }
 
-function MarkSoldForm({ booking, onOpenChange, onDone }: DialogProps & { booking: BookingListItem }) {
+function MarkSoldForm({
+  booking,
+  onOpenChange,
+  onDone,
+}: DialogProps & { booking: BookingListItem }) {
   const t = useTranslations("bookings");
   const tRoot = useTranslations();
   const locale = useLocale() as AppLocale;
@@ -91,7 +95,8 @@ function MarkSoldForm({ booking, onOpenChange, onDone }: DialogProps & { booking
 
   const rows: { label: string; value: string; strong?: boolean }[] = [
     {
-      label: booking.units > 1 ? t("sold.totalUnits", { count: booking.units }) : t("sold.sellingPrice"),
+      label:
+        booking.units > 1 ? t("sold.totalUnits", { count: booking.units }) : t("sold.sellingPrice"),
       value: booking.totalPrice == null ? "—" : money(booking.totalPrice),
     },
     { label: t("sold.depositPaid"), value: `− ${money(booking.deposit)}` },
@@ -133,7 +138,7 @@ function MarkSoldForm({ booking, onOpenChange, onDone }: DialogProps & { booking
               {tRoot(error as Parameters<typeof tRoot>[0])}
             </p>
           ) : (
-            <p className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
+            <p className="text-success-foreground flex items-center gap-1.5">
               <CircleCheckIcon className="size-3.5" aria-hidden />
               {t("sold.fullBalanceHint")}
             </p>
@@ -161,7 +166,9 @@ export function MarkSoldDialog(props: DialogProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("sold.title")}</DialogTitle>
-          <DialogDescription>{booking ? <BookingSubject booking={booking} /> : null}</DialogDescription>
+          <DialogDescription>
+            {booking ? <BookingSubject booking={booking} /> : null}
+          </DialogDescription>
         </DialogHeader>
         {/* Keyed so each booking opens with its own balance prefilled. */}
         {booking && open ? <MarkSoldForm key={booking.id} {...props} booking={booking} /> : null}
@@ -235,7 +242,7 @@ function CancelForm({ booking, onOpenChange, onDone }: DialogProps & { booking: 
       <p className="text-muted-foreground text-sm">{t("cancelDialog.effect")}</p>
 
       {hasDeposit ? (
-        <section className="grid gap-3 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4">
+        <section className="border-warning/30 bg-warning-soft grid gap-3 rounded-xl border p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="grid gap-0.5">
               <h3 className="text-sm font-semibold">{t("cancelDialog.refundTitle")}</h3>
@@ -292,7 +299,9 @@ function CancelForm({ booking, onOpenChange, onDone }: DialogProps & { booking: 
           <div className="grid content-start gap-1.5">
             <Label htmlFor="cancel-refund-reference">
               {t("cancelDialog.refundReference")}
-              <span className="text-muted-foreground font-normal">({tRoot("common.optional")})</span>
+              <span className="text-muted-foreground font-normal">
+                ({tRoot("common.optional")})
+              </span>
             </Label>
             <Input
               id="cancel-refund-reference"
@@ -337,7 +346,9 @@ export function CancelBookingDialog(props: DialogProps) {
           <DialogTitle>
             {hasDeposit ? t("cancelDialog.titleRefund") : t("cancelDialog.title")}
           </DialogTitle>
-          <DialogDescription>{booking ? <BookingSubject booking={booking} /> : null}</DialogDescription>
+          <DialogDescription>
+            {booking ? <BookingSubject booking={booking} /> : null}
+          </DialogDescription>
         </DialogHeader>
         {booking && open ? <CancelForm key={booking.id} {...props} booking={booking} /> : null}
       </DialogContent>
@@ -345,7 +356,11 @@ export function CancelBookingDialog(props: DialogProps) {
   );
 }
 
-function RequestHoldForm({ booking, onOpenChange, onDone }: DialogProps & { booking: BookingListItem }) {
+function RequestHoldForm({
+  booking,
+  onOpenChange,
+  onDone,
+}: DialogProps & { booking: BookingListItem }) {
   const t = useTranslations("bookings");
   const tRoot = useTranslations();
   const [reason, setReason] = useState("");
@@ -419,7 +434,9 @@ export function RequestHoldDialog(props: DialogProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("holdDialog.title")}</DialogTitle>
-          <DialogDescription>{booking ? <BookingSubject booking={booking} /> : null}</DialogDescription>
+          <DialogDescription>
+            {booking ? <BookingSubject booking={booking} /> : null}
+          </DialogDescription>
         </DialogHeader>
         {booking && open ? <RequestHoldForm key={booking.id} {...props} booking={booking} /> : null}
       </DialogContent>
@@ -427,7 +444,11 @@ export function RequestHoldDialog(props: DialogProps) {
   );
 }
 
-function ReviewHoldForm({ booking, onOpenChange, onDone }: DialogProps & { booking: BookingListItem }) {
+function ReviewHoldForm({
+  booking,
+  onOpenChange,
+  onDone,
+}: DialogProps & { booking: BookingListItem }) {
   const t = useTranslations("bookings");
   const [note, setNote] = useState("");
   const [saving, setSaving] = useState<"approve" | "reject" | null>(null);
@@ -512,7 +533,9 @@ export function ReviewHoldDialog(props: DialogProps) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("reviewDialog.title")}</DialogTitle>
-          <DialogDescription>{booking ? <BookingSubject booking={booking} /> : null}</DialogDescription>
+          <DialogDescription>
+            {booking ? <BookingSubject booking={booking} /> : null}
+          </DialogDescription>
         </DialogHeader>
         {booking && open ? <ReviewHoldForm key={booking.id} {...props} booking={booking} /> : null}
       </DialogContent>

@@ -25,7 +25,8 @@ export function MobileNav() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const filtered = useMemo(
-    () => filterNavigation(navigation, can, user.roles, user.canManageCatalog, user.disabledFeatures),
+    () =>
+      filterNavigation(navigation, can, user.roles, user.canManageCatalog, user.disabledFeatures),
     [can, user.roles, user.canManageCatalog, user.disabledFeatures],
   );
   const allowedQuickActions = useMemo(
@@ -34,9 +35,9 @@ export function MobileNav() {
   );
 
   const home = filtered.find((group) => group.id === "overview")?.items[0];
-  const cars = filtered.find((group) => group.id === "operations")?.items.find(
-    (item) => item.href === "/inventory",
-  );
+  const cars = filtered
+    .find((group) => group.id === "operations")
+    ?.items.find((item) => item.href === "/inventory");
   const bookings = filtered
     .find((group) => group.id === "operations")
     ?.items.find((item) => item.href === "/bookings");
@@ -50,42 +51,43 @@ export function MobileNav() {
     <>
       <nav
         aria-label={t("nav.more")}
-        className="border-border bg-background/90 fixed inset-x-0 bottom-0 z-40 border-t px-2 pt-1.5 shadow-[0_-4px_16px_-8px_hsl(var(--shadow-color)/0.12)] backdrop-blur-lg lg:hidden"
-        style={{ paddingBottom: "calc(0.4rem + env(safe-area-inset-bottom))" }}
+        className="brand-dark-scope text-sidebar-foreground fixed inset-x-3 z-40 rounded-2xl bg-[#111318]/95 px-1.5 py-1.5 shadow-[0_12px_32px_-12px_rgb(0_0_0/0.55)] ring-1 ring-white/10 backdrop-blur-lg lg:hidden"
+        style={{ bottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
       >
-        <ul className="grid grid-cols-5 items-end">
-          {slots[0] ? <MobileSlot item={slots[0].item} label={slots[0].label} pathname={pathname} /> : null}
-          {slots[1] ? <MobileSlot item={slots[1].item} label={slots[1].label} pathname={pathname} /> : null}
+        <ul className="grid grid-cols-5 items-center">
+          {slots[0] ? (
+            <MobileSlot item={slots[0].item} label={slots[0].label} pathname={pathname} />
+          ) : null}
+          {slots[1] ? (
+            <MobileSlot item={slots[1].item} label={slots[1].label} pathname={pathname} />
+          ) : null}
           <li className="flex justify-center">
             <button
               type="button"
-              className="bg-gold sheen text-brand-foreground focus-visible:ring-ring ring-background relative -mt-5 flex size-14 items-center justify-center overflow-hidden rounded-2xl shadow-[0_8px_24px_-6px_color-mix(in_oklch,var(--brand)_60%,transparent)] ring-4 outline-none transition-transform duration-300 ease-(--ease-spring) focus-visible:ring-2 active:scale-90"
+              className="gradient-champagne text-gold-foreground focus-visible:ring-sidebar-ring flex size-12 items-center justify-center rounded-xl transition-transform duration-150 outline-none focus-visible:ring-2 active:scale-95"
               onClick={() => setCreateOpen(true)}
               aria-label={t("quick.title")}
             >
-              <PlusIcon className="size-6 transition-transform duration-300" />
+              <PlusIcon className="size-5" />
             </button>
           </li>
-          {bookings ? <MobileSlot
+          {bookings ? (
+            <MobileSlot
               item={bookings}
               label={t(bookings.labelKey as Parameters<typeof t>[0])}
               pathname={pathname}
-            /> : null}
+            />
+          ) : null}
           <li>
             <button
               type="button"
               className={cn(
-                "group flex w-full flex-col items-center gap-1 rounded-lg px-1 py-1 text-[0.7rem] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                moreOpen ? "text-foreground" : "text-muted-foreground",
+                "group focus-visible:ring-sidebar-ring flex w-full flex-col items-center gap-0.5 rounded-xl px-0.5 py-1.5 text-[0.625rem] font-medium outline-none focus-visible:ring-2",
+                moreOpen ? "text-sidebar-primary" : "text-sidebar-foreground/55",
               )}
               onClick={() => setMoreOpen(true)}
             >
-              <span
-                className={cn(
-                  "flex h-7 w-12 items-center justify-center rounded-full transition-colors",
-                  moreOpen && "bg-brand-soft",
-                )}
-              >
+              <span className="flex h-6 items-center justify-center">
                 <EllipsisIcon className="size-5" aria-hidden />
               </span>
               {t("nav.more")}
@@ -104,7 +106,7 @@ export function MobileNav() {
             {filtered.map((group) => (
               <div key={group.id} className="space-y-1">
                 {group.labelKey ? (
-                  <p className="text-muted-foreground px-3 text-[0.6875rem] font-semibold tracking-[0.08em] uppercase">
+                  <p className="eyebrow px-3 pb-1">
                     {t(group.labelKey as Parameters<typeof t>[0])}
                   </p>
                 ) : null}
@@ -128,13 +130,13 @@ export function MobileNav() {
             <SheetTitle>{t("quick.title")}</SheetTitle>
             <SheetDescription>{t("quick.description")}</SheetDescription>
           </SheetHeader>
-          <ul className="stagger grid grid-cols-2 gap-3 px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] [--stagger:50ms]">
+          <ul className="grid grid-cols-2 gap-3 px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] [--stagger:50ms]">
             {allowedQuickActions.map((action) => (
               <li key={action.href}>
                 <Link
                   href={action.href}
                   onClick={() => setCreateOpen(false)}
-                  className="bg-card hover:border-brand/40 focus-visible:ring-ring flex flex-col items-start gap-3 rounded-xl border p-4 text-sm font-medium shadow-xs outline-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 active:scale-[0.97]"
+                  className="bg-card hover:border-brand/40 focus-visible:ring-ring flex flex-col items-start gap-3 rounded-xl border p-4 text-sm font-medium transition-colors duration-150 outline-none focus-visible:ring-2 active:scale-[0.98]"
                 >
                   <span className="bg-brand-soft text-brand flex size-10 items-center justify-center rounded-lg">
                     <action.icon className="size-5" aria-hidden />
@@ -167,19 +169,14 @@ function MobileSlot({
         href={item.href}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "flex flex-col items-center gap-1 rounded-lg px-1 py-1 text-[0.7rem] font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          active ? "text-foreground font-semibold" : "text-muted-foreground",
+          "focus-visible:ring-sidebar-ring relative flex flex-col items-center gap-0.5 rounded-xl px-0.5 py-1.5 text-[0.625rem] font-medium transition-colors outline-none focus-visible:ring-2",
+          active ? "text-sidebar-primary bg-white/6" : "text-sidebar-foreground/55",
         )}
       >
-        <span
-          className={cn(
-            "flex h-7 w-12 items-center justify-center rounded-full transition-colors",
-            active && "bg-brand-soft text-brand animate-pop",
-          )}
-        >
+        <span className="flex h-6 items-center justify-center">
           <Icon className="size-5" aria-hidden />
         </span>
-        {label}
+        <span className="max-w-full truncate">{label}</span>
       </Link>
     </li>
   );

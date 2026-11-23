@@ -8,7 +8,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-/** The console's one table: scrolls sideways on small screens rather than breaking the page. */
+/**
+ * The console's one table. Inside a card it runs edge to edge (cancelling the card padding);
+ * it scrolls sideways on small screens rather than breaking the page.
+ */
 export function DataTable({
   headers,
   rows,
@@ -18,9 +21,9 @@ export function DataTable({
   rows: { key: string; cells: React.ReactNode[] }[];
   empty: string;
 }) {
-  if (rows.length === 0) return <EmptyState title={empty} />;
+  if (rows.length === 0) return <EmptyState inset title={empty} className="py-12" />;
   return (
-    <div className="overflow-x-auto">
+    <div className="-mx-(--card-spacing,0px) overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>

@@ -118,7 +118,7 @@ export function InventoryVehiclePicker({
           )}
           <ChevronsUpDownIcon className="size-4 shrink-0 opacity-50" aria-hidden />
         </PopoverTrigger>
-        <PopoverContent className="w-(--anchor-width) min-w-72 p-0" align="start" sideOffset={4}>
+        <PopoverContent className="w-(--anchor-width) min-w-72 p-0" align="start">
           <Command shouldFilter={false}>
             <CommandInput
               value={search}

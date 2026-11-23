@@ -1,6 +1,5 @@
 import {
   FeedSkeleton,
-  KpiRowSkeleton,
   PageHeaderSkeleton,
   PageSkeleton,
   SectionCardSkeleton,
@@ -8,46 +7,52 @@ import {
 } from "@/components/feedback/skeletons";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/** Same rows as the dashboard: KPIs, sales and outcomes, team, stock and activity, attention. */
+/** Same shape as the dashboard: hero band, then the 8/4 grid. */
 export default function Loading() {
   return (
     <PageSkeleton>
-      <PageHeaderSkeleton actions={2} />
-      <KpiRowSkeleton className="lg:grid-cols-2 lg:gap-3 xl:grid-cols-4" />
-      <div className="grid gap-4 lg:grid-cols-3">
-        <SectionCardSkeleton className="lg:col-span-2" bodyClassName="h-64" />
-        <SectionCardSkeleton>
-          <div className="grid gap-4">
-            <Skeleton className="mx-auto size-40 rounded-full" />
-            <Skeleton className="h-3.5 w-full" />
-            <Skeleton className="h-3.5 w-2/3" />
-          </div>
-        </SectionCardSkeleton>
-      </div>
-      <SectionCardSkeleton action>
-        <TableSkeleton rows={4} columns={6} lead="avatar" />
-      </SectionCardSkeleton>
-      <div className="grid gap-4 lg:grid-cols-3">
-        <SectionCardSkeleton className="lg:col-span-2">
-          <div className="grid gap-5">
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-              {Array.from({ length: 4 }, (_, index) => (
-                <Skeleton key={index} className="h-20 rounded-lg" />
-              ))}
+      <PageHeaderSkeleton actions={1} />
+      <div className="bg-brand-panel grid gap-6 rounded-2xl p-5 sm:p-7 lg:grid-cols-[1.1fr_2fr]">
+        <div className="grid gap-4">
+          <Skeleton className="h-2.5 w-32 bg-white/10" />
+          <Skeleton className="h-12 w-48 bg-white/10" />
+          <Skeleton className="h-3.5 w-40 bg-white/10" />
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          {Array.from({ length: 3 }, (_, index) => (
+            <div key={index} className="grid gap-3">
+              <Skeleton className="h-3 w-24 bg-white/10" />
+              <Skeleton className="h-8 w-20 bg-white/10" />
+              <Skeleton className="h-3 w-28 bg-white/10" />
             </div>
-            <Skeleton className="h-3 w-full rounded-full" />
-            <Skeleton className="h-32 w-full rounded-lg" />
-          </div>
-        </SectionCardSkeleton>
-        <SectionCardSkeleton>
-          <FeedSkeleton rows={5} />
-        </SectionCardSkeleton>
+          ))}
+        </div>
       </div>
-      <div className="grid gap-4 lg:grid-cols-3">
-        <SectionCardSkeleton className="lg:col-span-2" action>
-          <FeedSkeleton rows={4} />
-        </SectionCardSkeleton>
-        <SectionCardSkeleton bodyClassName="h-48" />
+      <div className="grid items-start gap-6 xl:grid-cols-12">
+        <div className="grid gap-6 xl:col-span-8">
+          <SectionCardSkeleton bodyClassName="h-64" />
+          <SectionCardSkeleton action>
+            <FeedSkeleton rows={3} />
+          </SectionCardSkeleton>
+          <SectionCardSkeleton>
+            <div className="grid gap-5">
+              <Skeleton className="h-20 w-full rounded-xl" />
+              <Skeleton className="h-3 w-full rounded-full" />
+            </div>
+          </SectionCardSkeleton>
+          <SectionCardSkeleton action>
+            <TableSkeleton rows={4} columns={6} lead="avatar" />
+          </SectionCardSkeleton>
+        </div>
+        <div className="grid gap-6 xl:col-span-4">
+          <SectionCardSkeleton>
+            <Skeleton className="mx-auto size-40 rounded-full" />
+          </SectionCardSkeleton>
+          <SectionCardSkeleton>
+            <FeedSkeleton rows={5} />
+          </SectionCardSkeleton>
+          <SectionCardSkeleton bodyClassName="h-40" />
+        </div>
       </div>
     </PageSkeleton>
   );

@@ -17,8 +17,8 @@ import { quickActions } from "@/config/routes";
 import { usePermission } from "@/hooks/use-permission";
 import { Link } from "@/lib/i18n/navigation";
 
-/** Desktop counterpart to the mobile nav's floating "+" button. */
-export function CreateMenu() {
+/** Desktop counterpart to the mobile nav's floating "+" button; lives at the top of the sidebar. */
+export function CreateMenu({ collapsed = false }: { collapsed?: boolean }) {
   const t = useTranslations();
   const { can } = usePermission();
   const actions = useMemo(() => quickActions.filter((action) => can(action.permission)), [can]);
@@ -27,11 +27,24 @@ export function CreateMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="brand" className="hidden md:inline-flex" />}>
+      <DropdownMenuTrigger
+        render={
+          <Button
+            variant="brand"
+            size={collapsed ? "icon" : "default"}
+            className={collapsed ? "mx-auto" : "w-full justify-start"}
+            aria-label={t("quick.title")}
+          />
+        }
+      >
         <PlusIcon />
-        {t("quick.title")}
+        {collapsed ? null : t("quick.title")}
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent
+        align="start"
+        side={collapsed ? "inline-end" : "bottom"}
+        className="w-56"
+      >
         <DropdownMenuGroup>
           <DropdownMenuLabel>{t("quick.description")}</DropdownMenuLabel>
           {actions.map((action) => (

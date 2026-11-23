@@ -36,7 +36,7 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
     <section
       ref={ref}
       id="top"
-      className="bg-carbon text-sidebar-foreground relative isolate overflow-hidden pt-32 pb-20 sm:pt-40"
+      className="bg-brand-panel text-sidebar-foreground relative isolate overflow-hidden pt-32 pb-20 sm:pt-40"
     >
       {/* Showroom lighting: gold and chrome glows over the carbon weave. */}
       <motion.div
@@ -62,7 +62,7 @@ export function Hero({ copy }: { copy: LandingCopy["opening"] }) {
         ))}
       </div>
       <div
-        className="absolute inset-x-0 bottom-0 -z-10 hidden h-2/3 [transform-origin:bottom] md:block [transform:perspective(600px)_rotateX(60deg)] [background-image:linear-gradient(var(--sidebar-primary)_1px,transparent_1px),linear-gradient(90deg,var(--sidebar-primary)_1px,transparent_1px)] [mask-image:linear-gradient(to_top,black,transparent)] [background-size:64px_64px] opacity-[0.07]"
+        className="absolute inset-x-0 bottom-0 -z-10 hidden h-2/3 [transform-origin:bottom] [transform:perspective(600px)_rotateX(60deg)] [background-image:linear-gradient(var(--sidebar-primary)_1px,transparent_1px),linear-gradient(90deg,var(--sidebar-primary)_1px,transparent_1px)] [mask-image:linear-gradient(to_top,black,transparent)] [background-size:64px_64px] opacity-[0.07] md:block"
         aria-hidden
       />
 

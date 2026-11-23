@@ -8,11 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { VehicleMarketType } from "@/types/vehicle";
 
-// New is solid brand gold; Used is polished chrome (silver) with carbon lettering, so the
-// two read as a matched pair and both stand out on photos in light and dark themes.
+// New is muted gold; Used is polished silver with deep lettering, so the two read as a matched
+// pair and both stand out on photos in light and dark themes.
 const STYLES: Record<VehicleMarketType, string> = {
-  new: "bg-gold text-brand-foreground border-transparent font-semibold shadow-sm",
-  used: "bg-(image:--chrome-gradient) text-sidebar border-transparent font-semibold shadow-sm ring-1 ring-inset ring-black/10",
+  new: "bg-gold text-gold-foreground border-transparent font-semibold shadow-sm",
+  used: "bg-(image:--chrome-gradient) text-[#191b20] border-transparent font-semibold shadow-sm ring-1 ring-inset ring-black/10",
 };
 
 const ICONS: Record<VehicleMarketType, typeof SparklesIcon> = {
@@ -46,7 +46,7 @@ export function NewCarBadge({ className }: { className?: string }) {
     <span
       className={cn(
         "animate-pop relative inline-flex h-8 items-center gap-1.5 overflow-hidden rounded-full ps-1 pe-3.5",
-        "bg-gold text-brand-foreground shadow-lg ring-1 shadow-black/25 ring-white/30",
+        "bg-gold text-gold-foreground shadow-lg ring-1 shadow-black/25 ring-white/30",
         className,
       )}
     >
@@ -68,7 +68,7 @@ export function UsedCarBadge({ className }: { className?: string }) {
     <span
       className={cn(
         "animate-pop relative inline-flex h-8 items-center gap-1.5 overflow-hidden rounded-full ps-1 pe-3.5",
-        "text-sidebar bg-(image:--chrome-gradient) shadow-lg ring-1 shadow-black/25 ring-white/40",
+        "bg-(image:--chrome-gradient) text-[#191b20] shadow-lg ring-1 shadow-black/25 ring-white/40",
         className,
       )}
     >

@@ -54,7 +54,7 @@ export function ListPagination({
         <label className="text-muted-foreground flex items-center gap-2 text-sm">
           <span className="hidden sm:inline">{t(key("pagination.pageSize"))}</span>
           <NativeSelect
-            className="h-9 w-20 md:h-9"
+            className="h-9 w-20 rounded-full"
             value={String(pageSize)}
             onChange={(event) => onChange({ pageSize: event.target.value, page: 1 })}
             aria-label={t(key("pagination.pageSize"))}
@@ -66,24 +66,26 @@ export function ListPagination({
             ))}
           </NativeSelect>
         </label>
-        <div className="flex items-center gap-1">
+        <div className="bg-card flex items-center gap-0.5 rounded-full border p-0.5 shadow-xs">
           <Button
             type="button"
-            variant="outline"
-            size="icon"
+            variant="ghost"
+            size="icon-sm"
+            className="rounded-full"
             disabled={page <= 1}
             onClick={() => onChange({ page: page - 1 })}
             aria-label={t(key("pagination.previous"))}
           >
             <ChevronLeftIcon className="rtl:rotate-180" />
           </Button>
-          <span className="min-w-14 text-center text-sm font-medium tabular-nums">
+          <span className="min-w-16 text-center text-sm font-medium tabular-nums">
             {page} / {totalPages}
           </span>
           <Button
             type="button"
-            variant="outline"
-            size="icon"
+            variant="ghost"
+            size="icon-sm"
+            className="rounded-full"
             disabled={page >= totalPages}
             onClick={() => onChange({ page: page + 1 })}
             aria-label={t(key("pagination.next"))}

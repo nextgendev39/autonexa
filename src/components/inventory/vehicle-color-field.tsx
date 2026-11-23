@@ -139,7 +139,7 @@ export function VehicleColorField({
           )}
         </span>
       </PopoverTrigger>
-      <PopoverContent align="start" sideOffset={4} className="w-72 p-3">
+      <PopoverContent align="start" className="w-72 p-3">
         <div className="grid grid-cols-6 gap-2">
           {VEHICLE_COLORS.map((color) => {
             const checked = selected.toLowerCase() === color.name.toLowerCase();

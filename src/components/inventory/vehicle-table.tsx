@@ -26,9 +26,12 @@ import { isSoldStatus } from "@/lib/vehicles/status-transitions";
 export function VehicleTable({
   vehicles,
   viewMode = "auto",
+  embedded = false,
 }: {
   vehicles: VehicleListItem[];
   viewMode?: ListViewMode | "auto";
+  /** Inside a DataPanel: the table runs edge to edge and cards sit in the panel's well. */
+  embedded?: boolean;
 }) {
   const t = useTranslations();
   const locale = useAppLocale();
@@ -77,7 +80,7 @@ export function VehicleTable({
             className={cn(
               "inline-flex min-w-10 items-center justify-center gap-1 rounded-md px-2 py-0.5 text-sm font-semibold",
               row.quantity > 1
-                ? "bg-violet-500/10 text-violet-800 dark:text-violet-200"
+                ? "bg-gold-soft text-premium-foreground"
                 : "text-muted-foreground font-medium",
             )}
             aria-label={t("inventory.quantity.units", { count: row.quantity })}
@@ -162,6 +165,10 @@ export function VehicleTable({
       columns={columns}
       rows={vehicles}
       viewMode={viewMode}
+      bare={embedded}
+      gridClassName={
+        embedded ? "bg-muted/35 gap-4 p-3 sm:p-4 xl:grid-cols-3 2xl:grid-cols-4" : undefined
+      }
       hrefForRow={(vehicle) => vehicleHref(vehicle.stockNumber)}
       renderCard={(vehicle) => <VehicleCard key={vehicle.id} vehicle={vehicle} />}
     />

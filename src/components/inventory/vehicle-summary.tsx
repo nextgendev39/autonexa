@@ -24,10 +24,10 @@ export function VehicleSummary({ summary }: { summary?: InventorySummary }) {
 }
 
 const pipelineSegments = [
-  { key: "inTransit", color: "bg-sky-500" },
-  { key: "readyForSale", color: "bg-emerald-500" },
-  { key: "reserved", color: "bg-amber-500" },
-  { key: "sold", color: "bg-violet-500" },
+  { key: "inTransit", color: "bg-info" },
+  { key: "readyForSale", color: "bg-success" },
+  { key: "reserved", color: "bg-warning" },
+  { key: "sold", color: "bg-gold" },
 ] as const;
 
 /** Phone layout: total, the segmented bar and the four statuses in a single row. */
@@ -61,7 +61,9 @@ function CompactSummary({ summary }: { summary?: InventorySummary }) {
         aria-label={
           summary
             ? pipelineSegments
-                .map((segment) => `${t(`inventory.summary.${segment.key}`)} ${summary[segment.key]}`)
+                .map(
+                  (segment) => `${t(`inventory.summary.${segment.key}`)} ${summary[segment.key]}`,
+                )
                 .join(", ")
             : undefined
         }
@@ -84,7 +86,10 @@ function CompactSummary({ summary }: { summary?: InventorySummary }) {
 
       <ul className="grid grid-cols-4 divide-x rtl:divide-x-reverse">
         {pipelineSegments.map((segment) => (
-          <li key={segment.key} className="grid min-w-0 justify-items-center gap-0.5 px-1 text-center">
+          <li
+            key={segment.key}
+            className="grid min-w-0 justify-items-center gap-0.5 px-1 text-center"
+          >
             {summary ? (
               <span className="flex items-center gap-1 text-base font-semibold tabular-nums">
                 <span className={cn(segment.color, "size-2 shrink-0 rounded-full")} aria-hidden />
@@ -187,7 +192,7 @@ function StockPipeline({ summary }: { summary: InventorySummary }) {
               strokeDasharray={`${Math.max(sellThrough, 0.01)} 1`}
               strokeWidth="3.5"
               strokeLinecap="round"
-              className="animate-draw stroke-violet-500"
+              className="animate-draw stroke-gold"
               style={{ animationDelay: "600ms" }}
             />
           </svg>

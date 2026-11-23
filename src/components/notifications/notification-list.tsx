@@ -11,6 +11,8 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { DataPanel } from "@/components/layout/data-panel";
+import { Chip, ChipTabs } from "@/components/ui/chip";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { useAppLocale } from "@/components/inventory/inventory-utils";
 import { PageHeader } from "@/components/layout/page-header";
@@ -140,66 +142,44 @@ export function NotificationList() {
           description={te("notificationsHint")}
         />
       ) : (
-        <>
-          <div className="animate-rise flex flex-col gap-3 [animation-delay:120ms] md:flex-row md:items-center md:justify-between">
-            <div
-              className="bg-muted flex w-full rounded-lg p-0.5 text-sm md:w-fit"
-              role="tablist"
-              aria-label={t("title")}
-            >
-              {(["all", "unread"] as const).map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  role="tab"
-                  aria-selected={readFilter === key}
-                  onClick={() => setReadFilter(key)}
-                  className={cn(
-                    "flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 whitespace-nowrap transition-all duration-200 md:flex-none",
-                    readFilter === key
-                      ? "bg-background font-medium shadow-xs"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {t(`filters.${key}`)}
-                  <span
-                    className={cn(
-                      "rounded-full px-1.5 text-xs tabular-nums",
-                      key === "unread" && readCounts.unread > 0
-                        ? "bg-brand text-brand-foreground font-semibold"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    {number(readCounts[key])}
-                  </span>
-                </button>
-              ))}
+        <div className="grid items-start gap-6 lg:grid-cols-[15rem_minmax(0,1fr)]">
+          {/* Filter rail: read state, then categories. */}
+          <aside className="bg-card rounded-panel animate-rise grid gap-4 border p-4 shadow-sm lg:sticky lg:top-0">
+            <div className="grid gap-2">
+              <p className="eyebrow text-muted-foreground">{t("title")}</p>
+              <ChipTabs
+                label={t("title")}
+                value={readFilter}
+                onChange={setReadFilter}
+                className="lg:flex-wrap"
+                items={(["all", "unread"] as const).map((key) => ({
+                  value: key,
+                  label: t(`filters.${key}`),
+                  count: number(readCounts[key]),
+                  alert: key === "unread" && readCounts.unread > 0,
+                }))}
+              />
             </div>
-
             {present.length > 1 ? (
-              <div
-                className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5"
-                aria-label={t("filters.type")}
-              >
-                {(["all", ...present] as const).map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    aria-pressed={activeCategory === key}
-                    onClick={() => setCategory(key)}
-                    className={cn(
-                      "rounded-full border px-3 py-1 text-xs font-medium whitespace-nowrap transition-colors",
-                      activeCategory === key
-                        ? "border-foreground bg-foreground text-background"
-                        : "bg-card text-muted-foreground hover:border-foreground/30 hover:text-foreground",
-                    )}
-                  >
-                    {t(`categories.${key}`)}
-                  </button>
-                ))}
+              <div className="grid gap-2">
+                <p className="eyebrow text-muted-foreground">{t("filters.type")}</p>
+                <div
+                  className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5 lg:flex-wrap lg:overflow-visible"
+                  aria-label={t("filters.type")}
+                >
+                  {(["all", ...present] as const).map((key) => (
+                    <Chip
+                      key={key}
+                      selected={activeCategory === key}
+                      onClick={() => setCategory(key)}
+                    >
+                      {t(`categories.${key}`)}
+                    </Chip>
+                  ))}
+                </div>
               </div>
             ) : null}
-          </div>
+          </aside>
 
           {groups.length === 0 ? (
             readFilter === "unread" && activeCategory === "all" ? (
@@ -212,19 +192,19 @@ export function NotificationList() {
               <EmptyState icon={SearchIcon} title={t("noMatches")} />
             )
           ) : (
-            <div className="stagger flex flex-col gap-6 [--stagger:60ms]">
+            <DataPanel className="animate-rise [animation-delay:80ms]">
               {groups.map((group) => (
                 <section key={group.key} aria-labelledby={`notifications-${group.key}`}>
                   <h2
                     id={`notifications-${group.key}`}
-                    className="text-muted-foreground mb-2 flex items-center gap-2 px-1 text-xs font-semibold tracking-wide uppercase"
+                    className="eyebrow text-muted-foreground bg-muted/45 border-divider flex items-center gap-2 border-b px-4 py-2 not-first:border-t"
                   >
                     {t(`groups.${group.key}`)}
-                    <span className="bg-muted rounded-full px-1.5 py-px font-medium tabular-nums">
+                    <span className="bg-card text-muted-foreground rounded-full border px-1.5 text-[10px] tabular-nums">
                       {number(group.items.length)}
                     </span>
                   </h2>
-                  <ul className="bg-card ring-foreground/[0.07] divide-y overflow-hidden rounded-xl shadow-xs ring-1">
+                  <ul className="divide-divider divide-y">
                     {group.items.map((item) => (
                       <NotificationRow
                         key={item.id}
@@ -236,9 +216,9 @@ export function NotificationList() {
                   </ul>
                 </section>
               ))}
-            </div>
+            </DataPanel>
           )}
-        </>
+        </div>
       )}
 
       <Dialog open={confirmClear} onOpenChange={setConfirmClear}>

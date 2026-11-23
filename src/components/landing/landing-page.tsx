@@ -82,7 +82,7 @@ export async function LandingPage() {
 
   return (
     <LandingMotionConfig>
-      <div className="landing bg-background text-foreground min-h-svh">
+      <div className="landing brand-dark-scope bg-background text-foreground min-h-svh">
         <LandingNav copy={copy.nav} />
 
         <main>
@@ -246,7 +246,7 @@ export async function LandingPage() {
           {/* ---- Your data ---- */}
           <section
             id="trust"
-            className="bg-carbon text-sidebar-foreground relative isolate overflow-hidden py-20 sm:py-28"
+            className="bg-brand-panel text-sidebar-foreground relative isolate overflow-hidden py-20 sm:py-28"
           >
             <div
               className="landing-glow text-sidebar-primary/25 animate-drift absolute -start-56 top-1/6 -z-10 size-[38rem]"
@@ -312,7 +312,7 @@ export async function LandingPage() {
                 <Stagger as="ul" className="grid gap-3" step={0.1}>
                   {copy.why.rules.map((rule) => (
                     <StaggerItem as="li" key={rule} className="flex items-start gap-3">
-                      <span className="bg-gold text-brand-foreground mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full">
+                      <span className="bg-gold text-gold-foreground mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full">
                         <CheckIcon className="size-3.5" strokeWidth={3} />
                       </span>
                       <span className="text-base font-medium">{rule}</span>
@@ -347,12 +347,12 @@ export async function LandingPage() {
                       className={cn(
                         "relative flex flex-col rounded-lg border p-6 transition-shadow duration-300 hover:shadow-lg",
                         featured
-                          ? "bg-carbon text-sidebar-foreground border-sidebar-primary/50 shadow-[0_24px_60px_-24px_color-mix(in_oklch,var(--sidebar-primary)_45%,transparent)]"
+                          ? "bg-brand-panel text-sidebar-foreground border-sidebar-primary/50 shadow-[0_24px_60px_-24px_color-mix(in_oklch,var(--sidebar-primary)_45%,transparent)]"
                           : "border-border bg-card shadow-xs",
                       )}
                     >
                       {featured ? (
-                        <span className="bg-gold text-brand-foreground absolute start-6 -top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold">
+                        <span className="bg-gold text-gold-foreground absolute start-6 -top-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold">
                           <SparklesIcon className="size-3" />
                           {copy.plans.popular}
                         </span>
@@ -451,7 +451,7 @@ export async function LandingPage() {
 
           {/* ---- Book a demo ---- */}
           <section id="demo" className="scroll-mt-20 px-3 pb-20 sm:px-4 sm:pb-28">
-            <div className="bg-carbon text-sidebar-foreground relative isolate mx-auto max-w-6xl overflow-hidden rounded-lg px-5 py-14 sm:px-10 sm:py-16 lg:px-14">
+            <div className="bg-brand-panel text-sidebar-foreground relative isolate mx-auto max-w-6xl overflow-hidden rounded-lg px-5 py-14 sm:px-10 sm:py-16 lg:px-14">
               <div
                 className="landing-glow text-sidebar-primary/30 animate-drift absolute -end-48 -top-48 -z-10 size-[36rem]"
                 aria-hidden

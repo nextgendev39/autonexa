@@ -2,13 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import {
-  useEffect,
-  useImperativeHandle,
-  useState,
-  type ReactNode,
-  type Ref,
-} from "react";
+import { useEffect, useImperativeHandle, useState, type ReactNode, type Ref } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import type { z } from "zod";
 
@@ -28,12 +22,8 @@ import { PhoneInput } from "@/components/forms/phone-input";
 import { LoadingButton } from "@/components/shared/loading-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  SearchableSelect,
-  type SearchableSelectOption,
-} from "@/components/ui/searchable-select";
+import { SearchableSelect, type SearchableSelectOption } from "@/components/ui/searchable-select";
 import { FormSectionsSkeleton } from "@/components/feedback/skeletons";
 import { Textarea } from "@/components/ui/textarea";
 import { useAcquisitionMeta } from "@/hooks/use-acquisitions";
@@ -198,14 +188,20 @@ function toDefaults(
   };
 }
 
+/**
+ * AutoNexa form section: on wide screens the title sits in its own column beside the fields
+ * panel; narrower screens stack the title above the panel.
+ */
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <Card className="gap-4 [--card-spacing:--spacing(4)] sm:[--card-spacing:--spacing(5)]">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="grid grid-cols-1 gap-x-4 gap-y-3.5 sm:grid-cols-2 lg:grid-cols-3">{children}</CardContent>
-    </Card>
+    <section className="grid gap-3 xl:grid-cols-[13rem_minmax(0,1fr)] xl:gap-10">
+      <h2 className="font-heading pt-1 text-[0.9375rem] font-semibold tracking-[-0.015em] xl:pt-5">
+        {title}
+      </h2>
+      <div className="bg-card grid grid-cols-1 gap-x-4 gap-y-4 rounded-xl border p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3">
+        {children}
+      </div>
+    </section>
   );
 }
 
@@ -279,9 +275,7 @@ function AcquisitionFormBody({
   const perUnit = (label: string) =>
     unitCount > 1 ? t("inventory.quantity.perUnitLabel", { label }) : label;
 
-  const prefillVehicle = useVehicle(
-    mode === "create" && initialVehicleId ? initialVehicleId : "",
-  );
+  const prefillVehicle = useVehicle(mode === "create" && initialVehicleId ? initialVehicleId : "");
 
   useEffect(() => {
     if (!fieldErrors) return;
@@ -315,8 +309,7 @@ function AcquisitionFormBody({
     const make = meta.makes.find((item) => item.name.toLowerCase() === makeName.toLowerCase());
     const model = make
       ? meta.models.find(
-          (item) =>
-            item.makeId === make.id && item.name.toLowerCase() === modelName.toLowerCase(),
+          (item) => item.makeId === make.id && item.name.toLowerCase() === modelName.toLowerCase(),
         )
       : undefined;
     return {
@@ -469,261 +462,261 @@ function AcquisitionFormBody({
       ) : null}
 
       {!embedded ? (
-      <Section title={t("acquisitions.sections.vehicle")}>
-        {mode === "create" ? (
-            <div className="sm:col-span-2 lg:col-span-3 grid gap-3">
-            <div
-              className="bg-muted/40 grid gap-2 rounded-xl border p-2 sm:grid-cols-2"
-              role="group"
-              aria-label={t("acquisitions.vehiclePicker.modeLabel")}
-            >
-              <button
-                type="button"
-                className={cn(
-                  "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  vehicleMode === "existing"
-                    ? "bg-background shadow-sm"
-                    : "text-muted-foreground hover:bg-background/60",
-                )}
-                aria-pressed={vehicleMode === "existing"}
-                onClick={() => switchVehicleMode("existing")}
+        <Section title={t("acquisitions.sections.vehicle")}>
+          {mode === "create" ? (
+            <div className="grid gap-3 sm:col-span-2 lg:col-span-3">
+              <div
+                className="bg-muted/40 grid gap-2 rounded-xl border p-2 sm:grid-cols-2"
+                role="group"
+                aria-label={t("acquisitions.vehiclePicker.modeLabel")}
               >
-                {t("acquisitions.vehiclePicker.useExisting")}
-              </button>
-              <button
-                type="button"
-                className={cn(
-                  "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                  vehicleMode === "new"
-                    ? "bg-background shadow-sm"
-                    : "text-muted-foreground hover:bg-background/60",
-                  !canCreateVehicle && "cursor-not-allowed opacity-50",
-                )}
-                aria-pressed={vehicleMode === "new"}
-                disabled={!canCreateVehicle}
-                onClick={() => switchVehicleMode("new")}
-              >
-                {t("acquisitions.vehiclePicker.createNew")}
-              </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    vehicleMode === "existing"
+                      ? "bg-background shadow-sm"
+                      : "text-muted-foreground hover:bg-background/60",
+                  )}
+                  aria-pressed={vehicleMode === "existing"}
+                  onClick={() => switchVehicleMode("existing")}
+                >
+                  {t("acquisitions.vehiclePicker.useExisting")}
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    vehicleMode === "new"
+                      ? "bg-background shadow-sm"
+                      : "text-muted-foreground hover:bg-background/60",
+                    !canCreateVehicle && "cursor-not-allowed opacity-50",
+                  )}
+                  aria-pressed={vehicleMode === "new"}
+                  disabled={!canCreateVehicle}
+                  onClick={() => switchVehicleMode("new")}
+                >
+                  {t("acquisitions.vehiclePicker.createNew")}
+                </button>
+              </div>
+
+              {vehicleMode === "existing" ? (
+                <FormField
+                  label={t("acquisitions.vehiclePicker.selectExisting")}
+                  htmlFor="acquisition-vehicle-picker"
+                  error={
+                    vehicleError("vehicleId") ||
+                    (!linkedVehicleId && errors.vehicle?.make?.message
+                      ? t("acquisitions.vehiclePicker.required")
+                      : undefined)
+                  }
+                  hint={
+                    canViewVehicle
+                      ? t("acquisitions.vehiclePicker.hint")
+                      : t("acquisitions.vehiclePicker.noVehicleView")
+                  }
+                >
+                  {canViewVehicle ? (
+                    <AcquisitionVehiclePicker
+                      id="acquisition-vehicle-picker"
+                      value={linkedVehicleId || null}
+                      selected={selectedVehicle}
+                      disabled={Boolean(submitting)}
+                      aria-invalid={errors.vehicle?.vehicleId ? true : undefined}
+                      onSelect={applyExistingVehicle}
+                      onClear={clearExistingVehicle}
+                    />
+                  ) : (
+                    <p className="text-muted-foreground text-sm">
+                      {t("acquisitions.vehiclePicker.noVehicleView")}
+                    </p>
+                  )}
+                </FormField>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  {t("acquisitions.vehiclePicker.createNewHint")}
+                </p>
+              )}
             </div>
+          ) : null}
 
-            {vehicleMode === "existing" ? (
+          {mode === "edit" && acquisition?.vehicleStockNumber ? (
+            <FormField label={t("acquisitions.fields.stockNumber")} htmlFor="stockNumber">
+              <Input
+                id="stockNumber"
+                readOnly
+                disabled
+                className="h-11 md:h-10"
+                value={acquisition.vehicleStockNumber}
+              />
+            </FormField>
+          ) : null}
+
+          {showNewVehicleFields || mode === "edit" ? (
+            <>
               <FormField
-                label={t("acquisitions.vehiclePicker.selectExisting")}
-                htmlFor="acquisition-vehicle-picker"
-                error={
-                  vehicleError("vehicleId") ||
-                  (!linkedVehicleId && errors.vehicle?.make?.message
-                    ? t("acquisitions.vehiclePicker.required")
-                    : undefined)
-                }
-                hint={
-                  canViewVehicle
-                    ? t("acquisitions.vehiclePicker.hint")
-                    : t("acquisitions.vehiclePicker.noVehicleView")
-                }
+                label={t("acquisitions.fields.vin")}
+                htmlFor="vehicle.vin"
+                error={vehicleError("vin")}
+                hint={t("acquisitions.fields.vinHint")}
               >
-                {canViewVehicle ? (
-                  <AcquisitionVehiclePicker
-                    id="acquisition-vehicle-picker"
-                    value={linkedVehicleId || null}
-                    selected={selectedVehicle}
-                    disabled={Boolean(submitting)}
-                    aria-invalid={errors.vehicle?.vehicleId ? true : undefined}
-                    onSelect={applyExistingVehicle}
-                    onClear={clearExistingVehicle}
-                  />
-                ) : (
-                  <p className="text-muted-foreground text-sm">
-                    {t("acquisitions.vehiclePicker.noVehicleView")}
-                  </p>
-                )}
+                <Input
+                  id="vehicle.vin"
+                  className="h-11 font-mono uppercase md:h-10"
+                  autoCapitalize="characters"
+                  autoComplete="off"
+                  disabled={vehicleFieldsLocked && mode === "edit"}
+                  aria-invalid={errors.vehicle?.vin ? true : undefined}
+                  {...form.register("vehicle.vin")}
+                />
               </FormField>
-            ) : (
-              <p className="text-muted-foreground text-sm">
-                {t("acquisitions.vehiclePicker.createNewHint")}
-              </p>
-            )}
-          </div>
-        ) : null}
-
-        {mode === "edit" && acquisition?.vehicleStockNumber ? (
-          <FormField label={t("acquisitions.fields.stockNumber")} htmlFor="stockNumber">
-            <Input
-              id="stockNumber"
-              readOnly
-              disabled
-              className="h-11 md:h-10"
-              value={acquisition.vehicleStockNumber}
-            />
-          </FormField>
-        ) : null}
-
-        {showNewVehicleFields || mode === "edit" ? (
-          <>
-            <FormField
-              label={t("acquisitions.fields.vin")}
-              htmlFor="vehicle.vin"
-              error={vehicleError("vin")}
-              hint={t("acquisitions.fields.vinHint")}
-            >
-              <Input
-                id="vehicle.vin"
-                className="h-11 font-mono uppercase md:h-10"
-                autoCapitalize="characters"
-                autoComplete="off"
-                disabled={vehicleFieldsLocked && mode === "edit"}
-                aria-invalid={errors.vehicle?.vin ? true : undefined}
-                {...form.register("vehicle.vin")}
-              />
-            </FormField>
-            <FormField
-              label={t("acquisitions.fields.chassis")}
-              htmlFor="vehicle.chassisNumber"
-              error={vehicleError("chassisNumber")}
-            >
-              <Input
-                id="vehicle.chassisNumber"
-                className="h-11 font-mono uppercase md:h-10"
-                autoCapitalize="characters"
-                autoComplete="off"
-                disabled={vehicleFieldsLocked && mode === "edit"}
-                aria-invalid={errors.vehicle?.chassisNumber ? true : undefined}
-                {...form.register("vehicle.chassisNumber")}
-              />
-            </FormField>
-            <FormField
-              label={t("acquisitions.fields.brand")}
-              htmlFor="vehicle.make"
-              error={vehicleError("make")}
-            >
-              <Input
-                id="vehicle.make"
-                list="acquisition-makes"
-                className="h-11 md:h-10"
-                autoComplete="off"
-                disabled={vehicleFieldsLocked && mode === "edit"}
-                aria-invalid={errors.vehicle?.make ? true : undefined}
-                {...form.register("vehicle.make")}
-              />
-            </FormField>
-            <FormField
-              label={t("acquisitions.fields.model")}
-              htmlFor="vehicle.model"
-              error={vehicleError("model")}
-            >
-              <Input
-                id="vehicle.model"
-                list="acquisition-models"
-                className="h-11 md:h-10"
-                autoComplete="off"
-                disabled={vehicleFieldsLocked && mode === "edit"}
-                aria-invalid={errors.vehicle?.model ? true : undefined}
-                {...form.register("vehicle.model")}
-              />
-            </FormField>
-            <FormField
-              label={t("acquisitions.fields.variant")}
-              htmlFor="vehicle.variant"
-              error={vehicleError("variant")}
-            >
-              <Input
-                id="vehicle.variant"
-                className="h-11 md:h-10"
-                autoComplete="off"
-                disabled={vehicleFieldsLocked && mode === "edit"}
-                {...form.register("vehicle.variant")}
-              />
-            </FormField>
-            <FormField
-              label={t("acquisitions.fields.year")}
-              htmlFor="vehicle.year"
-              error={vehicleError("year")}
-            >
-              <Input
-                id="vehicle.year"
-                type="number"
-                inputMode="numeric"
-                className="h-11 md:h-10"
-                disabled={vehicleFieldsLocked && mode === "edit"}
-                aria-invalid={errors.vehicle?.year ? true : undefined}
-                {...form.register("vehicle.year", { valueAsNumber: true })}
-              />
-            </FormField>
-            <FormField
-              label={t("acquisitions.fields.mileage")}
-              htmlFor="vehicle.mileage"
-              error={vehicleError("mileage")}
-            >
-              <Input
-                id="vehicle.mileage"
-                type="number"
-                inputMode="numeric"
-                className="h-11 md:h-10"
-                disabled={vehicleFieldsLocked && mode === "edit"}
-                aria-invalid={errors.vehicle?.mileage ? true : undefined}
-                {...form.register("vehicle.mileage", { valueAsNumber: true })}
-              />
-            </FormField>
-            <FormField
-              label={t("acquisitions.fields.origin")}
-              htmlFor="vehicle.originType"
-              error={vehicleError("originType")}
-            >
-              <Controller
-                control={form.control}
-                name="vehicle.originType"
-                render={({ field }) => (
-                  <SearchableSelect
-                    id="vehicle.originType"
-                    value={field.value == null ? "" : String(field.value)}
-                    onValueChange={field.onChange}
-                    searchable={false}
-                    disabled={vehicleFieldsLocked && mode === "edit"}
-                    options={ORIGIN_TYPES.map((type) => ({
-                      value: type,
-                      label: t(`inventory.enums.origin.${type}`),
-                      icon: ORIGIN_ICONS[type],
-                    }))}
-                  />
-                )}
-              />
-            </FormField>
-            <FormField
-              label={t("acquisitions.fields.countryOfOrigin")}
-              htmlFor="vehicle.countryOfOrigin"
-              error={vehicleError("countryOfOrigin")}
-            >
-              <Controller
-                control={form.control}
-                name="vehicle.countryOfOrigin"
-                render={({ field }) => (
-                  <SearchableSelect
-                    id="vehicle.countryOfOrigin"
-                    value={field.value ?? ""}
-                    onValueChange={(next) => field.onChange(next === "" ? null : next)}
-                    optional
-                    disabled={vehicleFieldsLocked && mode === "edit"}
-                    placeholder={t("acquisitions.fields.selectPlaceholder")}
-                    options={countrySelectOptions(acquisition?.vehicleCountryOfOrigin)}
-                    groupLabel={(group) => t(`inventory.enums.countryRegion.${group}`)}
-                  />
-                )}
-              />
-            </FormField>
-            <datalist id="acquisition-makes">
-              {meta.makes.map((make) => (
-                <option key={make.id} value={make.name} />
-              ))}
-            </datalist>
-            <datalist id="acquisition-models">
-              {modelSuggestions.map((model) => (
-                <option key={model.id} value={model.name} />
-              ))}
-            </datalist>
-          </>
-        ) : null}
-      </Section>
+              <FormField
+                label={t("acquisitions.fields.chassis")}
+                htmlFor="vehicle.chassisNumber"
+                error={vehicleError("chassisNumber")}
+              >
+                <Input
+                  id="vehicle.chassisNumber"
+                  className="h-11 font-mono uppercase md:h-10"
+                  autoCapitalize="characters"
+                  autoComplete="off"
+                  disabled={vehicleFieldsLocked && mode === "edit"}
+                  aria-invalid={errors.vehicle?.chassisNumber ? true : undefined}
+                  {...form.register("vehicle.chassisNumber")}
+                />
+              </FormField>
+              <FormField
+                label={t("acquisitions.fields.brand")}
+                htmlFor="vehicle.make"
+                error={vehicleError("make")}
+              >
+                <Input
+                  id="vehicle.make"
+                  list="acquisition-makes"
+                  className="h-11 md:h-10"
+                  autoComplete="off"
+                  disabled={vehicleFieldsLocked && mode === "edit"}
+                  aria-invalid={errors.vehicle?.make ? true : undefined}
+                  {...form.register("vehicle.make")}
+                />
+              </FormField>
+              <FormField
+                label={t("acquisitions.fields.model")}
+                htmlFor="vehicle.model"
+                error={vehicleError("model")}
+              >
+                <Input
+                  id="vehicle.model"
+                  list="acquisition-models"
+                  className="h-11 md:h-10"
+                  autoComplete="off"
+                  disabled={vehicleFieldsLocked && mode === "edit"}
+                  aria-invalid={errors.vehicle?.model ? true : undefined}
+                  {...form.register("vehicle.model")}
+                />
+              </FormField>
+              <FormField
+                label={t("acquisitions.fields.variant")}
+                htmlFor="vehicle.variant"
+                error={vehicleError("variant")}
+              >
+                <Input
+                  id="vehicle.variant"
+                  className="h-11 md:h-10"
+                  autoComplete="off"
+                  disabled={vehicleFieldsLocked && mode === "edit"}
+                  {...form.register("vehicle.variant")}
+                />
+              </FormField>
+              <FormField
+                label={t("acquisitions.fields.year")}
+                htmlFor="vehicle.year"
+                error={vehicleError("year")}
+              >
+                <Input
+                  id="vehicle.year"
+                  type="number"
+                  inputMode="numeric"
+                  className="h-11 md:h-10"
+                  disabled={vehicleFieldsLocked && mode === "edit"}
+                  aria-invalid={errors.vehicle?.year ? true : undefined}
+                  {...form.register("vehicle.year", { valueAsNumber: true })}
+                />
+              </FormField>
+              <FormField
+                label={t("acquisitions.fields.mileage")}
+                htmlFor="vehicle.mileage"
+                error={vehicleError("mileage")}
+              >
+                <Input
+                  id="vehicle.mileage"
+                  type="number"
+                  inputMode="numeric"
+                  className="h-11 md:h-10"
+                  disabled={vehicleFieldsLocked && mode === "edit"}
+                  aria-invalid={errors.vehicle?.mileage ? true : undefined}
+                  {...form.register("vehicle.mileage", { valueAsNumber: true })}
+                />
+              </FormField>
+              <FormField
+                label={t("acquisitions.fields.origin")}
+                htmlFor="vehicle.originType"
+                error={vehicleError("originType")}
+              >
+                <Controller
+                  control={form.control}
+                  name="vehicle.originType"
+                  render={({ field }) => (
+                    <SearchableSelect
+                      id="vehicle.originType"
+                      value={field.value == null ? "" : String(field.value)}
+                      onValueChange={field.onChange}
+                      searchable={false}
+                      disabled={vehicleFieldsLocked && mode === "edit"}
+                      options={ORIGIN_TYPES.map((type) => ({
+                        value: type,
+                        label: t(`inventory.enums.origin.${type}`),
+                        icon: ORIGIN_ICONS[type],
+                      }))}
+                    />
+                  )}
+                />
+              </FormField>
+              <FormField
+                label={t("acquisitions.fields.countryOfOrigin")}
+                htmlFor="vehicle.countryOfOrigin"
+                error={vehicleError("countryOfOrigin")}
+              >
+                <Controller
+                  control={form.control}
+                  name="vehicle.countryOfOrigin"
+                  render={({ field }) => (
+                    <SearchableSelect
+                      id="vehicle.countryOfOrigin"
+                      value={field.value ?? ""}
+                      onValueChange={(next) => field.onChange(next === "" ? null : next)}
+                      optional
+                      disabled={vehicleFieldsLocked && mode === "edit"}
+                      placeholder={t("acquisitions.fields.selectPlaceholder")}
+                      options={countrySelectOptions(acquisition?.vehicleCountryOfOrigin)}
+                      groupLabel={(group) => t(`inventory.enums.countryRegion.${group}`)}
+                    />
+                  )}
+                />
+              </FormField>
+              <datalist id="acquisition-makes">
+                {meta.makes.map((make) => (
+                  <option key={make.id} value={make.name} />
+                ))}
+              </datalist>
+              <datalist id="acquisition-models">
+                {modelSuggestions.map((model) => (
+                  <option key={model.id} value={model.name} />
+                ))}
+              </datalist>
+            </>
+          ) : null}
+        </Section>
       ) : null}
 
       <Section title={t("acquisitions.sections.source")}>
@@ -989,41 +982,39 @@ function AcquisitionFormBody({
       {extraSections}
 
       {!embedded ? (
-      <div className="bg-background/95 supports-backdrop-filter:bg-background/80 sticky bottom-0 z-10 -mx-1 border-t px-1 py-3 backdrop-blur">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-muted-foreground min-h-5 text-xs">
-            {mode === "edit" && !isDirty && !submitting
-              ? t("acquisitions.actions.noChangesHint")
-              : null}
-          </p>
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <Link
-              href={cancelHref ?? "/inventory"}
-              className={cn(buttonVariants({ variant: "outline" }), "h-11 sm:h-9")}
-            >
-              {t("acquisitions.actions.cancel")}
-            </Link>
-            <LoadingButton
-              type="submit"
-              variant="brand"
-              className="h-11 sm:h-9"
-              loading={submitting}
-              disabled={mode === "edit" && !isDirty}
-              title={
-                mode === "edit" && !isDirty
-                  ? t("acquisitions.actions.noChangesHint")
-                  : undefined
-              }
-            >
-              {submitting
-                ? (submittingLabel ?? t("acquisitions.actions.updating"))
-                : mode === "create"
-                  ? t("acquisitions.actions.createSubmit")
-                  : t("acquisitions.actions.updateSubmit")}
-            </LoadingButton>
+        <div className="bg-background/95 supports-backdrop-filter:bg-background/80 sticky bottom-0 z-10 -mx-1 border-t px-1 py-3 backdrop-blur">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-muted-foreground min-h-5 text-xs">
+              {mode === "edit" && !isDirty && !submitting
+                ? t("acquisitions.actions.noChangesHint")
+                : null}
+            </p>
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <Link
+                href={cancelHref ?? "/inventory"}
+                className={cn(buttonVariants({ variant: "outline" }), "h-11 sm:h-9")}
+              >
+                {t("acquisitions.actions.cancel")}
+              </Link>
+              <LoadingButton
+                type="submit"
+                variant="brand"
+                className="h-11 sm:h-9"
+                loading={submitting}
+                disabled={mode === "edit" && !isDirty}
+                title={
+                  mode === "edit" && !isDirty ? t("acquisitions.actions.noChangesHint") : undefined
+                }
+              >
+                {submitting
+                  ? (submittingLabel ?? t("acquisitions.actions.updating"))
+                  : mode === "create"
+                    ? t("acquisitions.actions.createSubmit")
+                    : t("acquisitions.actions.updateSubmit")}
+              </LoadingButton>
+            </div>
           </div>
         </div>
-      </div>
       ) : null}
     </>
   );
@@ -1050,9 +1041,7 @@ export function AcquisitionForm({ ref, ...props }: AcquisitionFormProps) {
   const meta = useAcquisitionMeta();
 
   if (meta.isPending) {
-    return (
-      <FormSectionsSkeleton />
-    );
+    return <FormSectionsSkeleton />;
   }
 
   if (meta.isError) {

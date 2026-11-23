@@ -157,7 +157,7 @@ export function ShareVehicleButton({
           </div>
           <p className="text-muted-foreground text-xs">{t("hint")}</p>
           {missing.length > 0 ? (
-            <div className="flex gap-2 rounded-lg bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-100">
+            <div className="bg-warning-soft text-warning-foreground flex gap-2 rounded-lg p-3 text-sm">
               <TriangleAlertIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
               <p>
                 {t("missing", {

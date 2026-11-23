@@ -23,7 +23,8 @@ export default async function Page() {
   const locale = (await getLocale()) as AppLocale;
   const { plans, features } = await listPlans();
   const canManage = canPlatform(context, "plans.manage");
-  const limit = (value: number | null) => (value === null ? t("usage.unlimited") : formatNumber(value, locale));
+  const limit = (value: number | null) =>
+    value === null ? t("usage.unlimited") : formatNumber(value, locale);
 
   return (
     <div className="flex flex-col gap-6">
@@ -39,11 +40,24 @@ export default async function Page() {
         <CardContent>
           <DataTable
             empty={t("plans.none")}
-            headers={[t("plans.name"), t("plans.priceMonthly"), t("plans.priceYearly"), t("usage.users"), t("usage.branches"), t("usage.vehicles"), t("plans.storageMb"), t("plans.customDomains"), t("plans.active"), ""]}
+            headers={[
+              t("plans.name"),
+              t("plans.priceMonthly"),
+              t("plans.priceYearly"),
+              t("usage.users"),
+              t("usage.branches"),
+              t("usage.vehicles"),
+              t("plans.storageMb"),
+              t("plans.customDomains"),
+              t("plans.active"),
+              "",
+            ]}
             rows={plans.map((plan) => ({
               key: plan.id,
               cells: [
-                <span key="n" className="font-medium">{plan.name}</span>,
+                <span key="n" className="font-medium">
+                  {plan.name}
+                </span>,
                 formatCurrency(plan.price_monthly, locale, plan.currency),
                 formatCurrency(plan.price_yearly, locale, plan.currency),
                 limit(plan.max_users),
@@ -72,9 +86,17 @@ export default async function Page() {
                 t(`features.${feature.key}` as never),
                 ...plans.map((plan) =>
                   plan.features[feature.key] ? (
-                    <CheckIcon key={plan.id} className="size-4 text-emerald-600" aria-label={t("common.yes")} />
+                    <CheckIcon
+                      key={plan.id}
+                      className="text-success size-4"
+                      aria-label={t("common.yes")}
+                    />
                   ) : (
-                    <MinusIcon key={plan.id} className="text-muted-foreground size-4" aria-label={t("common.no")} />
+                    <MinusIcon
+                      key={plan.id}
+                      className="text-muted-foreground size-4"
+                      aria-label={t("common.no")}
+                    />
                   ),
                 ),
               ],

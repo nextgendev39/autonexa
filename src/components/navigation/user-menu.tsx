@@ -1,6 +1,12 @@
 "use client";
 
-import { BellIcon, LogOutIcon, SettingsIcon, UserRoundIcon } from "lucide-react";
+import {
+  BellIcon,
+  ChevronsUpDownIcon,
+  LogOutIcon,
+  SettingsIcon,
+  UserRoundIcon,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { signOutClient } from "@/hooks/use-auth-submit";
@@ -16,28 +22,78 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 import type { UserContext } from "@/types/auth";
 
-export function UserMenu({ user }: { user: UserContext }) {
+/**
+ * Account menu. `variant="avatar"` is the compact header button; `variant="sidebar"` is the
+ * identity block at the foot of the sidebar (collapsed: just the avatar).
+ */
+export function UserMenu({
+  user,
+  variant = "avatar",
+  collapsed = false,
+}: {
+  user: UserContext;
+  variant?: "avatar" | "sidebar";
+  collapsed?: boolean;
+}) {
   const t = useTranslations();
   const label = user.displayName || user.email || t("common.account");
-  const initial = (user.displayName || user.email || "Z").slice(0, 1).toUpperCase();
+  const initial = (user.displayName || user.email || "A").slice(0, 1).toUpperCase();
+  const avatar = (
+    <Avatar className={variant === "sidebar" ? "size-8" : "size-7"}>
+      {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt="" /> : null}
+      <AvatarFallback className="bg-gold text-gold-foreground text-xs font-semibold">
+        {initial}
+      </AvatarFallback>
+    </Avatar>
+  );
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        render={<Button variant="ghost" size="icon" aria-label={t("common.account")} />}
+      {variant === "sidebar" ? (
+        <DropdownMenuTrigger
+          className={cn(
+            "hover:bg-sidebar-accent aria-expanded:bg-sidebar-accent focus-visible:ring-sidebar-ring flex w-full min-w-0 items-center gap-2.5 rounded-xl p-1.5 text-start transition-colors duration-150 outline-none focus-visible:ring-2",
+            collapsed && "justify-center",
+          )}
+          aria-label={t("common.account")}
+        >
+          {avatar}
+          {collapsed ? null : (
+            <>
+              <span className="grid min-w-0 flex-1 leading-tight">
+                <span className="truncate text-sm font-medium">{label}</span>
+                {user.email && user.displayName ? (
+                  <span className="text-sidebar-foreground/55 truncate text-xs">{user.email}</span>
+                ) : null}
+              </span>
+              <ChevronsUpDownIcon
+                className="text-sidebar-foreground/45 size-4 shrink-0"
+                aria-hidden
+              />
+            </>
+          )}
+        </DropdownMenuTrigger>
+      ) : (
+        <DropdownMenuTrigger
+          render={<Button variant="ghost" size="icon" aria-label={t("common.account")} />}
+        >
+          {avatar}
+        </DropdownMenuTrigger>
+      )}
+      <DropdownMenuContent
+        align={variant === "sidebar" ? "start" : "end"}
+        side={variant === "sidebar" ? "top" : "bottom"}
+        className="w-64"
       >
-        <Avatar className="size-7">
-          {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt="" /> : null}
-          <AvatarFallback>{initial}</AvatarFallback>
-        </Avatar>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-64">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="space-y-0.5 font-normal">
             <p className="truncate font-medium">{label}</p>
-            {user.email ? <p className="text-muted-foreground truncate text-xs">{user.email}</p> : null}
+            {user.email ? (
+              <p className="text-muted-foreground truncate text-xs">{user.email}</p>
+            ) : null}
             {user.employeeCode ? (
               <p className="text-muted-foreground truncate text-xs">{user.employeeCode}</p>
             ) : null}

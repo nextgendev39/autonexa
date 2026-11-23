@@ -28,12 +28,7 @@ import { cn } from "@/lib/utils";
 
 /** Filter groups on the notifications screen. */
 export type NotificationCategory =
-  | "booking"
-  | "ready"
-  | "sale"
-  | "cancellation"
-  | "payment"
-  | "other";
+  "booking" | "ready" | "sale" | "cancellation" | "payment" | "other";
 
 const kinds: Record<string, { icon: LucideIcon; tone: string; category: NotificationCategory }> = {
   [BOOKING_CREATED]: {
@@ -43,47 +38,47 @@ const kinds: Record<string, { icon: LucideIcon; tone: string; category: Notifica
   },
   [BOOKING_SOLD]: {
     icon: BadgeCheckIcon,
-    tone: "bg-emerald-600/10 text-emerald-700 dark:bg-emerald-400/12 dark:text-emerald-300",
+    tone: "bg-success-soft text-success-foreground",
     category: "sale",
   },
   [VEHICLE_SOLD]: {
     icon: BadgeCheckIcon,
-    tone: "bg-emerald-600/10 text-emerald-700 dark:bg-emerald-400/12 dark:text-emerald-300",
+    tone: "bg-success-soft text-success-foreground",
     category: "sale",
   },
   [VEHICLE_READY_FOR_SALE]: {
     icon: CarIcon,
-    tone: "bg-sky-600/10 text-sky-700 dark:bg-sky-400/12 dark:text-sky-300",
+    tone: "bg-info-soft text-info-foreground",
     category: "ready",
   },
   [BOOKING_CANCELLED]: {
     icon: CircleXIcon,
-    tone: "bg-rose-600/10 text-rose-700 dark:bg-rose-400/12 dark:text-rose-300",
+    tone: "bg-danger-soft text-danger-foreground",
     category: "cancellation",
   },
   [BOOKING_AUTO_CANCELLED]: {
     icon: TimerOffIcon,
-    tone: "bg-rose-600/10 text-rose-700 dark:bg-rose-400/12 dark:text-rose-300",
+    tone: "bg-danger-soft text-danger-foreground",
     category: "cancellation",
   },
   [BOOKING_HOLD_REQUESTED]: {
     icon: ShieldEllipsisIcon,
-    tone: "bg-sky-600/10 text-sky-700 dark:bg-sky-400/12 dark:text-sky-300",
+    tone: "bg-info-soft text-info-foreground",
     category: "payment",
   },
   [BOOKING_HOLD_APPROVED]: {
     icon: ShieldCheckIcon,
-    tone: "bg-emerald-600/10 text-emerald-700 dark:bg-emerald-400/12 dark:text-emerald-300",
+    tone: "bg-success-soft text-success-foreground",
     category: "payment",
   },
   [BOOKING_HOLD_REJECTED]: {
     icon: ShieldXIcon,
-    tone: "bg-rose-600/10 text-rose-700 dark:bg-rose-400/12 dark:text-rose-300",
+    tone: "bg-danger-soft text-danger-foreground",
     category: "payment",
   },
   [BOOKING_BALANCE_OVERDUE]: {
     icon: WalletIcon,
-    tone: "bg-amber-600/12 text-amber-700 dark:bg-amber-400/12 dark:text-amber-300",
+    tone: "bg-warning-soft text-warning-foreground",
     category: "payment",
   },
 };

@@ -284,7 +284,7 @@ export async function VehicleScreen({
               <span
                 className={
                   vehicle.available
-                    ? "rounded-full bg-emerald-500/12 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+                    ? "bg-success-soft text-success-foreground rounded-full px-2.5 py-0.5 text-xs font-semibold"
                     : "bg-muted rounded-full px-2.5 py-0.5 text-xs font-semibold"
                 }
               >

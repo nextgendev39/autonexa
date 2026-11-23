@@ -24,7 +24,7 @@ export function PageSkeleton({
   );
 }
 
-/** Breadcrumbs, title with the gold underline, description and action buttons. */
+/** Eyebrow, display title, description and actions, closed by the header hairline. */
 export function PageHeaderSkeleton({
   actions = 0,
   description = true,
@@ -33,53 +33,88 @@ export function PageHeaderSkeleton({
   description?: boolean;
 }) {
   return (
-    <div className="flex flex-col gap-3">
-      <Skeleton className="h-3.5 w-36" />
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="min-w-0">
-          <Skeleton className="h-7 w-52 sm:h-8 sm:w-64" />
-          <span className="bg-gold mt-2 block h-0.5 w-10 rounded-full opacity-60" aria-hidden />
-          {description ? <Skeleton className="mt-2 h-4 w-72 max-w-full sm:w-96" /> : null}
+    <div className="border-divider flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-end sm:justify-between sm:pb-6">
+      <div className="min-w-0">
+        <Skeleton className="mb-2.5 h-2.5 w-20" />
+        <Skeleton className="h-7 w-52 sm:h-8 sm:w-72" />
+        {description ? <Skeleton className="mt-2.5 h-4 w-72 max-w-full sm:w-96" /> : null}
+      </div>
+      {actions > 0 ? (
+        <div className="flex w-full gap-2 sm:w-auto">
+          {range(actions).map((index) => (
+            <Skeleton key={index} className="h-9 flex-1 rounded-lg sm:w-32 sm:flex-none" />
+          ))}
         </div>
-        {actions > 0 ? (
-          <div className="flex w-full gap-2 sm:w-auto">
-            {range(actions).map((index) => (
-              <Skeleton
-                key={index}
-                className="h-10 flex-1 rounded-md sm:w-32 sm:flex-none md:h-9"
-              />
-            ))}
-          </div>
-        ) : null}
+      ) : null}
+    </div>
+  );
+}
+
+/** One instrument tile: dot and label, then the figure and hint. The first is the obsidian hero. */
+export function KpiCardSkeleton({ brand = false }: { brand?: boolean }) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col justify-between gap-4 rounded-xl border p-4 sm:min-h-[8.5rem] sm:p-5",
+        brand ? "bg-brand-panel border-transparent" : "bg-card",
+      )}
+    >
+      <Skeleton className={cn("h-2.5 w-24", brand && "bg-white/10")} />
+      <div className="grid gap-2">
+        <Skeleton className={cn("h-7 w-24", brand && "bg-white/10")} />
+        <Skeleton className={cn("h-3 w-28", brand && "bg-white/10")} />
       </div>
     </div>
   );
 }
 
-/** One KPI card: label and icon tile on top, the figure and hint below. */
-export function KpiCardSkeleton({ brand = false }: { brand?: boolean }) {
+/** The metric strip: one panel divided into figure cells. */
+export function MetricStripSkeleton({ count = 4 }: { count?: number }) {
   return (
-    <Card size="sm" className="relative gap-3 px-4 py-4 max-sm:gap-0 max-sm:px-3 max-sm:py-2.5">
-      {brand ? (
-        <span className="bg-gold absolute inset-x-0 top-0 h-0.5 opacity-60" aria-hidden />
-      ) : null}
-      {/* Phones: the compact row (icon, label, value). */}
-      <div className="flex items-center gap-2.5 sm:hidden">
-        <Skeleton className="size-8 shrink-0 rounded-lg" />
-        <div className="grid flex-1 gap-1">
-          <Skeleton className="h-3 w-16" />
-          <Skeleton className="h-5 w-12" />
+    <div className="bg-card rounded-panel divide-divider grid grid-cols-2 overflow-hidden border shadow-sm lg:auto-cols-fr lg:grid-flow-col lg:divide-x">
+      {range(count).map((index) => (
+        <div key={index} className="grid gap-2 px-4 py-3.5 sm:px-5 sm:py-4">
+          <Skeleton className="h-3 w-24" />
+          <Skeleton className="h-7 w-16" />
+          <Skeleton className="h-3 w-28" />
         </div>
+      ))}
+    </div>
+  );
+}
+
+/** A data panel: toolbar of chips and search, then the body (optionally in a tinted well). */
+export function PanelSkeleton({
+  chips = 3,
+  search = true,
+  well = false,
+  footer = false,
+  children,
+}: {
+  chips?: number;
+  search?: boolean;
+  well?: boolean;
+  footer?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="bg-card rounded-panel overflow-hidden border shadow-sm">
+      <div className="border-divider flex flex-col gap-3 border-b px-3 py-3 sm:px-4 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex gap-1.5">
+          {range(chips).map((index) => (
+            <Skeleton key={index} className="h-8 w-24 rounded-full" />
+          ))}
+        </div>
+        {search ? <Skeleton className="h-9 w-full rounded-lg xl:w-72" /> : null}
       </div>
-      <div className="flex items-start justify-between gap-2 max-sm:hidden">
-        <Skeleton className="mt-1 h-3.5 w-24" />
-        <Skeleton className="size-9 rounded-xl" />
-      </div>
-      <div className="grid gap-1.5 max-sm:hidden">
-        <Skeleton className="h-7 w-20" />
-        <Skeleton className="h-3 w-28" />
-      </div>
-    </Card>
+      <div className={cn(well && "bg-muted/35 p-3 sm:p-4")}>{children}</div>
+      {footer ? (
+        <div className="border-divider flex justify-between border-t px-3 py-3 sm:px-4">
+          <Skeleton className="h-4 w-32" />
+          <Skeleton className="h-8 w-40 rounded-lg" />
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -124,15 +159,18 @@ export function TableSkeleton({
   rows = 6,
   columns = 5,
   lead = "thumb",
+  bare = false,
 }: {
   rows?: number;
   columns?: number;
   /** What the first cell starts with. */
   lead?: "thumb" | "avatar" | "none";
+  /** Inside a panel: no surface of its own. */
+  bare?: boolean;
 }) {
   const rest = range(Math.max(columns - 1, 0));
   return (
-    <div className="bg-card ring-foreground/[0.07] overflow-hidden rounded-xl shadow-xs ring-1">
+    <div className={cn("overflow-hidden", !bare && "bg-card rounded-xl border shadow-sm")}>
       <div className="bg-muted/40 flex h-10 items-center gap-6 border-b px-4">
         <Skeleton className="h-3 w-24" />
         {rest.map((index) => (
@@ -239,6 +277,7 @@ export function VehicleCardSkeleton() {
             <span className="bg-background/80 h-5 w-24 rounded-full" />
             <span className="bg-background/80 h-5 w-14 rounded-full" />
           </div>
+          <span className="absolute start-3 bottom-3 h-8 w-28 rounded-lg bg-black/25 max-sm:hidden" />
         </div>
         <div className="flex min-w-0 flex-1 flex-col gap-3 p-4 max-sm:gap-2 max-sm:p-3">
           <div className="flex gap-1.5 sm:hidden">
@@ -253,21 +292,22 @@ export function VehicleCardSkeleton() {
             <Skeleton className="h-5 w-3/4" />
             <Skeleton className="h-3.5 w-1/2" />
           </div>
-          <div className="flex flex-wrap gap-1.5">
+          <div className="border-divider grid grid-cols-4 rounded-lg border max-sm:hidden">
             {range(4).map((index) => (
-              <Skeleton
-                key={index}
-                className={cn("h-6 w-16 max-sm:h-5", index > 1 && "max-sm:hidden")}
-              />
+              <div key={index} className="grid justify-items-center gap-1.5 py-2">
+                <Skeleton className="size-3.5 rounded-full" />
+                <Skeleton className="h-3 w-10" />
+              </div>
             ))}
           </div>
-          <div className="mt-auto flex items-end justify-between border-t pt-3 max-sm:border-0 max-sm:pt-1">
+          <Skeleton className="h-3 w-24 sm:hidden" />
+          <div className="mt-auto flex items-end justify-between">
             <Skeleton className="h-4 w-28 max-sm:w-20" />
             <Skeleton className="h-5 w-24 max-sm:w-16" />
           </div>
         </div>
       </div>
-      <div className="bg-muted/30 flex gap-2 border-t px-3 py-2.5">
+      <div className="border-divider flex gap-2 border-t px-3 py-2.5">
         <Skeleton className="h-9 flex-1" />
         <Skeleton className="h-9 flex-1" />
         <Skeleton className="size-9" />
@@ -370,7 +410,7 @@ export function FilterPanelSkeleton() {
 /** Placeholder for the pipeline card while the summary loads. */
 export function StockPipelineSkeleton() {
   return (
-    <div className="bg-card ring-foreground/[0.07] grid gap-5 rounded-xl p-5 shadow-xs ring-1 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+    <div className="bg-card ring-border grid gap-5 rounded-xl p-5 shadow-xs ring-1 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
       <div className="grid gap-3">
         <div className="flex items-center justify-between gap-3">
           <div className="grid gap-1.5">
@@ -403,7 +443,7 @@ export function InventoryListSkeleton({ view = "list" }: { view?: "list" | "grid
     <PageSkeleton>
       <PageHeaderSkeleton actions={1} />
       {/* Phones: the single compact status card (total, bar, four statuses). */}
-      <div className="bg-card ring-foreground/[0.07] grid gap-3 rounded-xl px-3.5 py-3 shadow-xs ring-1 md:hidden">
+      <div className="bg-card ring-border grid gap-3 rounded-xl px-3.5 py-3 shadow-xs ring-1 md:hidden">
         <div className="flex items-center gap-2.5">
           <Skeleton className="size-8 rounded-lg" />
           <Skeleton className="h-3 w-12" />
@@ -422,8 +462,12 @@ export function InventoryListSkeleton({ view = "list" }: { view?: "list" | "grid
       <div className="hidden md:block">
         <StockPipelineSkeleton />
       </div>
-      <FilterPanelSkeleton />
-      <VehicleResultsSkeleton view={view} />
+      <PanelSkeleton chips={0} footer>
+        <FilterPanelSkeleton />
+        <div className="bg-muted/35 p-3 sm:p-4">
+          <VehicleResultsSkeleton view={view} />
+        </div>
+      </PanelSkeleton>
     </PageSkeleton>
   );
 }
@@ -433,15 +477,9 @@ export function VehicleDetailSkeleton() {
   return (
     <PageSkeleton className="gap-5">
       <PageHeaderSkeleton actions={2} />
-      <div className="bg-muted/40 flex gap-1 overflow-hidden rounded-2xl border p-1.5">
+      <div className="border-divider flex gap-6 overflow-hidden border-b pb-3">
         {range(6).map((index) => (
-          <Skeleton
-            key={index}
-            className={cn(
-              "h-9 w-24 shrink-0 rounded-xl sm:h-10 sm:w-28",
-              index === 0 && "bg-background shadow-sm",
-            )}
-          />
+          <Skeleton key={index} className="h-4 w-20 shrink-0" />
         ))}
       </div>
       <Card className="overflow-hidden p-0">
@@ -484,7 +522,7 @@ function FormSectionSkeleton({
   textarea?: boolean;
 }) {
   return (
-    <div className="bg-card ring-foreground/[0.07] grid gap-4 rounded-xl p-4 shadow-xs ring-1 sm:p-5">
+    <div className="bg-card ring-border grid gap-4 rounded-xl p-4 shadow-xs ring-1 sm:p-5">
       <Skeleton className={cn("h-4.5", titleWidth)} />
       <div className="grid gap-x-4 gap-y-3.5 sm:grid-cols-2 lg:grid-cols-3">
         {range(fields).map((index) => (
@@ -523,7 +561,7 @@ export function VehicleSectionsSkeleton() {
 
 /** Matches the full-screen vehicle step form: step bar, form sections, pinned actions. */
 export function VehicleFormSkeleton() {
-  const bleed = "-mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8";
+  const bleed = "-mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-10 lg:px-10";
   return (
     <div className="flex flex-1 flex-col" aria-busy="true" aria-live="polite">
       {/* Step bar: close, title, step pills (desktop) or progress segments (phone). */}
@@ -661,7 +699,7 @@ export function TileGridSkeleton({ count = 6, className }: { count?: number; cla
   return (
     <div className={cn("grid gap-3 sm:grid-cols-2 xl:grid-cols-3", className)}>
       {range(count).map((index) => (
-        <div key={index} className="bg-card grid gap-4 rounded-xl border p-4 shadow-xs">
+        <div key={index} className="bg-card grid gap-4 rounded-xl border p-4 shadow-sm">
           <div className="flex items-start gap-3">
             <Skeleton className="size-10 shrink-0 rounded-lg" />
             <div className="grid flex-1 gap-2">

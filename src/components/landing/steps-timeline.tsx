@@ -49,7 +49,7 @@ export function StepsTimeline({ copy }: { copy: LandingCopy["how"] }) {
             whileInView={{ scale: 1, opacity: 1 }}
             viewport={{ once: true }}
             transition={{ type: "spring", stiffness: 260, damping: 18, delay: 0.15 + index * 0.1 }}
-            className="bg-gold text-brand-foreground font-heading ring-background absolute start-0 top-0 flex size-10 items-center justify-center rounded-full text-sm font-bold ring-8 lg:relative"
+            className="bg-gold text-gold-foreground font-heading ring-background absolute start-0 top-0 flex size-10 items-center justify-center rounded-full text-sm font-bold ring-8 lg:relative"
           >
             {index + 1}
           </motion.span>

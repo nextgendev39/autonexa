@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono, Noto_Sans_Arabic, Sora, Source_Sans_3 } from "next/font/google";
+import { Geist_Mono, IBM_Plex_Sans_Arabic, Inter, Manrope } from "next/font/google";
 import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
@@ -10,21 +10,22 @@ import { routing } from "@/lib/i18n/routing";
 
 import "../globals.css";
 
-const latin = Source_Sans_3({
+// AutoNexa type system: Inter for interface text and tables, Manrope for titles and figures.
+const latin = Inter({
   subsets: ["latin"],
   variable: "--font-latin",
   display: "swap",
 });
 
-// Geometric display face for headings and figures — reads like dashboard instrumentation.
-const heading = Sora({
+const heading = Manrope({
   subsets: ["latin"],
   variable: "--font-heading-latin",
   display: "swap",
 });
 
-const arabic = Noto_Sans_Arabic({
+const arabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-arabic",
   display: "swap",
 });
@@ -56,8 +57,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f4f5f7" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e0f12" },
+    { media: "(prefers-color-scheme: light)", color: "#f5f5f3" },
+    { media: "(prefers-color-scheme: dark)", color: "#080a0f" },
   ],
 };
 
@@ -88,7 +89,11 @@ export default async function LocaleLayout({
       className={`${latin.variable} ${heading.variable} ${arabic.variable} ${mono.variable} h-full antialiased`}
     >
       <body className="h-full overflow-hidden" suppressHydrationWarning>
-        <AppProviders locale={localeParam} direction={directionFor(localeParam)} messages={messages}>
+        <AppProviders
+          locale={localeParam}
+          direction={directionFor(localeParam)}
+          messages={messages}
+        >
           {children}
         </AppProviders>
       </body>

@@ -64,16 +64,50 @@ export function PricingKpis({
     p.expectedGrossProfit == null ? "neutral" : p.expectedGrossProfit < 0 ? "danger" : "success";
 
   const tiles: { key: string; label: string; value: string; icon: LucideIcon; tone: KpiTone }[] = [
-    ...(canCost ? [{ key: "cost", label: t("pricing.summary.totalCost"), value: fmt(totalCost), icon: LandmarkIcon, tone: "neutral" as KpiTone }] : []),
-    { key: "min", label: t("pricing.fields.minimum"), value: fmt(p.minimumSellingPrice), icon: ShieldIcon, tone: "warning" },
-    { key: "target", label: t("pricing.fields.target"), value: fmt(p.targetSellingPrice ?? p.currentSellingPrice), icon: TargetIcon, tone: "brand" },
+    ...(canCost
+      ? [
+          {
+            key: "cost",
+            label: t("pricing.summary.totalCost"),
+            value: fmt(totalCost),
+            icon: LandmarkIcon,
+            tone: "neutral" as KpiTone,
+          },
+        ]
+      : []),
+    {
+      key: "min",
+      label: t("pricing.fields.minimum"),
+      value: fmt(p.minimumSellingPrice),
+      icon: ShieldIcon,
+      tone: "warning",
+    },
+    {
+      key: "target",
+      label: t("pricing.fields.target"),
+      value: fmt(p.targetSellingPrice ?? p.currentSellingPrice),
+      icon: TargetIcon,
+      tone: "brand",
+    },
     ...(canProfit
       ? [
-          { key: "profit", label: t("pricing.summary.expectedProfit"), value: fmt(p.expectedGrossProfit), icon: p.expectedGrossProfit != null && p.expectedGrossProfit < 0 ? TrendingDownIcon : TrendingUpIcon, tone: profitTone },
+          {
+            key: "profit",
+            label: t("pricing.summary.expectedProfit"),
+            value: fmt(p.expectedGrossProfit),
+            icon:
+              p.expectedGrossProfit != null && p.expectedGrossProfit < 0
+                ? TrendingDownIcon
+                : TrendingUpIcon,
+            tone: profitTone,
+          },
           {
             key: "margin",
             label: t("pricing.summary.margin"),
-            value: p.expectedMarginPercent == null ? "—" : formatPercent(p.expectedMarginPercent / 100, locale),
+            value:
+              p.expectedMarginPercent == null
+                ? "—"
+                : formatPercent(p.expectedMarginPercent / 100, locale),
             icon: PercentIcon,
             tone: profitTone === "danger" ? ("danger" as KpiTone) : ("violet" as KpiTone),
           },
@@ -84,7 +118,13 @@ export function PricingKpis({
   return (
     <section className="stagger grid grid-cols-2 gap-3 [--stagger:70ms] md:grid-cols-3 xl:grid-cols-5">
       {tiles.map((tile) => (
-        <KpiCard key={tile.key} label={tile.label} value={tile.value} icon={tile.icon} tone={tile.tone} />
+        <KpiCard
+          key={tile.key}
+          label={tile.label}
+          value={tile.value}
+          icon={tile.icon}
+          tone={tile.tone}
+        />
       ))}
     </section>
   );
@@ -97,7 +137,13 @@ export function PricingKpis({
  * loss (below cost), protected (cost → minimum, needs approval) and
  * negotiation (minimum → target). Markers show every price point at once.
  */
-export function PriceCorridor({ p, totalCost }: { p: VehicleProfitability; totalCost: number | null }) {
+export function PriceCorridor({
+  p,
+  totalCost,
+}: {
+  p: VehicleProfitability;
+  totalCost: number | null;
+}) {
   const t = useTranslations();
   const money = useMoney(p.currency);
   const target = p.targetSellingPrice ?? p.currentSellingPrice;
@@ -107,17 +153,35 @@ export function PriceCorridor({ p, totalCost }: { p: VehicleProfitability; total
       : null;
 
   const markers = [
-    { key: "cost", label: t("pricing.visual.markers.cost"), value: totalCost, color: "bg-rose-500" },
-    { key: "minimum", label: t("pricing.visual.markers.minimum"), value: p.minimumSellingPrice, color: "bg-amber-500" },
-    { key: "floor", label: t("pricing.visual.markers.floor"), value: floor, color: "bg-sky-500" },
-    { key: "target", label: t("pricing.visual.markers.target"), value: target, color: "bg-[var(--brand)]" },
+    {
+      key: "cost",
+      label: t("pricing.visual.markers.cost"),
+      value: totalCost,
+      color: "bg-destructive",
+    },
+    {
+      key: "minimum",
+      label: t("pricing.visual.markers.minimum"),
+      value: p.minimumSellingPrice,
+      color: "bg-warning",
+    },
+    { key: "floor", label: t("pricing.visual.markers.floor"), value: floor, color: "bg-info" },
+    {
+      key: "target",
+      label: t("pricing.visual.markers.target"),
+      value: target,
+      color: "bg-[var(--brand)]",
+    },
     {
       key: "advertised",
       label: t("pricing.visual.markers.advertised"),
       value: p.advertisedPrice !== target ? p.advertisedPrice : null,
-      color: "bg-violet-500",
+      color: "bg-gold",
     },
-  ].filter((m): m is { key: string; label: string; value: number; color: string } => m.value != null && m.value > 0);
+  ].filter(
+    (m): m is { key: string; label: string; value: number; color: string } =>
+      m.value != null && m.value > 0,
+  );
 
   if (markers.length < 2) return null;
 
@@ -128,12 +192,12 @@ export function PriceCorridor({ p, totalCost }: { p: VehicleProfitability; total
   const pos = (value: number) => Math.min(100, Math.max(0, ((value - lo) / (hi - lo)) * 100));
 
   const zones = [
-    totalCost != null ? { key: "loss", from: lo, to: totalCost, cls: "bg-rose-500/20" } : null,
+    totalCost != null ? { key: "loss", from: lo, to: totalCost, cls: "bg-danger-soft" } : null,
     totalCost != null && p.minimumSellingPrice != null && p.minimumSellingPrice > totalCost
-      ? { key: "protected", from: totalCost, to: p.minimumSellingPrice, cls: "bg-amber-500/25" }
+      ? { key: "protected", from: totalCost, to: p.minimumSellingPrice, cls: "bg-warning-soft" }
       : null,
     p.minimumSellingPrice != null && target != null && target > p.minimumSellingPrice
-      ? { key: "negotiation", from: p.minimumSellingPrice, to: target, cls: "bg-emerald-500/25" }
+      ? { key: "negotiation", from: p.minimumSellingPrice, to: target, cls: "bg-success-soft" }
       : null,
     target != null ? { key: "premium", from: target, to: hi, cls: "bg-[var(--brand-soft)]" } : null,
   ].filter((z): z is { key: string; from: number; to: number; cls: string } => z != null);
@@ -148,12 +212,19 @@ export function PriceCorridor({ p, totalCost }: { p: VehicleProfitability; total
         <CardDescription>{t("pricing.visual.corridorHint")}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-5">
-        <div className="relative px-1 pt-12 pb-12" role="img" aria-label={sorted.map((m) => `${m.label} ${money(m.value)}`).join(", ")}>
+        <div
+          className="relative px-1 pt-12 pb-12"
+          role="img"
+          aria-label={sorted.map((m) => `${m.label} ${money(m.value)}`).join(", ")}
+        >
           <div className="bg-muted relative h-4 overflow-hidden rounded-full">
             {zones.map((zone, index) => (
               <div
                 key={zone.key}
-                className={cn("animate-grow-x absolute inset-y-0 ltr:origin-left rtl:origin-right", zone.cls)}
+                className={cn(
+                  "animate-grow-x absolute inset-y-0 ltr:origin-left rtl:origin-right",
+                  zone.cls,
+                )}
                 style={{
                   insetInlineStart: `${pos(zone.from)}%`,
                   width: `${pos(zone.to) - pos(zone.from)}%`,
@@ -168,16 +239,26 @@ export function PriceCorridor({ p, totalCost }: { p: VehicleProfitability; total
               <div
                 key={marker.key}
                 className="animate-pop absolute top-12 flex -translate-x-1/2 flex-col items-center rtl:translate-x-1/2"
-                style={{ insetInlineStart: `${pos(marker.value)}%`, animationDelay: `${400 + index * 90}ms` }}
+                style={{
+                  insetInlineStart: `${pos(marker.value)}%`,
+                  animationDelay: `${400 + index * 90}ms`,
+                }}
               >
-                <span className={cn(marker.color, "ring-card relative z-10 -mt-1 h-6 w-1.5 rounded-full ring-2")} />
+                <span
+                  className={cn(
+                    marker.color,
+                    "ring-card relative z-10 -mt-1 h-6 w-1.5 rounded-full ring-2",
+                  )}
+                />
                 <span
                   className={cn(
                     "absolute grid w-max max-w-28 justify-items-center text-center leading-tight",
                     above ? "bottom-7" : "top-7",
                   )}
                 >
-                  <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">{marker.label}</span>
+                  <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
+                    {marker.label}
+                  </span>
                   <span className="text-xs font-semibold tabular-nums">{money(marker.value)}</span>
                 </span>
               </div>
@@ -187,14 +268,23 @@ export function PriceCorridor({ p, totalCost }: { p: VehicleProfitability; total
         {totalCost != null || (p.minimumSellingPrice != null && target != null) ? (
           <dl className="grid grid-cols-3 gap-2 text-center">
             {[
-              { key: "atTarget", value: totalCost != null && target != null ? target - totalCost : null },
+              {
+                key: "atTarget",
+                value: totalCost != null && target != null ? target - totalCost : null,
+              },
               {
                 key: "atMinimum",
-                value: totalCost != null && p.minimumSellingPrice != null ? p.minimumSellingPrice - totalCost : null,
+                value:
+                  totalCost != null && p.minimumSellingPrice != null
+                    ? p.minimumSellingPrice - totalCost
+                    : null,
               },
               {
                 key: "room",
-                value: p.minimumSellingPrice != null && target != null ? Math.max(0, target - p.minimumSellingPrice) : null,
+                value:
+                  p.minimumSellingPrice != null && target != null
+                    ? Math.max(0, target - p.minimumSellingPrice)
+                    : null,
               },
             ].map((stat) => (
               <div key={stat.key} className="bg-muted/40 grid gap-1 rounded-xl p-3">
@@ -205,7 +295,10 @@ export function PriceCorridor({ p, totalCost }: { p: VehicleProfitability; total
                   className={cn(
                     "font-heading text-sm font-semibold tabular-nums sm:text-base",
                     stat.value != null && stat.value < 0 && "text-destructive",
-                    stat.value != null && stat.value > 0 && stat.key !== "room" && "text-emerald-700 dark:text-emerald-300",
+                    stat.value != null &&
+                      stat.value > 0 &&
+                      stat.key !== "room" &&
+                      "text-success-foreground",
                   )}
                 >
                   {stat.value == null ? "—" : money(stat.value)}
@@ -221,7 +314,9 @@ export function PriceCorridor({ p, totalCost }: { p: VehicleProfitability; total
               <li key={zone.key} className="flex items-center gap-1.5">
                 <span className={cn(zone.cls, "size-3 rounded-sm")} aria-hidden />
                 <span className="font-medium">{t(`pricing.visual.zones.${zone.key}`)}</span>
-                <span className="text-muted-foreground">· {t(`pricing.visual.zoneHints.${zone.key}`)}</span>
+                <span className="text-muted-foreground">
+                  · {t(`pricing.visual.zoneHints.${zone.key}`)}
+                </span>
               </li>
             ))}
         </ul>
@@ -232,7 +327,15 @@ export function PriceCorridor({ p, totalCost }: { p: VehicleProfitability; total
 
 /* ------------------------------------------------------------ cost donut */
 
-const DONUT_COLORS = ["var(--chart-2)", "var(--brand)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)", "#38bdf8", "#a78bfa"];
+const DONUT_COLORS = [
+  "var(--chart-2)",
+  "var(--brand)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+  "var(--info)",
+  "var(--gold-200)",
+];
 
 export function CostMixCard({
   lines,
@@ -287,13 +390,19 @@ export function CostMixCard({
             <span className="text-muted-foreground text-[10px] font-medium tracking-wide uppercase">
               {t("pricing.summary.totalCost")}
             </span>
-            <span className="font-heading text-xs font-semibold tabular-nums">{money(total ?? sum)}</span>
+            <span className="font-heading text-xs font-semibold tabular-nums">
+              {money(total ?? sum)}
+            </span>
           </div>
         </div>
         <ul className="grid gap-2 text-sm">
           {parts.map((part, index) => (
             <li key={part.label} className="flex items-center gap-2">
-              <span className="size-2.5 shrink-0 rounded-full" style={{ background: DONUT_COLORS[index % DONUT_COLORS.length] }} aria-hidden />
+              <span
+                className="size-2.5 shrink-0 rounded-full"
+                style={{ background: DONUT_COLORS[index % DONUT_COLORS.length] }}
+                aria-hidden
+              />
               <span className="text-muted-foreground min-w-0 flex-1 truncate">{part.label}</span>
               <span className="font-medium tabular-nums">{money(part.value)}</span>
               <span className="text-muted-foreground w-11 text-end text-xs tabular-nums">
@@ -337,13 +446,22 @@ export function PriceHistoryChart({
   }
   const last = points.at(-1);
   if (last && (current.target !== last.target || current.minimum !== last.minimum)) {
-    points.push({ at: last.at, target: current.target ?? last.target, minimum: current.minimum ?? last.minimum });
+    points.push({
+      at: last.at,
+      target: current.target ?? last.target,
+      minimum: current.minimum ?? last.minimum,
+    });
   }
 
   const withTarget = points.filter((point) => point.target != null);
   // Extend the latest price to "now" so the newest change reads as a level, not a cliff at the edge.
   const tail = points.at(-1);
-  if (tail) points.push({ ...tail, at: Math.max(tail.at, Date.parse(history[0]?.changedAt ?? "") || tail.at), anchor: true });
+  if (tail)
+    points.push({
+      ...tail,
+      at: Math.max(tail.at, Date.parse(history[0]?.changedAt ?? "") || tail.at),
+      anchor: true,
+    });
   const header = (
     <CardHeader>
       <ChartTitle icon={LineChartIcon}>{t("pricing.visual.historyTitle")}</ChartTitle>
@@ -368,7 +486,9 @@ export function PriceHistoryChart({
   const W = 600;
   const H = 180;
   const pad = 10;
-  const all = points.flatMap((point) => [point.target, point.minimum]).filter((v): v is number => v != null);
+  const all = points
+    .flatMap((point) => [point.target, point.minimum])
+    .filter((v): v is number => v != null);
   const vMax = Math.max(...all);
   const vMin = Math.min(...all);
   const range = vMax - vMin || vMax * 0.1 || 1;
@@ -404,11 +524,15 @@ export function PriceHistoryChart({
               className={cn(
                 "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums",
                 delta > 0
-                  ? "bg-emerald-600/10 text-emerald-700 dark:text-emerald-300"
-                  : "bg-rose-500/12 text-rose-700 dark:text-rose-300",
+                  ? "bg-success-soft text-success-foreground"
+                  : "bg-danger-soft text-danger-foreground",
               )}
             >
-              {delta > 0 ? <ArrowUpRightIcon className="size-3.5" aria-hidden /> : <ArrowDownRightIcon className="size-3.5" aria-hidden />}
+              {delta > 0 ? (
+                <ArrowUpRightIcon className="size-3.5" aria-hidden />
+              ) : (
+                <ArrowDownRightIcon className="size-3.5" aria-hidden />
+              )}
               {delta > 0 ? "+" : "−"}
               {money(Math.abs(delta))} ({formatPercent(Math.abs(delta) / first, locale)})
             </span>
@@ -433,11 +557,15 @@ export function PriceHistoryChart({
                 <stop offset="100%" stopColor="var(--brand)" stopOpacity="0" />
               </linearGradient>
             </defs>
-            <path d={areaPath} fill="url(#price-history-fill)" className="animate-fade-in [animation-delay:500ms]" />
+            <path
+              d={areaPath}
+              fill="url(#price-history-fill)"
+              className="animate-fade-in [animation-delay:500ms]"
+            />
             <path
               d={step("minimum")}
               fill="none"
-              stroke="#f59e0b"
+              stroke="var(--warning)"
               strokeWidth="2"
               strokeDasharray="6 5"
               vectorEffect="non-scaling-stroke"
@@ -474,7 +602,7 @@ export function PriceHistoryChart({
               {t("pricing.visual.markers.target")}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="h-0 w-4 border-t-2 border-dashed border-amber-500" aria-hidden />
+              <span className="border-warning h-0 w-4 border-t-2 border-dashed" aria-hidden />
               {t("pricing.visual.markers.minimum")}
             </span>
           </span>
@@ -500,9 +628,24 @@ export function PriceChangeTimeline({
 
   const changes = (item: VehiclePricingHistoryItem) =>
     [
-      { key: "target", label: t("pricing.visual.markers.target"), from: item.previousTargetPrice, to: item.newTargetPrice },
-      { key: "minimum", label: t("pricing.visual.markers.minimum"), from: item.previousMinimumPrice, to: item.newMinimumPrice },
-      { key: "advertised", label: t("pricing.visual.markers.advertised"), from: item.previousAdvertisedPrice, to: item.newAdvertisedPrice },
+      {
+        key: "target",
+        label: t("pricing.visual.markers.target"),
+        from: item.previousTargetPrice,
+        to: item.newTargetPrice,
+      },
+      {
+        key: "minimum",
+        label: t("pricing.visual.markers.minimum"),
+        from: item.previousMinimumPrice,
+        to: item.newMinimumPrice,
+      },
+      {
+        key: "advertised",
+        label: t("pricing.visual.markers.advertised"),
+        from: item.previousAdvertisedPrice,
+        to: item.newAdvertisedPrice,
+      },
     ].filter((c) => c.from !== c.to && c.to != null);
 
   return (
@@ -515,20 +658,29 @@ export function PriceChangeTimeline({
           <p className="text-muted-foreground text-sm">{t("pricing.visual.noChanges")}</p>
         ) : (
           <ol className="stagger relative grid gap-4 [--stagger:50ms]">
-            <span className="bg-border absolute inset-y-2 start-[15px] w-0.5 rounded-full" aria-hidden />
+            <span
+              className="bg-border absolute inset-y-2 start-[15px] w-0.5 rounded-full"
+              aria-hidden
+            />
             {history.slice(0, 8).map((item) => {
               const list = changes(item);
               const main = list[0];
               const up = main && main.from != null && main.to! > main.from;
               const down = main && main.from != null && main.to! < main.from;
-              const Icon = up ? ArrowUpRightIcon : down ? ArrowDownRightIcon : main ? CarFrontIcon : MinusIcon;
+              const Icon = up
+                ? ArrowUpRightIcon
+                : down
+                  ? ArrowDownRightIcon
+                  : main
+                    ? CarFrontIcon
+                    : MinusIcon;
               return (
                 <li key={item.id} className="relative flex gap-3">
                   <span
                     className={cn(
                       "ring-card relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full ring-4",
-                      up && "bg-emerald-600/12 text-emerald-700 dark:text-emerald-300",
-                      down && "bg-rose-500/12 text-rose-700 dark:text-rose-300",
+                      up && "bg-success-soft text-success-foreground",
+                      down && "bg-danger-soft text-danger-foreground",
                       !up && !down && "bg-brand-soft text-brand",
                     )}
                   >
@@ -539,16 +691,24 @@ export function PriceChangeTimeline({
                       <span className="text-sm font-semibold">
                         {item.changedByName ?? t("pricing.history.unknownUser")}
                       </span>
-                      <span className="text-muted-foreground text-xs" title={formatDate(item.changedAt, locale, "dateTime")}>
+                      <span
+                        className="text-muted-foreground text-xs"
+                        title={formatDate(item.changedAt, locale, "dateTime")}
+                      >
                         {formatRelativeTime(item.changedAt, locale)}
                       </span>
                     </div>
                     {list.map((change) => (
-                      <p key={change.key} className="flex flex-wrap items-center gap-1.5 text-xs tabular-nums">
+                      <p
+                        key={change.key}
+                        className="flex flex-wrap items-center gap-1.5 text-xs tabular-nums"
+                      >
                         <span className="text-muted-foreground">{change.label}</span>
                         {change.from != null ? (
                           <>
-                            <span className="text-muted-foreground line-through">{money(change.from)}</span>
+                            <span className="text-muted-foreground line-through">
+                              {money(change.from)}
+                            </span>
                             <span aria-hidden>→</span>
                           </>
                         ) : null}
@@ -558,11 +718,13 @@ export function PriceChangeTimeline({
                     {item.reason || item.notes ? (
                       <div className="flex flex-wrap items-center gap-1.5">
                         {item.reason ? (
-                          <span className="bg-muted rounded-full px-2 py-0.5 text-[11px] font-medium">
+                          <span className="bg-muted border-border rounded-full border px-2 py-0.5 text-[11px] font-medium">
                             {t(`pricing.reasons.${item.reason}`)}
                           </span>
                         ) : null}
-                        {item.notes ? <span className="text-muted-foreground text-xs">{item.notes}</span> : null}
+                        {item.notes ? (
+                          <span className="text-muted-foreground text-xs">{item.notes}</span>
+                        ) : null}
                       </div>
                     ) : null}
                   </div>

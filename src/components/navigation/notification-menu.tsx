@@ -39,7 +39,7 @@ export function NotificationMenu() {
       >
         <BellIcon />
         {unreadCount > 0 ? (
-          <span className="bg-brand text-brand-foreground absolute end-1 top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[0.65rem] font-semibold">
+          <span className="bg-destructive ring-background absolute end-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[0.625rem] font-semibold text-white tabular-nums ring-2">
             {unreadCount > 99 ? "99+" : unreadCount}
           </span>
         ) : null}

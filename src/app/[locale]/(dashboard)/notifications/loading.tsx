@@ -1,32 +1,23 @@
-import { PageHeaderSkeleton, PageSkeleton } from "@/components/feedback/skeletons";
+import { FeedSkeleton, PageHeaderSkeleton, PageSkeleton } from "@/components/feedback/skeletons";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/** Header with Mark all read / Clear all, the All / Unread filter, then day groups of rows. */
+/** Header, then the inbox: filter rail on the left, the feed panel on the right. */
 export default function Loading() {
   return (
     <PageSkeleton>
       <PageHeaderSkeleton actions={2} />
-      <Skeleton className="h-9 w-full rounded-lg md:w-48" />
-      {[3, 3].map((rows, group) => (
-        <div key={group} className="grid gap-2">
-          <Skeleton className="h-3.5 w-20" />
-          <div className="bg-card ring-foreground/[0.07] divide-y overflow-hidden rounded-xl shadow-xs ring-1">
-            {Array.from({ length: rows }, (_, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-3 py-3.5 ps-4 pe-14 sm:gap-4 sm:ps-5"
-              >
-                <Skeleton className="size-10 shrink-0 rounded-xl" />
-                <div className="grid flex-1 gap-2">
-                  <Skeleton className="h-4 w-1/3" />
-                  <Skeleton className="h-3.5 w-3/4" />
-                  <Skeleton className="h-3 w-20" />
-                </div>
-              </div>
-            ))}
+      <div className="grid items-start gap-6 lg:grid-cols-[15rem_minmax(0,1fr)]">
+        <div className="bg-card rounded-panel grid gap-3 border p-4 shadow-sm">
+          <Skeleton className="h-2.5 w-16" />
+          <div className="flex gap-1.5">
+            <Skeleton className="h-8 w-16 rounded-full" />
+            <Skeleton className="h-8 w-20 rounded-full" />
           </div>
         </div>
-      ))}
+        <div className="bg-card rounded-panel overflow-hidden border p-4 shadow-sm">
+          <FeedSkeleton rows={6} />
+        </div>
+      </div>
     </PageSkeleton>
   );
 }

@@ -40,7 +40,7 @@ export function TrustVisual({ copy, alt }: { copy: Copy; alt: string }) {
             )}
           >
             <div className="flex items-center gap-2.5">
-              <span className="bg-gold text-brand-foreground font-heading flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold sm:size-9">
+              <span className="bg-gold text-gold-foreground font-heading flex size-8 shrink-0 items-center justify-center rounded-lg text-sm font-bold sm:size-9">
                 {workspace.initial}
               </span>
               <div className="min-w-0">
@@ -88,7 +88,7 @@ export function TrustVisual({ copy, alt }: { copy: Copy; alt: string }) {
         {/* The wall between them. */}
         <div className="relative col-start-2 row-start-1 flex w-8 flex-col items-center justify-center sm:w-10">
           <span className="via-sidebar-primary/60 absolute inset-y-2 start-1/2 w-px -translate-x-1/2 bg-linear-to-b from-transparent to-transparent rtl:translate-x-1/2" />
-          <span className="bg-gold text-brand-foreground ring-sidebar relative flex size-8 items-center justify-center rounded-full shadow-[0_0_24px_color-mix(in_oklch,var(--sidebar-primary)_55%,transparent)] ring-4 sm:size-10">
+          <span className="bg-gold text-gold-foreground ring-sidebar relative flex size-8 items-center justify-center rounded-full shadow-[0_0_24px_color-mix(in_oklch,var(--sidebar-primary)_55%,transparent)] ring-4 sm:size-10">
             <LockIcon className="size-4 sm:size-5" />
           </span>
         </div>

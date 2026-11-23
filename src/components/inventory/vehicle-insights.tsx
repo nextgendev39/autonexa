@@ -33,6 +33,8 @@ import {
 import { NewCarBadge, UsedCarBadge } from "@/components/inventory/market-type-badge";
 import { ReadyForSaleTag, SoldRibbon } from "@/components/inventory/vehicle-sold-tag";
 import { isSoldStatus } from "@/lib/vehicles/status-transitions";
+import { usePermission } from "@/hooks/use-permission";
+import { useVehiclePhotos } from "@/hooks/use-vehicle-photos";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatNumber, formatPercent } from "@/lib/utils/currency";
@@ -114,70 +116,117 @@ export function VehicleHero({ vehicle }: { vehicle: VehicleDetail }) {
     },
   ];
   const place = [vehicle.branchName, vehicle.locationName].filter(Boolean).join(" · ");
+  const photos = useVehiclePhotos(vehicle.id);
+  const gallery = (photos.data ?? [])
+    .filter((photo) => photo.url)
+    .sort((a, b) => Number(b.isPrimary) - Number(a.isPrimary) || a.sortOrder - b.sortOrder);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const active = gallery.find((photo) => photo.id === activeId) ?? gallery[0];
+  const mainUrl = active?.url ?? vehicle.primaryPhotoUrl ?? null;
+  // Same rule as the list cards: the price shows only to people who may see prices.
+  const { can } = usePermission();
+  const askingPrice = can("vehicle.price.view") ? vehicle.currentSellingPrice : null;
 
   return (
     <Card className="animate-rise overflow-hidden p-0">
-      <div className="grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <div className="bg-muted relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-full">
-          {vehicle.primaryPhotoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- signed storage URL
-            <img
-              src={vehicle.primaryPhotoUrl}
-              alt={vehicleTitle(vehicle)}
-              className="absolute inset-0 size-full object-cover"
-            />
-          ) : (
-            <VehiclePhotoPlaceholder
-              size="lg"
-              label={t("inventory.insights.noPhoto")}
-              className="absolute inset-0"
-            />
-          )}
-          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/60 via-black/0 to-transparent" />
-          {isSoldStatus(vehicle.status) ? <SoldRibbon /> : null}
-          {vehicle.marketType === "new" ? (
-            <NewCarBadge className="absolute start-3 top-3" />
-          ) : vehicle.marketType === "used" ? (
-            <UsedCarBadge className="absolute start-3 top-3" />
-          ) : null}
-          {/* Ready for sale uses the corner the Sold ribbon takes on sold cars. */}
-          {vehicle.status === "ready_for_sale" ? (
-            <ReadyForSaleTag className="absolute end-3 top-3" />
-          ) : null}
-          {place ? (
-            <p className="absolute start-4 bottom-4 flex items-center gap-1.5 text-sm font-medium text-white drop-shadow">
-              <MapPinIcon className="size-4" aria-hidden />
-              {place}
-            </p>
+      <div className="grid xl:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+        {/* Gallery: the main image, then a strip of thumbnails to switch it. */}
+        <div className="grid content-start gap-2.5 p-3 sm:p-4">
+          <div className="bg-muted rounded-image relative aspect-[16/10] overflow-hidden">
+            {mainUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- signed storage URL
+              <img
+                src={mainUrl}
+                alt={vehicleTitle(vehicle)}
+                className="absolute inset-0 size-full object-cover"
+              />
+            ) : (
+              <VehiclePhotoPlaceholder
+                size="lg"
+                label={t("inventory.insights.noPhoto")}
+                className="absolute inset-0"
+              />
+            )}
+            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_top,rgb(8_10_15/0.6),transparent_45%)]" />
+            {isSoldStatus(vehicle.status) ? <SoldRibbon /> : null}
+            {vehicle.marketType === "new" ? (
+              <NewCarBadge className="absolute start-3 top-3" />
+            ) : vehicle.marketType === "used" ? (
+              <UsedCarBadge className="absolute start-3 top-3" />
+            ) : null}
+            {vehicle.status === "ready_for_sale" ? (
+              <ReadyForSaleTag className="absolute end-3 top-3" />
+            ) : null}
+            {place ? (
+              <p className="absolute start-4 bottom-4 flex items-center gap-1.5 text-sm font-medium text-white drop-shadow">
+                <MapPinIcon className="size-4" aria-hidden />
+                {place}
+              </p>
+            ) : null}
+            {gallery.length > 1 ? (
+              <span className="absolute end-4 bottom-4 rounded-full bg-[#111318]/70 px-2.5 py-1 text-xs font-medium text-white tabular-nums backdrop-blur-md">
+                {gallery.indexOf(active!) + 1} / {gallery.length}
+              </span>
+            ) : null}
+          </div>
+          {gallery.length > 1 ? (
+            <ul
+              className="flex [scrollbar-width:none] gap-2 overflow-x-auto pb-0.5"
+              aria-label={t("inventory.tabs.photos")}
+            >
+              {gallery.slice(0, 8).map((photo) => (
+                <li key={photo.id} className="shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setActiveId(photo.id)}
+                    aria-pressed={photo.id === active?.id}
+                    aria-label={photo.fileName}
+                    className={cn(
+                      "bg-muted focus-visible:ring-ring block h-14 w-20 overflow-hidden rounded-lg ring-2 ring-offset-2 ring-offset-[var(--card)] transition-shadow outline-none sm:h-16 sm:w-24",
+                      photo.id === active?.id ? "ring-brand" : "hover:ring-border ring-transparent",
+                    )}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element -- signed storage URL */}
+                    <img
+                      src={photo.url!}
+                      alt=""
+                      className="size-full object-cover"
+                      loading="lazy"
+                    />
+                  </button>
+                </li>
+              ))}
+            </ul>
           ) : null}
         </div>
 
-        <div className="grid content-start gap-5 p-5">
+        {/* Spec sheet: price, the car's journey, then label/value rows. */}
+        <div className="border-divider grid content-start gap-5 border-t p-5 xl:border-s xl:border-t-0">
+          {askingPrice != null ? (
+            <div className="gradient-card rounded-xl border p-4">
+              <p className="eyebrow">{t("inventory.fields.sellingPrice")}</p>
+              <p className="figure mt-1.5 text-[1.75rem]">{formatCurrency(askingPrice, locale)}</p>
+            </div>
+          ) : null}
           <LifecycleStepper status={vehicle.status} />
-          <ul className="stagger grid grid-cols-2 gap-2.5 [--stagger:45ms] sm:grid-cols-4">
+          <dl className="divide-divider grid divide-y">
             {specs.map((spec) => (
-              <li
-                key={spec.label}
-                className="group/spec bg-muted/40 hover:border-brand/40 hover:bg-brand-soft/40 grid gap-1.5 rounded-xl border border-transparent p-3 transition-colors"
-              >
-                <spec.icon
-                  className="text-brand size-4 transition-transform duration-300 group-hover/spec:scale-110"
-                  aria-hidden
-                />
-                <span className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
-                  {spec.label}
-                </span>
-                <span
+              <div key={spec.label} className="flex items-center gap-3 py-2.5 text-sm">
+                <dt className="text-muted-foreground flex min-w-0 flex-1 items-center gap-2">
+                  <spec.icon className="text-brand size-4 shrink-0" aria-hidden />
+                  <span className="truncate">{spec.label}</span>
+                </dt>
+                <dd
                   className={cn(
-                    "text-sm leading-tight font-semibold",
-                    !spec.value && "text-muted-foreground font-normal",
+                    "text-end font-medium",
+                    !spec.value && "text-subtle-foreground font-normal",
                   )}
                 >
                   {spec.value ?? "—"}
-                </span>
-              </li>
+                </dd>
+              </div>
             ))}
-          </ul>
+          </dl>
         </div>
       </div>
     </Card>
@@ -223,7 +272,7 @@ export function LifecycleStepper({ status }: { status: VehicleStatus }) {
           {t("inventory.insights.journey")}
         </p>
         {detour || offPath ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/12 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+          <span className="bg-warning-soft text-warning-foreground border-warning/25 inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium">
             <WrenchIcon className="size-3" aria-hidden />
             {t(`inventory.status.${status}`)}
           </span>
@@ -240,7 +289,7 @@ export function LifecycleStepper({ status }: { status: VehicleStatus }) {
           aria-hidden
         />
         <span
-          className="bg-gold animate-grow-x absolute top-4 h-0.5 rounded-full ltr:origin-left rtl:origin-right"
+          className="bg-primary animate-grow-x absolute top-4 h-0.5 rounded-full ltr:origin-left rtl:origin-right"
           style={{
             insetInlineStart: `${edge}%`,
             width: `${(progress / 100) * span}%`,
@@ -260,7 +309,7 @@ export function LifecycleStepper({ status }: { status: VehicleStatus }) {
               <span
                 className={cn(
                   "flex size-8 items-center justify-center rounded-full border-2 transition-colors",
-                  done && "bg-gold text-brand-foreground border-transparent",
+                  done && "bg-primary text-primary-foreground border-transparent",
                   active && "border-brand bg-card text-brand shadow-[0_0_0_4px_var(--brand-soft)]",
                   !done && !active && "bg-card text-muted-foreground border-border",
                 )}
@@ -435,7 +484,7 @@ function MarginGauge({
           className={cn(
             "mt-1 inline-flex items-center justify-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums",
             positive
-              ? "bg-emerald-600/10 text-emerald-700 dark:bg-emerald-400/12 dark:text-emerald-300"
+              ? "bg-success-soft text-success-foreground"
               : "bg-destructive/10 text-destructive",
           )}
         >
@@ -453,21 +502,21 @@ const AGE_BANDS = [
   {
     max: 30,
     key: "fresh",
-    ring: "stroke-emerald-500",
-    chip: "bg-emerald-600/10 text-emerald-700 dark:text-emerald-300",
+    ring: "stroke-success",
+    chip: "bg-success-soft text-success-foreground",
   },
   { max: 60, key: "mid", ring: "stroke-[var(--brand)]", chip: "bg-brand-soft text-brand" },
   {
     max: 90,
     key: "aging",
-    ring: "stroke-orange-500",
-    chip: "bg-orange-500/12 text-orange-700 dark:text-orange-300",
+    ring: "stroke-warning",
+    chip: "bg-warning-soft text-warning-foreground",
   },
   {
     max: Infinity,
     key: "old",
-    ring: "stroke-rose-500",
-    chip: "bg-rose-500/12 text-rose-700 dark:text-rose-300",
+    ring: "stroke-destructive",
+    chip: "bg-danger-soft text-danger-foreground",
   },
 ] as const;
 
@@ -553,7 +602,7 @@ export function BookingProgressCard({ vehicle }: { vehicle: VehicleDetail }) {
             key: "balance",
             label: t("bookings.payment.balanceReceived"),
             value: received,
-            color: "bg-emerald-500",
+            color: "bg-success",
           },
         ]
       : []),
@@ -660,7 +709,7 @@ function Person({ label, name, sub }: { label: string; name: string | null; sub?
     .join("");
   return (
     <div className="flex min-w-0 items-center gap-3 rounded-xl border p-3">
-      <span className="bg-gold text-brand-foreground flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
+      <span className="bg-gold text-gold-foreground flex size-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold">
         {initials}
       </span>
       <div className="min-w-0">
@@ -707,10 +756,10 @@ export function KeyDatesCard({ vehicle }: { vehicle: VehicleDetail }) {
     daysLeft == null
       ? ""
       : daysLeft < 0
-        ? "bg-rose-500/12 text-rose-700 dark:text-rose-300"
+        ? "bg-danger-soft text-danger-foreground"
         : daysLeft <= 30
-          ? "bg-amber-500/12 text-amber-700 dark:text-amber-300"
-          : "bg-emerald-600/10 text-emerald-700 dark:text-emerald-300";
+          ? "bg-warning-soft text-warning-foreground"
+          : "bg-success-soft text-success-foreground";
 
   return (
     <Card className="animate-rise h-full [animation-delay:200ms]">

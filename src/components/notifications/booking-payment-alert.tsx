@@ -35,7 +35,9 @@ export function BookingPaymentAlerts() {
   return (
     <div className="mb-5 grid gap-3">
       {cancelled.length > 0 ? <AlertGroup kind="cancelled" items={cancelled} showPush /> : null}
-      {overdue.length > 0 ? <AlertGroup kind="overdue" items={overdue} showPush={cancelled.length === 0} /> : null}
+      {overdue.length > 0 ? (
+        <AlertGroup kind="overdue" items={overdue} showPush={cancelled.length === 0} />
+      ) : null}
     </div>
   );
 }
@@ -49,7 +51,9 @@ function AlertGroup({
   items: AppNotification[];
   showPush: boolean;
 }) {
-  const t = useTranslations(kind === "cancelled" ? "notifications.alert" : "notifications.balanceAlert");
+  const t = useTranslations(
+    kind === "cancelled" ? "notifications.alert" : "notifications.balanceAlert",
+  );
   const tPeople = useTranslations("notifications.alert");
   const locale = useLocale() as AppLocale;
   const { markManyRead } = useNotifications();
@@ -67,7 +71,7 @@ function AlertGroup({
         "text-foreground grid gap-3 rounded-xl border p-4 shadow-xs",
         kind === "cancelled"
           ? "border-destructive/30 bg-destructive/8"
-          : "border-amber-500/35 bg-amber-500/10",
+          : "border-warning/35 bg-warning-soft",
       )}
     >
       <div className="flex items-start gap-3">
@@ -76,7 +80,7 @@ function AlertGroup({
             "flex size-9 shrink-0 items-center justify-center rounded-full",
             kind === "cancelled"
               ? "bg-destructive/15 text-destructive"
-              : "bg-amber-500/20 text-amber-700 dark:text-amber-400",
+              : "bg-warning-soft text-warning-foreground",
           )}
         >
           <Icon className="size-4.5" />
@@ -100,7 +104,9 @@ function AlertGroup({
                 onClick={() => markManyRead([item.id])}
                 className="group/row bg-background/70 hover:border-foreground/20 flex flex-wrap items-center gap-x-2 gap-y-0.5 rounded-lg border px-3 py-2 transition-colors"
               >
-                <span className="font-mono text-xs leading-5 font-medium">{data.bookingNumber}</span>
+                <span className="font-mono text-xs leading-5 font-medium">
+                  {data.bookingNumber}
+                </span>
                 <span className="font-medium">{bookingVehicleLabel(data)}</span>
                 <span className="text-muted-foreground">
                   {tPeople("people", {
@@ -109,7 +115,7 @@ function AlertGroup({
                   })}
                 </span>
                 {kind === "overdue" && data.outstanding != null ? (
-                  <span className="font-medium text-amber-700 dark:text-amber-400">
+                  <span className="text-warning-foreground font-medium">
                     {t("outstanding", {
                       amount: formatCurrency(data.outstanding, locale, data.currency ?? "AED"),
                     })}
@@ -124,7 +130,9 @@ function AlertGroup({
           );
         })}
         {items.length > VISIBLE ? (
-          <li className="text-muted-foreground text-xs">{tPeople("more", { count: items.length - VISIBLE })}</li>
+          <li className="text-muted-foreground text-xs">
+            {tPeople("more", { count: items.length - VISIBLE })}
+          </li>
         ) : null}
       </ul>
 

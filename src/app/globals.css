@@ -44,6 +44,27 @@
   --color-brand-soft: var(--brand-soft);
   --color-brand-strong: var(--brand-strong);
   --color-chrome: var(--chrome);
+  --color-gold: var(--gold);
+  --color-gold-foreground: var(--gold-foreground);
+  --color-gold-soft: var(--gold-soft);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-shell: var(--shell);
+  --color-divider: var(--divider);
+  --color-subtle-foreground: var(--subtle-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--destructive);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-info-soft: var(--info-soft);
+  --color-premium-foreground: var(--premium-foreground);
 
   /* Motion system — every entrance uses fill-mode "backwards" so no transform
      lingers after the animation (a lingering transform would trap position:fixed). */
@@ -149,85 +170,150 @@
       transform: translateX(400%);
     }
   }
-  --shadow-xs: 0 1px 2px hsl(var(--shadow-color) / 0.05);
-  --shadow-sm:
-    0 1px 2px hsl(var(--shadow-color) / 0.04), 0 2px 6px -1px hsl(var(--shadow-color) / 0.06);
-  --shadow-md:
-    0 2px 4px hsl(var(--shadow-color) / 0.04), 0 8px 20px -4px hsl(var(--shadow-color) / 0.1);
-  --shadow-lg:
-    0 4px 8px hsl(var(--shadow-color) / 0.05), 0 18px 40px -8px hsl(var(--shadow-color) / 0.16);
-  /* One corner radius across the app: every rounded-* size resolves to --radius (4px).
-     rounded-full stays round for avatars, dots, pills and switches. */
-  --radius-xs: var(--radius);
-  --radius-sm: var(--radius);
-  --radius-md: var(--radius);
-  --radius-lg: var(--radius);
-  --radius-xl: var(--radius);
-  --radius-2xl: var(--radius);
-  --radius-3xl: var(--radius);
-  --radius-4xl: var(--radius);
+  /* Elevation tokens (values per theme live in :root / .dark as --elev-*).
+     sm: cards and chips at rest · md: hover, dropdowns, floating panels · lg: modals, sheets. */
+  --shadow-xs: var(--elev-xs);
+  --shadow-sm: var(--elev-sm);
+  --shadow-md: var(--elev-md);
+  --shadow-lg: var(--elev-lg);
+  --shadow-xl: var(--elev-lg);
+  --shadow-gold: var(--elev-gold);
+  /* Radius scale. Tailwind sizes map onto the AutoNexa roles:
+     sm/md 6px small controls · lg 9px inputs & buttons · xl 14px cards · 2xl 16px large panels
+     · 3xl 18px modals; named roles below for dropdowns and image containers (12px).
+     rounded-full (999px) stays for pills, chips, avatars, dots and switches. */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 6px;
+  --radius-lg: 9px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
+  --radius-3xl: 18px;
+  --radius-4xl: 999px;
+  --radius-control: 9px;
+  --radius-card: 14px;
+  --radius-panel: 16px;
+  --radius-modal: 18px;
+  --radius-dropdown: 12px;
+  --radius-image: 12px;
+  --radius-pill: 999px;
+  /* Component heights. */
+  --spacing-control-sm: 2rem;
+  --spacing-control: 2.25rem;
+  --spacing-control-lg: 2.75rem;
+  /* Motion: most interactions sit between fast and base. */
+  --default-transition-duration: 180ms;
+  --default-transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
 }
 
 :root {
-  /* AutoNexa — "Carbon & Gold": the showroom palette lifted from the
-     shield logo (carbon black, chrome silver, metallic gold rim). */
+  /* AutoNexa — "Obsidian Black & Champagne Gold".
+     Brand scale (reference only; components use the semantic tokens below). */
+  --obsidian-950: #080a0f;
+  --obsidian-900: #111318;
+  --obsidian-800: #171a20;
+  --obsidian-700: #292d35;
+  --graphite-600: #3a3e46;
+  --champagne-700: #80683b;
+  --champagne-600: #a88952;
+  --champagne-500: #c5a96b;
+  --champagne-300: #e8d5a9;
+  --champagne-100: #f3ebdd;
+
+  /* Approved gradients — used sparingly (brand panels, highlighted KPIs, key actions). */
+  --gradient-brand: linear-gradient(135deg, #080a0f 0%, #292d35 100%);
+  --gradient-champagne: linear-gradient(135deg, #a88952 0%, #c5a96b 55%, #e8d5a9 100%);
+  --gradient-dark-surface: linear-gradient(135deg, #111318 0%, #1d2027 100%);
+  --gradient-surface: linear-gradient(135deg, #ffffff 0%, #f3f1eb 100%);
+  --gradient-gold-highlight: linear-gradient(135deg, #80683b 0%, #a88952 100%);
+  --gradient-premium: var(--gradient-champagne);
+  --gold-gradient: var(--gradient-champagne);
+  /* Polished silver for the "Used" badge — the quiet twin of the gold "New" badge. */
+  --chrome-gradient: linear-gradient(180deg, #fbfbfa 0%, #e6e6e2 55%, #d2d2cd 100%);
+
   --font-app: var(--font-latin), var(--font-arabic);
   --font-display: var(--font-heading-latin), var(--font-latin), var(--font-arabic);
-  --background: oklch(0.972 0.003 255);
-  --foreground: oklch(0.2 0.008 265);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.008 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.008 265);
-  --primary: oklch(0.21 0.009 265);
-  --primary-foreground: oklch(0.985 0.002 90);
-  --secondary: oklch(0.945 0.004 255);
-  --secondary-foreground: oklch(0.24 0.01 265);
-  --muted: oklch(0.952 0.004 255);
-  --muted-foreground: oklch(0.5 0.012 260);
-  --accent: oklch(0.95 0.02 85);
-  --accent-foreground: oklch(0.24 0.01 265);
-  --destructive: oklch(0.57 0.21 25);
-  --border: oklch(0.9 0.006 255);
-  --input: oklch(0.85 0.008 255);
-  --ring: oklch(0.72 0.13 80);
-  --brand: oklch(0.72 0.135 78);
-  --brand-strong: oklch(0.62 0.13 70);
-  --brand-foreground: oklch(0.18 0.01 265);
-  --brand-soft: oklch(0.72 0.135 78 / 13%);
-  --chrome: oklch(0.82 0.008 255);
-  --chart-1: oklch(0.72 0.135 78);
-  --chart-2: oklch(0.42 0.02 265);
-  --chart-3: oklch(0.62 0.13 160);
-  --chart-4: oklch(0.66 0.15 45);
-  --chart-5: oklch(0.6 0.04 250);
-  --radius: 4px;
-  --shadow-color: 260 15% 12%;
-  --sidebar: oklch(0.165 0.006 265);
-  --sidebar-foreground: oklch(0.93 0.004 255);
-  --sidebar-primary: oklch(0.8 0.13 82);
-  --sidebar-primary-foreground: oklch(0.18 0.01 265);
-  --sidebar-accent: oklch(0.235 0.008 265);
-  --sidebar-accent-foreground: oklch(0.985 0.002 90);
-  --sidebar-border: oklch(0.28 0.008 265);
-  --sidebar-ring: oklch(0.8 0.13 82);
-  /* Metallic finishes used by the brand surfaces. */
-  --gold-gradient: linear-gradient(
-    135deg,
-    oklch(0.86 0.11 88) 0%,
-    oklch(0.74 0.14 78) 38%,
-    oklch(0.6 0.12 65) 70%,
-    oklch(0.8 0.12 85) 100%
-  );
-  --chrome-gradient: linear-gradient(
-    180deg,
-    oklch(0.98 0.002 255) 0%,
-    oklch(0.8 0.008 255) 48%,
-    oklch(0.62 0.01 255) 52%,
-    oklch(0.9 0.004 255) 100%
-  );
+
+  /* The frame around the inset canvas (sidebar sits on it), then the canvas itself. */
+  --shell: #e9e8e3;
+  --background: #f5f5f3;
+  --foreground: #191b20;
+  --card: #ffffff;
+  --card-foreground: #191b20;
+  --popover: #ffffff;
+  --popover-foreground: #191b20;
+  --surface-elevated: #ffffff;
+  /* Primary actions: obsidian in light mode. */
+  --primary: #171a20;
+  --primary-hover: #292d35;
+  --primary-foreground: #f3f3f0;
+  --secondary: #f0f0ed;
+  --secondary-foreground: #191b20;
+  --muted: #f0f0ed;
+  --muted-foreground: #686b72;
+  --subtle-foreground: #92959b;
+  --accent: #f3ebdd;
+  --accent-foreground: #191b20;
+  --border: #e4e4e0;
+  --divider: #ecece8;
+  --input: #d9d9d4;
+  --ring: #a88952;
+
+  /* Brand accent: deep champagne for text/icons on light surfaces (5.3:1 on white). */
+  --brand: #80683b;
+  --brand-strong: #5f4d2b;
+  --brand-foreground: #ffffff;
+  --brand-soft: rgb(168 137 82 / 0.12);
+  --gold: #a88952;
+  --gold-foreground: #191b20;
+  --gold-soft: rgb(197 169 107 / 0.18);
+  --premium-foreground: #6e5932;
+  --chrome: #cfcfca;
+
+  --success: #23845b;
+  --success-foreground: #186647;
+  --success-soft: rgb(35 132 91 / 0.1);
+  --warning: #c18a36;
+  --warning-foreground: #835a1b;
+  --warning-soft: rgb(193 138 54 / 0.14);
+  --destructive: #c34d4d;
+  --danger-foreground: #a03a3a;
+  --danger-soft: rgb(195 77 77 / 0.1);
+  --info: #4c7fa5;
+  --info-foreground: #36617f;
+  --info-soft: rgb(76 127 165 / 0.12);
+
+  /* Charts: champagne highlight series, obsidian/graphite supporting series, then neutrals. */
+  --chart-1: #a88952;
+  --chart-2: #292d35;
+  --chart-3: #e8d5a9;
+  --chart-4: #4c7fa5;
+  --chart-5: #92959b;
+  --chart-grid: #ecece8;
+
+  --radius: 9px;
+  --shadow-color: 220 15% 10%;
+  --elev-xs: 0 1px 2px rgba(20, 20, 20, 0.04);
+  --elev-sm: 0 2px 8px rgba(20, 20, 20, 0.05);
+  --elev-md: 0 6px 18px rgba(20, 20, 20, 0.07);
+  --elev-lg: 0 12px 32px rgba(20, 20, 20, 0.1);
+  --elev-gold: 0 8px 24px -8px rgba(168, 137, 82, 0.4);
+  --gradient-card: linear-gradient(135deg, #ffffff 0%, #f6f3eb 100%);
+  /* Focus ring: champagne halo around the focused control. */
+  --focus-ring: 0 0 0 3px rgba(168, 137, 82, 0.25);
+
+  --sidebar: #e9e8e3;
+  --sidebar-foreground: #191b20;
+  --sidebar-primary: #80683b;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: #191b20;
+  --sidebar-border: #d9d8d2;
+  --sidebar-ring: #a88952;
+
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
   color-scheme: light;
 }
 
@@ -237,43 +323,80 @@ html[lang="ar"] {
 }
 
 .dark {
-  --background: oklch(0.14 0.004 265);
-  --foreground: oklch(0.95 0.004 90);
-  --card: oklch(0.18 0.005 265);
-  --card-foreground: oklch(0.95 0.004 90);
-  --popover: oklch(0.21 0.006 265);
-  --popover-foreground: oklch(0.95 0.004 90);
-  --primary: oklch(0.8 0.13 82);
-  --primary-foreground: oklch(0.17 0.008 265);
-  --secondary: oklch(0.25 0.006 265);
-  --secondary-foreground: oklch(0.95 0.004 90);
-  --muted: oklch(0.24 0.006 265);
-  --muted-foreground: oklch(0.72 0.01 255);
-  --accent: oklch(0.27 0.012 80);
-  --accent-foreground: oklch(0.95 0.004 90);
-  --destructive: oklch(0.7 0.17 25);
-  --border: oklch(0.95 0.004 255 / 10%);
-  --input: oklch(0.95 0.004 255 / 15%);
-  --ring: oklch(0.8 0.13 82);
-  --brand: oklch(0.8 0.13 82);
-  --brand-strong: oklch(0.86 0.11 88);
-  --brand-foreground: oklch(0.17 0.008 265);
-  --brand-soft: oklch(0.8 0.13 82 / 13%);
-  --chrome: oklch(0.7 0.008 255);
-  --shadow-color: 265 30% 2%;
-  --chart-1: oklch(0.8 0.13 82);
-  --chart-2: oklch(0.72 0.012 255);
-  --chart-3: oklch(0.72 0.12 160);
-  --chart-4: oklch(0.74 0.13 50);
-  --chart-5: oklch(0.6 0.03 250);
-  --sidebar: oklch(0.115 0.004 265);
-  --sidebar-foreground: oklch(0.93 0.004 255);
-  --sidebar-primary: oklch(0.8 0.13 82);
-  --sidebar-primary-foreground: oklch(0.17 0.008 265);
-  --sidebar-accent: oklch(0.2 0.006 265);
-  --sidebar-accent-foreground: oklch(0.97 0.004 90);
-  --sidebar-border: oklch(0.95 0.004 255 / 8%);
-  --sidebar-ring: oklch(0.8 0.13 82);
+  --gradient-surface: var(--gradient-dark-surface);
+
+  --shell: #111318;
+  --background: #080a0f;
+  --foreground: #f3f3f0;
+  --card: #171a20;
+  --card-foreground: #f3f3f0;
+  --popover: #22262d;
+  --popover-foreground: #f3f3f0;
+  --surface-elevated: #22262d;
+  /* Primary actions: champagne gold with obsidian text in dark mode (8.9:1). */
+  --primary: #c5a96b;
+  --primary-hover: #d1b87f;
+  --primary-foreground: #111318;
+  --secondary: #1d2027;
+  --secondary-foreground: #f3f3f0;
+  --muted: #1d2027;
+  --muted-foreground: #b0b2b8;
+  --subtle-foreground: #858991;
+  --accent: #22262d;
+  --accent-foreground: #f3f3f0;
+  --border: #30343c;
+  --divider: #282c33;
+  --input: #3a3e46;
+  --ring: #c5a96b;
+
+  --brand: #c5a96b;
+  --brand-strong: #e8d5a9;
+  --brand-foreground: #111318;
+  --brand-soft: rgb(197 169 107 / 0.13);
+  --gold: #c5a96b;
+  --gold-foreground: #111318;
+  --gold-soft: rgb(197 169 107 / 0.15);
+  --premium-foreground: #e8d5a9;
+  --chrome: #3a3e46;
+
+  --success: #3fa877;
+  --success-foreground: #86cfa9;
+  --success-soft: rgb(63 168 119 / 0.15);
+  --warning: #d9a458;
+  --warning-foreground: #e8c486;
+  --warning-soft: rgb(217 164 88 / 0.15);
+  --destructive: #dc6a6a;
+  --danger-foreground: #eea0a0;
+  --danger-soft: rgb(220 106 106 / 0.15);
+  --info: #77a5c9;
+  --info-foreground: #a9c8e1;
+  --info-soft: rgb(119 165 201 / 0.15);
+
+  --chart-1: #c5a96b;
+  --chart-2: #b0b2b8;
+  --chart-3: #80683b;
+  --chart-4: #77a5c9;
+  --chart-5: #585c64;
+  --chart-grid: #282c33;
+
+  --shadow-color: 220 40% 2%;
+  /* Dark elevation: a hairline highlight and a soft lift rather than heavy black shadows. */
+  --elev-xs: 0 0 0 1px rgba(255, 255, 255, 0.02);
+  --elev-sm: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 2px 8px rgba(0, 0, 0, 0.25);
+  --elev-md: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 8px 22px rgba(0, 0, 0, 0.35);
+  --elev-lg: 0 1px 0 rgba(255, 255, 255, 0.06) inset, 0 18px 40px rgba(0, 0, 0, 0.45);
+  --elev-gold: 0 8px 26px -10px rgba(197, 169, 107, 0.35);
+  --gradient-card: linear-gradient(135deg, #171a20 0%, #22262d 100%);
+  --focus-ring: 0 0 0 3px rgba(197, 169, 107, 0.28);
+
+  --sidebar: #111318;
+  --sidebar-foreground: #e6e6e2;
+  --sidebar-primary: #c5a96b;
+  --sidebar-primary-foreground: #111318;
+  --sidebar-accent: #22262d;
+  --sidebar-accent-foreground: #f3f3f0;
+  --sidebar-border: #282c33;
+  --sidebar-ring: #c5a96b;
   color-scheme: dark;
 }
 
@@ -286,7 +409,8 @@ html[lang="ar"] {
   }
   body {
     @apply bg-background text-foreground h-full overflow-hidden;
-    font-feature-settings: "cv11", "ss01";
+    background-color: var(--background);
+    font-feature-settings: "cv11", "ss01", "ss03";
     text-rendering: optimizeLegibility;
   }
   ::selection {
@@ -320,21 +444,30 @@ html[lang="ar"] {
     cursor: pointer;
   }
   :is(button, input, select, [role="button"], [role="option"], [role="menuitem"], [role="tab"]):is(
-      :disabled,
-      [aria-disabled="true"],
-      [data-disabled]
-    ) {
+    :disabled,
+    [aria-disabled="true"],
+    [data-disabled]
+  ) {
     cursor: not-allowed;
   }
   /* Slim, theme-aware scrollbars for the scrolling panes. */
   * {
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in oklch, var(--foreground) 18%, transparent) transparent;
+    scrollbar-color: color-mix(in srgb, var(--foreground) 16%, transparent) transparent;
+  }
+  /* Arabic letters join, so added tracking (eyebrows, table headers, labels) breaks the
+     script; it also has no capitals. Keep Arabic text at natural spacing. */
+  html[lang="ar"] :is(.eyebrow, [class*="tracking-"]) {
+    letter-spacing: 0 !important;
   }
   h1,
   h2,
   h3 {
     font-family: var(--font-heading);
+    letter-spacing: -0.022em;
+  }
+  :focus-visible {
+    outline-color: var(--ring);
   }
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -354,30 +487,82 @@ html[lang="ar"] {
     animation: var(--animate-rise);
     animation-delay: calc(var(--stagger, 70ms) * var(--i, 0));
   }
-  & > :nth-child(2) { --i: 1; }
-  & > :nth-child(3) { --i: 2; }
-  & > :nth-child(4) { --i: 3; }
-  & > :nth-child(5) { --i: 4; }
-  & > :nth-child(6) { --i: 5; }
-  & > :nth-child(7) { --i: 6; }
-  & > :nth-child(8) { --i: 7; }
-  & > :nth-child(9) { --i: 8; }
-  & > :nth-child(n + 10) { --i: 9; }
+  & > :nth-child(2) {
+    --i: 1;
+  }
+  & > :nth-child(3) {
+    --i: 2;
+  }
+  & > :nth-child(4) {
+    --i: 3;
+  }
+  & > :nth-child(5) {
+    --i: 4;
+  }
+  & > :nth-child(6) {
+    --i: 5;
+  }
+  & > :nth-child(7) {
+    --i: 6;
+  }
+  & > :nth-child(8) {
+    --i: 7;
+  }
+  & > :nth-child(9) {
+    --i: 8;
+  }
+  & > :nth-child(n + 10) {
+    --i: 9;
+  }
 }
 
-/* Metallic gold text, e.g. hero headlines and KPI highlights. */
+/* AutoNexa eyebrow: the small champagne caps that label sections, groups and figures. */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  line-height: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+/* Display figures (KPIs, prices): Manrope, tight, tabular. */
+@utility figure {
+  font-family: var(--font-heading);
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.05;
+}
+
+/* Champagne text for headlines on obsidian brand panels. Use sparingly. */
 @utility text-gold {
-  background-image: var(--gold-gradient);
+  background-image: linear-gradient(135deg, #c5a96b 0%, #e8d5a9 55%, #c5a96b 100%);
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
 }
 
+/* Champagne accent fill (thin indicators, badges, avatars). Pair text with text-gold-foreground. */
 @utility bg-gold {
-  background-image: var(--gold-gradient);
+  background-image: var(--gradient-champagne);
 }
 
-/* A light glint that sweeps across a surface (needs relative + overflow-hidden). */
+/* Champagne fill for key CTAs (sign in, primary create actions). */
+@utility gradient-champagne {
+  background-image: var(--gradient-champagne);
+}
+
+/* Highlighted cards and selected states: white→warm (light), obsidian→graphite (dark). */
+@utility gradient-card {
+  background-image: var(--gradient-card);
+}
+
+@utility gradient-surface {
+  background-image: var(--gradient-surface);
+}
+
+/* A soft glint that crosses a surface once on hover (needs relative + overflow-hidden). */
 @utility sheen {
   &::after {
     content: "";
@@ -386,18 +571,44 @@ html[lang="ar"] {
     inset-inline-start: 0;
     width: 40%;
     pointer-events: none;
-    background: linear-gradient(90deg, transparent, oklch(1 0 0 / 0.35), transparent);
-    animation: var(--animate-sheen);
+    background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.18), transparent);
+    transform: translateX(-120%) skewX(-18deg);
+    transition: transform 0.7s var(--ease-standard);
+  }
+  &:hover::after {
+    transform: translateX(260%) skewX(-18deg);
   }
 }
 
-/* Woven carbon-fibre texture for dark brand panels. */
-@utility bg-carbon {
-  background-color: var(--sidebar);
+/* Re-scopes the sidebar tokens to their obsidian values for a subtree, so any
+   text-sidebar-* / bg-sidebar-* child reads as "on a dark brand surface" in both themes.
+   Used by bg-brand-panel and by the marketing landing page, whose dark sections rely on it. */
+@utility brand-dark-scope {
+  --sidebar: #111318;
+  --sidebar-foreground: #f3f3f0;
+  --sidebar-primary: #e8d5a9;
+  --sidebar-primary-foreground: #111318;
+  --sidebar-accent: rgb(255 255 255 / 0.07);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.09);
+  --sidebar-ring: #c5a96b;
+}
+
+/* Obsidian brand panel (sign-in hero, profile header, branch cards). It stays dark in both
+   themes and re-scopes the sidebar tokens, so text-sidebar-* children read correctly on it. */
+@utility bg-brand-panel {
+  background-color: #080a0f;
   background-image:
-    linear-gradient(45deg, oklch(1 0 0 / 0.025) 25%, transparent 25%, transparent 75%, oklch(1 0 0 / 0.025) 75%),
-    linear-gradient(45deg, oklch(1 0 0 / 0.025) 25%, transparent 25%, transparent 75%, oklch(1 0 0 / 0.025) 75%),
-    linear-gradient(135deg, oklch(0 0 0 / 0.25) 25%, transparent 25%, transparent 75%, oklch(0 0 0 / 0.25) 75%);
-  background-size: 8px 8px;
-  background-position: 0 0, 4px 4px, 0 0;
+    radial-gradient(120% 80% at 100% 0%, rgb(197 169 107 / 0.1), transparent 55%),
+    var(--gradient-brand);
+  color: #f3f3f0;
+  --sidebar: #111318;
+  --sidebar-foreground: #f3f3f0;
+  --sidebar-primary: #e8d5a9;
+  --sidebar-primary-foreground: #111318;
+  --sidebar-accent: rgb(255 255 255 / 0.07);
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 0.09);
+  --sidebar-ring: #c5a96b;
+  --brand-soft: rgb(197 169 107 / 0.16);
 }

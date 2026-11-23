@@ -15,6 +15,8 @@ import { toast } from "sonner";
 
 import { FileKindIcon, formatFileSize } from "@/components/documents/document-utils";
 import { UploadDocumentDialog } from "@/components/documents/upload-document-dialog";
+import { DataPanel } from "@/components/layout/data-panel";
+import { chipClass } from "@/components/ui/chip";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { LoadingButton } from "@/components/shared/loading-button";
@@ -27,7 +29,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import type { AppLocale } from "@/config/app";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils/date";
@@ -55,12 +62,18 @@ export function DocumentsPageClient({
   const [uploadOpen, setUploadOpen] = useState(false);
   const [deleting, setDeleting] = useState<StaffDocument | null>(null);
 
-  const load = useCallback(async (next: Scope) => {
-    const res = await fetch(`/api/documents?scope=${next}`, { credentials: "same-origin", cache: "no-store" });
-    const json = await res.json().catch(() => null);
-    if (json?.status === "success") setDocuments(json.data);
-    else toast.error(t("errors.loadFailed"));
-  }, [t]);
+  const load = useCallback(
+    async (next: Scope) => {
+      const res = await fetch(`/api/documents?scope=${next}`, {
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      const json = await res.json().catch(() => null);
+      if (json?.status === "success") setDocuments(json.data);
+      else toast.error(t("errors.loadFailed"));
+    },
+    [t],
+  );
 
   const switchScope = (next: Scope) => {
     setScope(next);
@@ -95,33 +108,18 @@ export function DocumentsPageClient({
       />
 
       {attention > 0 ? (
-        <p className="rounded-lg border border-amber-500/35 bg-amber-500/10 px-4 py-2.5 text-sm text-amber-800 dark:text-amber-300">
+        <p className="border-warning/35 bg-warning-soft text-warning-foreground rounded-lg border px-4 py-2.5 text-sm">
           {t("attention", { count: attention })}
         </p>
       ) : null}
 
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
-          {canViewAll ? (
-            <div role="radiogroup" aria-label={t("scope.label")} className="bg-muted inline-flex rounded-lg p-1">
-              {(["mine", "all"] as const).map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  role="radio"
-                  aria-checked={scope === key}
-                  onClick={() => switchScope(key)}
-                  className={cn(
-                    "h-8 rounded-md px-3 text-sm font-medium transition-colors",
-                    scope === key ? "bg-background shadow-xs" : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {t(`scope.${key}`)}
-                </button>
-              ))}
-            </div>
-          ) : null}
-          <div className="flex flex-wrap gap-1.5">
+      <div className="grid items-start gap-6 lg:grid-cols-[14rem_minmax(0,1fr)]">
+        {/* Category rail: a vertical list on desktop, scrolling chips on phones. */}
+        <nav aria-label={t("allCategories")} className="lg:sticky lg:top-0">
+          <p className="eyebrow text-muted-foreground mb-2 hidden px-3 lg:block">
+            {t("allCategories")}
+          </p>
+          <div className="-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-0.5 lg:mx-0 lg:grid lg:gap-1 lg:overflow-visible lg:px-0">
             {(["all", ...STAFF_DOCUMENT_CATEGORIES] as const).map((key) => (
               <button
                 key={key}
@@ -129,55 +127,100 @@ export function DocumentsPageClient({
                 aria-pressed={category === key}
                 onClick={() => setCategory(key)}
                 className={cn(
-                  "h-8 rounded-full border px-3 text-xs font-medium transition-colors",
+                  chipClass(category === key),
+                  "lg:h-9 lg:w-full lg:justify-start lg:rounded-lg lg:border-transparent lg:bg-transparent lg:shadow-none",
                   category === key
-                    ? "border-brand bg-brand-soft text-brand"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "lg:bg-card lg:text-foreground lg:ring-border lg:shadow-xs lg:ring-1"
+                    : "lg:hover:bg-card/70",
                 )}
               >
                 {key === "all" ? t("allCategories") : t(`categories.${key}`)}
               </button>
             ))}
           </div>
-        </div>
-        <InputGroup className="lg:max-w-72">
-          <InputGroupAddon>
-            <SearchIcon />
-          </InputGroupAddon>
-          <InputGroupInput value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t("search")} />
-          {query ? (
-            <InputGroupAddon align="inline-end">
-              <InputGroupButton size="icon-xs" aria-label={t("clearSearch")} onClick={() => setQuery("")}>
-                <XIcon />
-              </InputGroupButton>
-            </InputGroupAddon>
-          ) : null}
-        </InputGroup>
+        </nav>
+
+        <DataPanel
+          toolbar={
+            <>
+              {canViewAll ? (
+                <div role="radiogroup" aria-label={t("scope.label")} className="flex gap-1.5">
+                  {(["mine", "all"] as const).map((key) => (
+                    <button
+                      key={key}
+                      type="button"
+                      role="radio"
+                      aria-checked={scope === key}
+                      onClick={() => switchScope(key)}
+                      className={chipClass(scope === key)}
+                    >
+                      {t(`scope.${key}`)}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <span />
+              )}
+              <InputGroup className="bg-background h-9 xl:max-w-72">
+                <InputGroupAddon>
+                  <SearchIcon />
+                </InputGroupAddon>
+                <InputGroupInput
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t("search")}
+                />
+                {query ? (
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupButton
+                      size="icon-xs"
+                      aria-label={t("clearSearch")}
+                      onClick={() => setQuery("")}
+                    >
+                      <XIcon />
+                    </InputGroupButton>
+                  </InputGroupAddon>
+                ) : null}
+              </InputGroup>
+            </>
+          }
+        >
+          {visible.length === 0 ? (
+            <EmptyState
+              inset
+              className="py-12"
+              icon={FolderLockIcon}
+              title={documents.length === 0 ? t("empty") : t("noMatches")}
+              description={documents.length === 0 ? t("emptyHint") : undefined}
+              action={
+                documents.length === 0 ? (
+                  <Button variant="brand" onClick={() => setUploadOpen(true)}>
+                    <PlusIcon />
+                    {t("upload")}
+                  </Button>
+                ) : undefined
+              }
+            />
+          ) : (
+            <ul className="bg-muted/35 grid gap-3 p-3 sm:grid-cols-2 sm:p-4 2xl:grid-cols-3">
+              {visible.map((doc) => (
+                <DocumentCard
+                  key={doc.id}
+                  doc={doc}
+                  showOwner={scope === "all"}
+                  onDelete={() => setDeleting(doc)}
+                />
+              ))}
+            </ul>
+          )}
+        </DataPanel>
       </div>
 
-      {visible.length === 0 ? (
-        <EmptyState
-          icon={FolderLockIcon}
-          title={documents.length === 0 ? t("empty") : t("noMatches")}
-          description={documents.length === 0 ? t("emptyHint") : undefined}
-          action={
-            documents.length === 0 ? (
-              <Button variant="brand" onClick={() => setUploadOpen(true)}>
-                <PlusIcon />
-                {t("upload")}
-              </Button>
-            ) : undefined
-          }
-        />
-      ) : (
-        <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-          {visible.map((doc) => (
-            <DocumentCard key={doc.id} doc={doc} showOwner={scope === "all"} onDelete={() => setDeleting(doc)} />
-          ))}
-        </ul>
-      )}
-
-      <UploadDocumentDialog open={uploadOpen} onOpenChange={setUploadOpen} onUploaded={() => void load(scope)} />
+      <UploadDocumentDialog
+        open={uploadOpen}
+        onOpenChange={setUploadOpen}
+        onUploaded={() => void load(scope)}
+      />
       <DeleteDocumentDialog
         doc={deleting}
         onOpenChange={(open) => !open && setDeleting(null)}
@@ -187,12 +230,20 @@ export function DocumentsPageClient({
   );
 }
 
-function DocumentCard({ doc, showOwner, onDelete }: { doc: StaffDocument; showOwner: boolean; onDelete: () => void }) {
+function DocumentCard({
+  doc,
+  showOwner,
+  onDelete,
+}: {
+  doc: StaffDocument;
+  showOwner: boolean;
+  onDelete: () => void;
+}) {
   const t = useTranslations("documents");
   const locale = useLocale() as AppLocale;
 
   return (
-    <li className="bg-card flex min-w-0 flex-col gap-3 rounded-xl border p-4 shadow-xs">
+    <li className="bg-card flex min-w-0 flex-col gap-3 rounded-xl border p-4 shadow-sm transition-shadow hover:shadow-md">
       <div className="flex items-start gap-3">
         <span className="bg-brand-soft text-brand flex size-10 shrink-0 items-center justify-center rounded-lg">
           <FileKindIcon mimeType={doc.mimeType} fileName={doc.fileName} className="size-5" />
@@ -213,7 +264,7 @@ function DocumentCard({ doc, showOwner, onDelete }: { doc: StaffDocument; showOw
             className={cn(
               "rounded-full px-2 py-0.5 font-medium",
               doc.expiry === "expired" && "bg-destructive/12 text-destructive",
-              doc.expiry === "soon" && "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+              doc.expiry === "soon" && "bg-warning-soft text-warning-foreground",
               doc.expiry === null && "bg-muted text-muted-foreground",
             )}
           >
@@ -224,7 +275,9 @@ function DocumentCard({ doc, showOwner, onDelete }: { doc: StaffDocument; showOw
                 : t("expires", { date: formatDate(doc.expiresOn, locale, "short") })}
           </span>
         ) : null}
-        <span className="text-muted-foreground">{t("uploadedOn", { date: formatDate(doc.createdAt, locale, "short") })}</span>
+        <span className="text-muted-foreground">
+          {t("uploadedOn", { date: formatDate(doc.createdAt, locale, "short") })}
+        </span>
         {showOwner ? <span className="text-muted-foreground">· {doc.owner.name}</span> : null}
       </div>
 
@@ -235,12 +288,19 @@ function DocumentCard({ doc, showOwner, onDelete }: { doc: StaffDocument; showOw
           size="sm"
           variant="outline"
           nativeButton={false}
-          render={<a href={`/api/documents/${doc.id}/file`} target="_blank" rel="noopener noreferrer" />}
+          render={
+            <a href={`/api/documents/${doc.id}/file`} target="_blank" rel="noopener noreferrer" />
+          }
         >
           <EyeIcon />
           {t("view")}
         </Button>
-        <Button size="sm" variant="ghost" nativeButton={false} render={<a href={`/api/documents/${doc.id}/file?download=1`} />}>
+        <Button
+          size="sm"
+          variant="ghost"
+          nativeButton={false}
+          render={<a href={`/api/documents/${doc.id}/file?download=1`} />}
+        >
           <DownloadIcon />
           {t("download")}
         </Button>
@@ -271,7 +331,10 @@ function DeleteDocumentDialog({
     if (!doc) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/documents/${doc.id}`, { method: "DELETE", credentials: "same-origin" });
+      const res = await fetch(`/api/documents/${doc.id}`, {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
       if (!res.ok) {
         toast.error(t("errors.deleteFailed"));
         return;
@@ -289,7 +352,9 @@ function DeleteDocumentDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{t("deleteTitle")}</DialogTitle>
-          <DialogDescription>{t("deleteDescription", { title: doc?.title ?? "" })}</DialogDescription>
+          <DialogDescription>
+            {t("deleteDescription", { title: doc?.title ?? "" })}
+          </DialogDescription>
         </DialogHeader>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>

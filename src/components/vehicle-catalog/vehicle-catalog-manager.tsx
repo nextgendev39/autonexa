@@ -63,7 +63,9 @@ function slugify(value: string) {
 type CatalogParams = { makeId: string; modelId: string; modelYearId: string };
 
 /** The lists plus the selection they were loaded for, so each column knows if it's current. */
-async function fetchCatalog(params: CatalogParams): Promise<CatalogPayload & { params: CatalogParams }> {
+async function fetchCatalog(
+  params: CatalogParams,
+): Promise<CatalogPayload & { params: CatalogParams }> {
   const search = new URLSearchParams();
   if (params.makeId) search.set("makeId", params.makeId);
   if (params.modelId) search.set("modelId", params.modelId);
@@ -281,7 +283,7 @@ export function VehicleCatalogManager({ canEdit }: { canEdit: boolean }) {
         })}
       </nav>
 
-      <div className="grid gap-3 lg:grid-cols-4">
+      <div className="bg-card rounded-panel divide-divider grid overflow-hidden border shadow-sm lg:grid-cols-4 lg:divide-x rtl:lg:divide-x-reverse">
         <Column
           className={columnClass(0)}
           icon={CarFrontIcon}
@@ -482,13 +484,13 @@ function Column({
   return (
     <section
       className={cn(
-        "bg-card ring-foreground/[0.07] h-[max(26rem,calc(100svh-19rem))] min-w-0 flex-col overflow-hidden rounded-xl shadow-xs ring-1",
+        "bg-card h-[max(26rem,calc(100svh-19rem))] min-w-0 flex-col overflow-hidden",
         locked && "lg:bg-muted/30",
         className,
       )}
       aria-label={title}
     >
-      <header className="grid gap-3 border-b p-3">
+      <header className="border-divider grid gap-3 border-b p-3.5">
         <div className="flex items-center gap-2.5">
           {onBack ? (
             <Button
@@ -780,7 +782,7 @@ function Row({
         </span>
         {!item.isActive ? (
           <span
-            className="bg-muted text-muted-foreground shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium"
+            className="bg-muted text-muted-foreground border-border shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-medium"
             title={t("inactiveHint")}
           >
             {t("inactive")}

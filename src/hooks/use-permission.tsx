@@ -26,6 +26,11 @@ export function useUserContext() {
   return context;
 }
 
+/** The signed-in user when inside the staff app, or null elsewhere (platform console, previews). */
+export function useOptionalUserContext() {
+  return useContext(PermissionContext);
+}
+
 export function usePermission() {
   const user = useUserContext();
 

@@ -13,7 +13,7 @@ export function QuantityBadge({ quantity, className }: { quantity: number; class
   return (
     <Badge
       variant="outline"
-      className={cn("border-violet-500/30 bg-violet-500/10 text-violet-800 dark:text-violet-200", className)}
+      className={cn("border-gold/30 bg-gold-soft text-premium-foreground", className)}
     >
       <LayersIcon data-icon="inline-start" aria-hidden />
       {t("inventory.quantity.units", { count: quantity })}

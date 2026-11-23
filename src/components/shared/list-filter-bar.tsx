@@ -66,10 +66,7 @@ export function ListFilterBar({
   const mobileCount = advancedCount + basicCount;
 
   return (
-    <section
-      className={cn("md:bg-card flex flex-col gap-3 md:rounded-xl md:border md:p-4", className)}
-      aria-label={ariaLabel}
-    >
+    <section className={cn("flex w-full flex-col gap-3", className)} aria-label={ariaLabel}>
       <div className="flex items-start gap-2 md:gap-3 lg:flex-row">
         <div className="grid min-w-0 flex-1 gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))]">
           <div className="min-w-0 md:col-span-2 xl:col-span-1">{search}</div>

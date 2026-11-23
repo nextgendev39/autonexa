@@ -28,7 +28,12 @@ import {
   RequestHoldDialog,
   ReviewHoldDialog,
 } from "@/components/bookings/booking-action-dialogs";
-import { CountdownRing, PaymentBar, PaymentRing, type PaymentPart } from "@/components/bookings/booking-charts";
+import {
+  CountdownRing,
+  PaymentBar,
+  PaymentRing,
+  type PaymentPart,
+} from "@/components/bookings/booking-charts";
 import { EditBookingDialog } from "@/components/bookings/edit-booking-dialog";
 import { PageHeader } from "@/components/layout/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -82,8 +87,18 @@ export function BookingDetailClient({ booking: b }: { booking: BookingDetail }) 
   const paidShare = total > 0 ? Math.min(collected / total, 1) : 0;
   const parts: PaymentPart[] = [
     { key: "deposit", label: t("payment.deposit"), value: b.deposit, display: money(b.deposit) },
-    { key: "balance", label: t("payment.balanceReceived"), value: balancePaid, display: money(balancePaid) },
-    { key: "outstanding", label: t("payment.outstanding"), value: outstanding, display: money(outstanding) },
+    {
+      key: "balance",
+      label: t("payment.balanceReceived"),
+      value: balancePaid,
+      display: money(balancePaid),
+    },
+    {
+      key: "outstanding",
+      label: t("payment.outstanding"),
+      value: outstanding,
+      display: money(outstanding),
+    },
   ];
 
   // ---- Deadlines ---------------------------------------------------------
@@ -144,7 +159,11 @@ export function BookingDetailClient({ booking: b }: { booking: BookingDetail }) 
               </Button>
             ) : null}
             {b.can.cancel ? (
-              <Button variant="outline" className="text-destructive" onClick={() => setAction("cancel")}>
+              <Button
+                variant="outline"
+                className="text-destructive"
+                onClick={() => setAction("cancel")}
+              >
                 <BanIcon />
                 {tBookings("cancelAction")}
               </Button>
@@ -161,259 +180,318 @@ export function BookingDetailClient({ booking: b }: { booking: BookingDetail }) 
 
       <StatusBanner booking={b} when={when} />
 
-      <div className="grid gap-4 lg:grid-cols-3">
-        {/* Vehicle hero */}
-        <section className="bg-card relative overflow-hidden rounded-2xl border shadow-xs lg:col-span-2">
-          <div className="grid sm:grid-cols-[minmax(0,15rem)_1fr]">
-            <div className="bg-muted relative aspect-[16/10] sm:aspect-auto sm:min-h-52">
-              {b.vehiclePhotoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
-                <img src={b.vehiclePhotoUrl} alt="" className="absolute inset-0 size-full object-cover" />
-              ) : (
-                <div className="text-muted-foreground absolute inset-0 grid place-items-center">
-                  <CarFrontIcon className="size-12 opacity-40" />
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col gap-4 p-5">
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={`booking_${b.status}`} label={tBookings(`statuses.${b.status}`)} />
-                {b.units > 1 ? (
-                  <span className="bg-brand-soft text-brand rounded-full px-2 py-0.5 text-xs font-medium">
-                    {tBookings("unitsBadge", { count: b.units })}
-                  </span>
-                ) : null}
-              </div>
-              <div className="grid gap-1">
-                {b.vehicle ? (
-                  <Link
-                    href={b.vehicle.stockNumber ? vehicleHref(b.vehicle.stockNumber) : `/inventory/${b.vehicle.id}`}
-                    className="hover:text-brand font-heading text-xl font-semibold tracking-tight transition-colors"
-                  >
-                    {b.vehicle.title}
-                  </Link>
+      {/* Booking file: the deal on the left; deadline, people and notes in a sticky aside. */}
+      <div className="grid items-start gap-5 xl:grid-cols-12">
+        <div className="grid min-w-0 gap-5 xl:col-span-8">
+          {/* Vehicle hero */}
+          <section className="bg-card relative overflow-hidden rounded-xl border shadow-sm">
+            <div className="grid sm:grid-cols-[minmax(0,15rem)_1fr]">
+              <div className="bg-muted relative aspect-[16/10] sm:aspect-auto sm:min-h-52">
+                {b.vehiclePhotoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
+                  <img
+                    src={b.vehiclePhotoUrl}
+                    alt=""
+                    className="absolute inset-0 size-full object-cover"
+                  />
                 ) : (
-                  <span className="text-xl font-semibold">—</span>
+                  <div className="text-muted-foreground absolute inset-0 grid place-items-center">
+                    <CarFrontIcon className="size-12 opacity-40" />
+                  </div>
                 )}
-                {b.vehicle?.stockNumber ? (
-                  <span className="text-muted-foreground font-mono text-xs">{b.vehicle.stockNumber}</span>
-                ) : null}
               </div>
-              <dl className="mt-auto grid grid-cols-2 gap-3 sm:grid-cols-3">
-                <Stat label={t("payment.total")} value={b.totalPrice == null ? "—" : money(b.totalPrice)} />
-                <Stat label={t("payment.collected")} value={money(collected)} tone="good" />
-                <Stat
-                  label={t("payment.outstanding")}
-                  value={money(outstanding)}
-                  tone={outstanding > 0 ? "warning" : "good"}
-                />
-              </dl>
+              <div className="flex flex-col gap-4 p-5">
+                <div className="flex flex-wrap items-center gap-2">
+                  <StatusBadge
+                    status={`booking_${b.status}`}
+                    label={tBookings(`statuses.${b.status}`)}
+                  />
+                  {b.units > 1 ? (
+                    <span className="bg-brand-soft text-brand border-brand/25 rounded-full border px-2 py-0.5 text-xs font-medium">
+                      {tBookings("unitsBadge", { count: b.units })}
+                    </span>
+                  ) : null}
+                </div>
+                <div className="grid gap-1">
+                  {b.vehicle ? (
+                    <Link
+                      href={
+                        b.vehicle.stockNumber
+                          ? vehicleHref(b.vehicle.stockNumber)
+                          : `/inventory/${b.vehicle.id}`
+                      }
+                      className="hover:text-brand font-heading text-xl font-semibold tracking-tight transition-colors"
+                    >
+                      {b.vehicle.title}
+                    </Link>
+                  ) : (
+                    <span className="text-xl font-semibold">—</span>
+                  )}
+                  {b.vehicle?.stockNumber ? (
+                    <span className="text-muted-foreground font-mono text-xs">
+                      {b.vehicle.stockNumber}
+                    </span>
+                  ) : null}
+                </div>
+                <dl className="mt-auto grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  <Stat
+                    label={t("payment.total")}
+                    value={b.totalPrice == null ? "—" : money(b.totalPrice)}
+                  />
+                  <Stat label={t("payment.collected")} value={money(collected)} tone="good" />
+                  <Stat
+                    label={t("payment.outstanding")}
+                    value={money(outstanding)}
+                    tone={outstanding > 0 ? "warning" : "good"}
+                  />
+                </dl>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Next deadline */}
-        <section className="bg-card flex flex-col gap-4 rounded-2xl border p-5 shadow-xs">
-          <h2 className="flex items-center gap-2 text-sm font-medium">
-            <AlarmClockIcon className="text-muted-foreground size-4" />
-            {t("nextDeadline.title")}
-          </h2>
-          {next && nextMs != null ? (
-            <div className="flex items-center gap-4">
-              <CountdownRing
-                progress={now == null ? 0 : (now - startMs) / (nextMs - startMs)}
-                tone={passed ? "critical" : remaining != null && remaining < (nextMs - startMs) * 0.25 ? "warning" : "neutral"}
-              >
-                <span className="text-muted-foreground text-[0.65rem] uppercase">
-                  {passed ? t("nextDeadline.now") : t("nextDeadline.left")}
-                </span>
-              </CountdownRing>
-              <div className="grid min-w-0 gap-1">
+          {/* Payment chart */}
+          <section className="bg-card grid gap-6 rounded-xl border p-5 shadow-sm">
+            <div className="flex items-baseline justify-between gap-3">
+              <h2 className="text-sm font-medium">{t("payment.title")}</h2>
+              {b.sellingPrice != null && b.units > 1 ? (
                 <span className="text-muted-foreground text-xs">
-                  {next.kind === "deposit" ? t("nextDeadline.deposit") : t("nextDeadline.balance")}
+                  {t("payment.perUnit", { price: money(b.sellingPrice), count: b.units })}
                 </span>
+              ) : null}
+            </div>
+            {total > 0 ? (
+              <div className="grid items-center gap-6 sm:grid-cols-[auto_1fr]">
+                <PaymentRing
+                  parts={parts}
+                  centerValue={`${Math.round(paidShare * 100)}%`}
+                  centerLabel={t("payment.paid")}
+                />
+                <div className="grid gap-5">
+                  <PaymentBar
+                    parts={parts}
+                    label={t("payment.barLabel", { share: Math.round(paidShare * 100) })}
+                  />
+                  <p
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-sm",
+                      outstanding > 0
+                        ? "bg-warning-soft text-warning-foreground"
+                        : "bg-success-soft text-success-foreground",
+                    )}
+                  >
+                    {outstanding > 0
+                      ? t("payment.remaining", { amount: money(outstanding) })
+                      : t("payment.fullyPaid")}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-sm">{t("payment.noPrice")}</p>
+            )}
+          </section>
+
+          {/* Timeline */}
+          <section className="bg-card rounded-xl border p-5 shadow-sm">
+            <h2 className="mb-4 text-sm font-medium">{t("timeline.title")}</h2>
+            <ol className="relative grid gap-5 ps-1">
+              <Step state="done" title={t("timeline.booked")} detail={when(b.reservedAt)} />
+              <Step
+                state={
+                  b.deposit > 0
+                    ? "done"
+                    : b.autoCancelled
+                      ? "missed"
+                      : open
+                        ? depositOnHold
+                          ? "upcoming"
+                          : new Date(depositDueAt).getTime() <= (now ?? 0) && now != null
+                            ? "missed"
+                            : "upcoming"
+                        : "skipped"
+                }
+                title={
+                  b.deposit > 0
+                    ? t("timeline.depositReceived", { amount: money(b.deposit) })
+                    : t("timeline.depositDue")
+                }
+                detail={
+                  b.deposit > 0
+                    ? t("timeline.depositBy", { date: when(depositDueAt) })
+                    : b.autoCancelled
+                      ? t("timeline.depositMissed", { date: when(depositDueAt) })
+                      : depositOnHold
+                        ? t(`timeline.hold.${b.cancellationHold!.status}`)
+                        : t("timeline.dueBy", { date: when(depositDueAt) })
+                }
+              />
+              <Step
+                state={
+                  outstanding <= 0 && total > 0
+                    ? "done"
+                    : b.balanceOverdue
+                      ? "missed"
+                      : b.status === "cancelled"
+                        ? "skipped"
+                        : "upcoming"
+                }
+                title={
+                  outstanding <= 0 && total > 0
+                    ? t("timeline.paidInFull")
+                    : t("timeline.balanceDue")
+                }
+                detail={
+                  b.balanceOverdue
+                    ? b.balanceAlertedAt
+                      ? t("timeline.balanceAlerted", { date: when(b.balanceAlertedAt) })
+                      : t("timeline.balanceMissed", { date: when(balanceDueAt) })
+                    : t("timeline.dueBy", { date: when(balanceDueAt) })
+                }
+              />
+              {b.status === "converted" && b.soldAt ? (
+                <Step state="done" title={t("timeline.sold")} detail={when(b.soldAt)} />
+              ) : null}
+              {b.status === "cancelled" ? (
+                <Step
+                  state="missed"
+                  title={b.autoCancelled ? t("timeline.autoCancelled") : t("timeline.cancelled")}
+                  detail={[b.cancelledAt ? when(b.cancelledAt) : null, b.cancelReason]
+                    .filter(Boolean)
+                    .join(" · ")}
+                />
+              ) : null}
+              {b.status === "cancelled" && b.refund ? (
+                <Step
+                  state="done"
+                  title={t("timeline.refunded", { amount: money(b.refund.amount) })}
+                  detail={refundDetail(b.refund, tBookings, when)}
+                />
+              ) : null}
+            </ol>
+          </section>
+        </div>
+        <aside className="grid min-w-0 gap-5 xl:sticky xl:top-0 xl:col-span-4">
+          {/* Next deadline */}
+          <section className="bg-card flex flex-col gap-4 rounded-xl border p-5 shadow-sm">
+            <h2 className="flex items-center gap-2 text-sm font-medium">
+              <AlarmClockIcon className="text-muted-foreground size-4" />
+              {t("nextDeadline.title")}
+            </h2>
+            {next && nextMs != null ? (
+              <div className="flex items-center gap-4">
+                <CountdownRing
+                  progress={now == null ? 0 : (now - startMs) / (nextMs - startMs)}
+                  tone={
+                    passed
+                      ? "critical"
+                      : remaining != null && remaining < (nextMs - startMs) * 0.25
+                        ? "warning"
+                        : "neutral"
+                  }
+                >
+                  <span className="text-muted-foreground text-[0.65rem] uppercase">
+                    {passed ? t("nextDeadline.now") : t("nextDeadline.left")}
+                  </span>
+                </CountdownRing>
+                <div className="grid min-w-0 gap-1">
+                  <span className="text-muted-foreground text-xs">
+                    {next.kind === "deposit"
+                      ? t("nextDeadline.deposit")
+                      : t("nextDeadline.balance")}
+                  </span>
+                  <span
+                    className={cn(
+                      "text-2xl font-semibold tracking-tight tabular-nums",
+                      passed && "text-destructive",
+                    )}
+                    aria-live="polite"
+                  >
+                    {remaining == null
+                      ? "—"
+                      : passed
+                        ? t("nextDeadline.applying")
+                        : countdown(remaining)}
+                  </span>
+                  <span className="text-muted-foreground text-xs">{when(next.at)}</span>
+                  <span className="text-muted-foreground text-xs">
+                    {next.kind === "deposit"
+                      ? t("nextDeadline.depositMissed")
+                      : t("nextDeadline.balanceMissed")}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
                 <span
                   className={cn(
-                    "text-2xl font-semibold tracking-tight tabular-nums",
-                    passed && "text-destructive",
-                  )}
-                  aria-live="polite"
-                >
-                  {remaining == null ? "—" : passed ? t("nextDeadline.applying") : countdown(remaining)}
-                </span>
-                <span className="text-muted-foreground text-xs">{when(next.at)}</span>
-                <span className="text-muted-foreground text-xs">
-                  {next.kind === "deposit" ? t("nextDeadline.depositMissed") : t("nextDeadline.balanceMissed")}
-                </span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3">
-              <span
-                className={cn(
-                  "flex size-11 items-center justify-center rounded-full",
-                  b.status === "cancelled" ? "bg-muted text-muted-foreground" : "bg-emerald-600/12 text-emerald-700 dark:text-emerald-400",
-                )}
-              >
-                {b.status === "cancelled" ? <CircleXIcon className="size-5" /> : <CircleCheckIcon className="size-5" />}
-              </span>
-              <p className="text-muted-foreground text-sm">
-                {b.status === "cancelled"
-                  ? t("nextDeadline.noneCancelled")
-                  : b.balanceOverdue
-                    ? t("nextDeadline.overdue", { date: when(balanceDueAt) })
-                    : t("nextDeadline.none")}
-              </p>
-            </div>
-          )}
-        </section>
-
-        {/* Payment chart */}
-        <section className="bg-card grid gap-6 rounded-2xl border p-5 shadow-xs lg:col-span-2">
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-sm font-medium">{t("payment.title")}</h2>
-            {b.sellingPrice != null && b.units > 1 ? (
-              <span className="text-muted-foreground text-xs">
-                {t("payment.perUnit", { price: money(b.sellingPrice), count: b.units })}
-              </span>
-            ) : null}
-          </div>
-          {total > 0 ? (
-            <div className="grid items-center gap-6 sm:grid-cols-[auto_1fr]">
-              <PaymentRing
-                parts={parts}
-                centerValue={`${Math.round(paidShare * 100)}%`}
-                centerLabel={t("payment.paid")}
-              />
-              <div className="grid gap-5">
-                <PaymentBar parts={parts} label={t("payment.barLabel", { share: Math.round(paidShare * 100) })} />
-                <p
-                  className={cn(
-                    "rounded-lg px-3 py-2 text-sm",
-                    outstanding > 0
-                      ? "bg-amber-500/10 text-amber-800 dark:text-amber-300"
-                      : "bg-emerald-600/10 text-emerald-800 dark:text-emerald-300",
+                    "flex size-11 items-center justify-center rounded-full",
+                    b.status === "cancelled"
+                      ? "bg-muted text-muted-foreground"
+                      : "bg-success-soft text-success-foreground",
                   )}
                 >
-                  {outstanding > 0
-                    ? t("payment.remaining", { amount: money(outstanding) })
-                    : t("payment.fullyPaid")}
+                  {b.status === "cancelled" ? (
+                    <CircleXIcon className="size-5" />
+                  ) : (
+                    <CircleCheckIcon className="size-5" />
+                  )}
+                </span>
+                <p className="text-muted-foreground text-sm">
+                  {b.status === "cancelled"
+                    ? t("nextDeadline.noneCancelled")
+                    : b.balanceOverdue
+                      ? t("nextDeadline.overdue", { date: when(balanceDueAt) })
+                      : t("nextDeadline.none")}
                 </p>
               </div>
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-sm">{t("payment.noPrice")}</p>
-          )}
-        </section>
+            )}
+          </section>
 
-        {/* People */}
-        <section className="bg-card grid content-start gap-4 rounded-2xl border p-5 shadow-xs">
-          <h2 className="text-sm font-medium">{t("people.title")}</h2>
-          <Person
-            icon={UserRoundIcon}
-            label={t("people.customer")}
-            name={b.customer?.name ?? "—"}
-            extra={
-              b.customer ? (
-                <a
-                  href={`tel:${b.customer.phone}`}
-                  dir="ltr"
-                  className="text-muted-foreground hover:text-brand inline-flex items-center gap-1 text-xs tabular-nums transition-colors"
-                >
-                  <PhoneIcon className="size-3" />
-                  {formatUaePhone(b.customer.phone)}
-                </a>
-              ) : null
-            }
-          />
-          <Person icon={BadgeCheckIcon} label={t("people.salesperson")} name={b.salesperson?.name ?? "—"} />
-          {/* Only when someone else booked it for the sales executive; otherwise it's the same name twice. */}
-          {b.createdBy && b.createdBy !== b.salesperson?.id ? (
-            <Person icon={CalendarCheckIcon} label={t("people.bookedBy")} name={b.bookedBy ?? "—"} />
-          ) : null}
-        </section>
-
-        {/* Timeline */}
-        <section className="bg-card rounded-2xl border p-5 shadow-xs lg:col-span-2">
-          <h2 className="mb-4 text-sm font-medium">{t("timeline.title")}</h2>
-          <ol className="relative grid gap-5 ps-1">
-            <Step state="done" title={t("timeline.booked")} detail={when(b.reservedAt)} />
-            <Step
-              state={
-                b.deposit > 0
-                  ? "done"
-                  : b.autoCancelled
-                    ? "missed"
-                    : open
-                      ? depositOnHold
-                        ? "upcoming"
-                        : new Date(depositDueAt).getTime() <= (now ?? 0) && now != null
-                          ? "missed"
-                          : "upcoming"
-                      : "skipped"
-              }
-              title={b.deposit > 0 ? t("timeline.depositReceived", { amount: money(b.deposit) }) : t("timeline.depositDue")}
-              detail={
-                b.deposit > 0
-                  ? t("timeline.depositBy", { date: when(depositDueAt) })
-                  : b.autoCancelled
-                    ? t("timeline.depositMissed", { date: when(depositDueAt) })
-                    : depositOnHold
-                      ? t(`timeline.hold.${b.cancellationHold!.status}`)
-                      : t("timeline.dueBy", { date: when(depositDueAt) })
+          {/* People */}
+          <section className="bg-card grid content-start gap-4 rounded-xl border p-5 shadow-sm">
+            <h2 className="text-sm font-medium">{t("people.title")}</h2>
+            <Person
+              icon={UserRoundIcon}
+              label={t("people.customer")}
+              name={b.customer?.name ?? "—"}
+              extra={
+                b.customer ? (
+                  <a
+                    href={`tel:${b.customer.phone}`}
+                    dir="ltr"
+                    className="text-muted-foreground hover:text-brand inline-flex items-center gap-1 text-xs tabular-nums transition-colors"
+                  >
+                    <PhoneIcon className="size-3" />
+                    {formatUaePhone(b.customer.phone)}
+                  </a>
+                ) : null
               }
             />
-            <Step
-              state={
-                outstanding <= 0 && total > 0
-                  ? "done"
-                  : b.balanceOverdue
-                    ? "missed"
-                    : b.status === "cancelled"
-                      ? "skipped"
-                      : "upcoming"
-              }
-              title={
-                outstanding <= 0 && total > 0 ? t("timeline.paidInFull") : t("timeline.balanceDue")
-              }
-              detail={
-                b.balanceOverdue
-                  ? b.balanceAlertedAt
-                    ? t("timeline.balanceAlerted", { date: when(b.balanceAlertedAt) })
-                    : t("timeline.balanceMissed", { date: when(balanceDueAt) })
-                  : t("timeline.dueBy", { date: when(balanceDueAt) })
-              }
+            <Person
+              icon={BadgeCheckIcon}
+              label={t("people.salesperson")}
+              name={b.salesperson?.name ?? "—"}
             />
-            {b.status === "converted" && b.soldAt ? (
-              <Step state="done" title={t("timeline.sold")} detail={when(b.soldAt)} />
-            ) : null}
-            {b.status === "cancelled" ? (
-              <Step
-                state="missed"
-                title={b.autoCancelled ? t("timeline.autoCancelled") : t("timeline.cancelled")}
-                detail={[b.cancelledAt ? when(b.cancelledAt) : null, b.cancelReason].filter(Boolean).join(" · ")}
+            {/* Only when someone else booked it for the sales executive; otherwise it's the same name twice. */}
+            {b.createdBy && b.createdBy !== b.salesperson?.id ? (
+              <Person
+                icon={CalendarCheckIcon}
+                label={t("people.bookedBy")}
+                name={b.bookedBy ?? "—"}
               />
             ) : null}
-            {b.status === "cancelled" && b.refund ? (
-              <Step
-                state="done"
-                title={t("timeline.refunded", { amount: money(b.refund.amount) })}
-                detail={refundDetail(b.refund, tBookings, when)}
-              />
-            ) : null}
-          </ol>
-        </section>
+          </section>
 
-        {/* Notes */}
-        <section className="bg-card grid content-start gap-3 rounded-2xl border p-5 shadow-xs">
-          <h2 className="flex items-center gap-2 text-sm font-medium">
-            <StickyNoteIcon className="text-muted-foreground size-4" />
-            {t("notes")}
-          </h2>
-          <p className={cn("text-sm whitespace-pre-wrap", !b.notes && "text-muted-foreground")}>
-            {b.notes || t("noNotes")}
-          </p>
-        </section>
+          {/* Notes */}
+          <section className="bg-card grid content-start gap-3 rounded-xl border p-5 shadow-sm">
+            <h2 className="flex items-center gap-2 text-sm font-medium">
+              <StickyNoteIcon className="text-muted-foreground size-4" />
+              {t("notes")}
+            </h2>
+            <p className={cn("text-sm whitespace-pre-wrap", !b.notes && "text-muted-foreground")}>
+              {b.notes || t("noNotes")}
+            </p>
+          </section>
+        </aside>
       </div>
 
       <EditBookingDialog
@@ -423,7 +501,12 @@ export function BookingDetailClient({ booking: b }: { booking: BookingDetail }) 
         onOpenChange={(o) => !o && setAction(null)}
         onSaved={refresh}
       />
-      <MarkSoldDialog booking={b} open={action === "sold"} onOpenChange={(o) => !o && setAction(null)} onDone={refresh} />
+      <MarkSoldDialog
+        booking={b}
+        open={action === "sold"}
+        onOpenChange={(o) => !o && setAction(null)}
+        onDone={refresh}
+      />
       <CancelBookingDialog
         booking={b}
         open={action === "cancel"}
@@ -453,7 +536,9 @@ function refundDetail(
   when: (iso: string) => string,
 ) {
   return [
-    refund.method ? t(`cancelDialog.refundMethods.${refund.method}` as Parameters<typeof t>[0]) : null,
+    refund.method
+      ? t(`cancelDialog.refundMethods.${refund.method}` as Parameters<typeof t>[0])
+      : null,
     refund.reference ? t("refundRef", { reference: refund.reference }) : null,
     refund.refundedBy ? t("refundBy", { name: refund.refundedBy }) : null,
     refund.refundedAt ? when(refund.refundedAt) : null,
@@ -462,7 +547,13 @@ function refundDetail(
     .join(" · ");
 }
 
-function StatusBanner({ booking: b, when }: { booking: BookingDetail; when: (iso: string) => string }) {
+function StatusBanner({
+  booking: b,
+  when,
+}: {
+  booking: BookingDetail;
+  when: (iso: string) => string;
+}) {
   const t = useTranslations("bookings.detail.banner");
   const tBookings = useTranslations("bookings");
   const locale = useLocale() as AppLocale;
@@ -473,7 +564,9 @@ function StatusBanner({ booking: b, when }: { booking: BookingDetail; when: (iso
         <div className="grid gap-0.5">
           <p className="font-medium">{b.autoCancelled ? t("autoCancelled") : t("cancelled")}</p>
           <p className="text-muted-foreground text-sm">
-            {[b.cancelledAt ? when(b.cancelledAt) : null, b.cancelReason].filter(Boolean).join(" · ")}
+            {[b.cancelledAt ? when(b.cancelledAt) : null, b.cancelReason]
+              .filter(Boolean)
+              .join(" · ")}
           </p>
           {b.refund ? (
             <p className="text-sm">
@@ -484,7 +577,10 @@ function StatusBanner({ booking: b, when }: { booking: BookingDetail; when: (iso
                 })}
               </span>
               {refundDetail(b.refund, tBookings, when) ? (
-                <span className="text-muted-foreground"> · {refundDetail(b.refund, tBookings, when)}</span>
+                <span className="text-muted-foreground">
+                  {" "}
+                  · {refundDetail(b.refund, tBookings, when)}
+                </span>
               ) : null}
             </p>
           ) : null}
@@ -494,11 +590,13 @@ function StatusBanner({ booking: b, when }: { booking: BookingDetail; when: (iso
   }
   if (b.balanceOverdue) {
     return (
-      <div className="flex items-start gap-3 rounded-xl border border-amber-500/35 bg-amber-500/10 p-4">
-        <TriangleAlertIcon className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" />
+      <div className="border-warning/35 bg-warning-soft flex items-start gap-3 rounded-xl border p-4">
+        <TriangleAlertIcon className="text-warning mt-0.5 size-5 shrink-0" />
         <div className="grid gap-0.5">
           <p className="font-medium">{t("overdue")}</p>
-          <p className="text-muted-foreground text-sm">{t("overdueHint", { date: when(b.balanceDueAt!) })}</p>
+          <p className="text-muted-foreground text-sm">
+            {t("overdueHint", { date: when(b.balanceDueAt!) })}
+          </p>
         </div>
       </div>
     );
@@ -507,10 +605,10 @@ function StatusBanner({ booking: b, when }: { booking: BookingDetail; when: (iso
   if (b.status === "active" && b.deposit <= 0 && hold) {
     const tone =
       hold.status === "approved"
-        ? "border-emerald-500/30 bg-emerald-500/8"
+        ? "border-success/30 bg-success-soft"
         : hold.status === "rejected"
           ? "border-destructive/30 bg-destructive/8"
-          : "border-sky-500/30 bg-sky-500/8";
+          : "border-info/30 bg-info-soft";
     const Icon =
       hold.status === "approved"
         ? ShieldCheckIcon
@@ -519,10 +617,10 @@ function StatusBanner({ booking: b, when }: { booking: BookingDetail; when: (iso
           : ShieldEllipsisIcon;
     const iconTone =
       hold.status === "approved"
-        ? "text-emerald-600 dark:text-emerald-400"
+        ? "text-success"
         : hold.status === "rejected"
           ? "text-destructive"
-          : "text-sky-600 dark:text-sky-400";
+          : "text-info";
     const at = hold.status === "pending" ? hold.requestedAt : hold.reviewedAt;
     const by = hold.status === "pending" ? hold.requestedBy : hold.reviewedBy;
     const note = hold.status === "pending" ? hold.reason : hold.reviewNote;
@@ -540,8 +638,8 @@ function StatusBanner({ booking: b, when }: { booking: BookingDetail; when: (iso
   }
   if (b.status === "converted") {
     return (
-      <div className="flex items-start gap-3 rounded-xl border border-violet-500/30 bg-violet-500/8 p-4">
-        <BadgeCheckIcon className="mt-0.5 size-5 shrink-0 text-violet-600 dark:text-violet-400" />
+      <div className="border-gold/30 bg-gold-soft flex items-start gap-3 rounded-xl border p-4">
+        <BadgeCheckIcon className="text-gold mt-0.5 size-5 shrink-0" />
         <p className="font-medium">{t("sold", { date: b.soldAt ? when(b.soldAt) : "—" })}</p>
       </div>
     );
@@ -556,8 +654,8 @@ function Stat({ label, value, tone }: { label: string; value: string; tone?: "go
       <dd
         className={cn(
           "truncate text-sm font-semibold tabular-nums",
-          tone === "good" && "text-emerald-700 dark:text-emerald-400",
-          tone === "warning" && "text-amber-700 dark:text-amber-400",
+          tone === "good" && "text-success-foreground",
+          tone === "warning" && "text-warning-foreground",
         )}
       >
         {value}
@@ -603,13 +701,13 @@ function Step({
   const Icon =
     state === "done" ? CircleCheckIcon : state === "missed" ? CircleXIcon : CircleDashedIcon;
   return (
-    <li className="relative flex gap-3 [&:not(:last-child)]:after:absolute [&:not(:last-child)]:after:start-[0.95rem] [&:not(:last-child)]:after:top-8 [&:not(:last-child)]:after:h-[calc(100%-1rem)] [&:not(:last-child)]:after:w-px [&:not(:last-child)]:after:bg-border">
+    <li className="[&:not(:last-child)]:after:bg-border relative flex gap-3 [&:not(:last-child)]:after:absolute [&:not(:last-child)]:after:start-[0.95rem] [&:not(:last-child)]:after:top-8 [&:not(:last-child)]:after:h-[calc(100%-1rem)] [&:not(:last-child)]:after:w-px">
       <span
         className={cn(
           "relative z-10 flex size-8 shrink-0 items-center justify-center rounded-full",
-          state === "done" && "bg-emerald-600/12 text-emerald-700 dark:text-emerald-400",
+          state === "done" && "bg-success-soft text-success-foreground",
           state === "missed" && "bg-destructive/12 text-destructive",
-          state === "upcoming" && "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+          state === "upcoming" && "bg-warning-soft text-warning-foreground",
           state === "skipped" && "bg-muted text-muted-foreground",
         )}
       >

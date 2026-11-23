@@ -1,5 +1,6 @@
 "use client";
 
+import { CircleAlertIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Label } from "@/components/ui/label";
@@ -37,12 +38,12 @@ export function FormField({
   const message = useTranslatedMessage()(error);
 
   return (
-    <div className="grid content-start gap-2">
-      <Label htmlFor={htmlFor} className="gap-0.5">
+    <div className="grid content-start gap-1.5">
+      <Label htmlFor={htmlFor} className="text-foreground/90 gap-1 text-[0.8125rem] font-medium">
         {label}
         {required ? (
           <>
-            <span className="text-destructive" aria-hidden>
+            <span className="text-brand text-sm leading-none" aria-hidden>
               *
             </span>
             <span className="sr-only"> ({t("validation.required")})</span>
@@ -50,10 +51,15 @@ export function FormField({
         ) : null}
       </Label>
       {children}
-      {hint && !message ? <p className="text-muted-foreground text-xs">{hint}</p> : null}
+      {hint && !message ? <p className="text-subtle-foreground text-xs">{hint}</p> : null}
       {message ? (
-        <p id={`${htmlFor}-error`} role="alert" className="text-destructive text-xs">
-          {message}
+        <p
+          id={`${htmlFor}-error`}
+          role="alert"
+          className="text-destructive flex items-start gap-1.5 text-xs"
+        >
+          <CircleAlertIcon className="mt-px size-3.5 shrink-0" aria-hidden />
+          <span>{message}</span>
         </p>
       ) : null}
     </div>

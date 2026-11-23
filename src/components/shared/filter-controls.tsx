@@ -1,9 +1,10 @@
 "use client";
 
-import { ChevronDownIcon, XIcon } from "lucide-react";
+import { ChevronDownIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { Chip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -55,6 +56,7 @@ export function DebouncedFilterInput({
   );
 }
 
+/** An active filter as a removable chip: "Label  Value  ×". */
 export function FilterChip({
   label,
   value,
@@ -65,18 +67,14 @@ export function FilterChip({
   onRemove: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onRemove}
-      className={cn(
-        "border-border bg-muted/60 text-foreground hover:bg-muted inline-flex max-w-full items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors",
-      )}
-      aria-label={`${label}: ${value}. Remove filter`}
+    <Chip
+      onRemove={onRemove}
+      removeLabel={`${label}: ${value}. Remove filter`}
+      className="max-w-full"
     >
-      <span className="text-muted-foreground shrink-0">{label}</span>
-      <span className="truncate font-medium">{value}</span>
-      <XIcon className="text-muted-foreground size-3.5 shrink-0" aria-hidden />
-    </button>
+      <span className="text-muted-foreground shrink-0 text-xs">{label}</span>
+      <span className="truncate">{value}</span>
+    </Chip>
   );
 }
 
@@ -117,9 +115,7 @@ export function FilterGroup({
   if (!collapsible) {
     return (
       <div className="grid gap-3">
-        <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-          {title}
-        </p>
+        <p className="eyebrow text-muted-foreground">{title}</p>
         {fields}
       </div>
     );
@@ -128,8 +124,8 @@ export function FilterGroup({
   return (
     <div
       className={cn(
-        "bg-background overflow-hidden rounded-xl border transition-colors",
-        activeCount > 0 ? "border-foreground/15" : "border-border",
+        "bg-card overflow-hidden rounded-xl border shadow-xs transition-colors",
+        activeCount > 0 ? "border-brand/40" : "border-border",
       )}
     >
       <button
@@ -140,7 +136,7 @@ export function FilterGroup({
       >
         <span className="min-w-0 flex-1 text-sm font-medium tracking-tight">{title}</span>
         {activeCount > 0 ? (
-          <Badge variant="secondary" className="tabular-nums">
+          <Badge variant="premium" size="sm" className="tabular-nums">
             {activeCount}
           </Badge>
         ) : null}
@@ -166,7 +162,5 @@ export function FilterToolbar({
   children: React.ReactNode;
   className?: string;
 }) {
-  return (
-    <div className={cn("flex flex-wrap items-center gap-2", className)}>{children}</div>
-  );
+  return <div className={cn("flex flex-wrap items-center gap-2", className)}>{children}</div>;
 }

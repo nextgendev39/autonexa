@@ -67,7 +67,7 @@ export function FormStepBar({
         </div>
 
         <ol
-          className="ms-auto hidden min-w-0 items-center gap-1 md:flex"
+          className="ms-auto hidden min-w-0 items-stretch gap-2 md:flex"
           aria-label={t("navLabel")}
         >
           {steps.map((step, index) => {
@@ -75,43 +75,52 @@ export function FormStepBar({
             const active = index === currentIndex;
             const clickable = Boolean(onStepSelect) && index < currentIndex;
             return (
-              <li key={step.id} className="flex items-center gap-1">
+              <li key={step.id} className="w-24 min-w-0 lg:w-32">
                 <button
                   type="button"
                   disabled={!clickable}
                   onClick={() => onStepSelect?.(step.id)}
                   aria-current={active ? "step" : undefined}
                   className={cn(
-                    "flex items-center gap-2 rounded-full py-1 ps-1 pe-3 text-sm whitespace-nowrap transition-colors",
-                    active && "bg-brand-soft text-foreground font-medium",
-                    done && "text-foreground",
-                    !active && !done && "text-muted-foreground",
-                    clickable ? "hover:bg-muted cursor-pointer" : "cursor-default",
+                    "group/step focus-visible:ring-ring grid w-full gap-1.5 rounded-md pt-1 text-start outline-none focus-visible:ring-2",
+                    clickable ? "cursor-pointer" : "cursor-default",
                   )}
                 >
                   <span
                     className={cn(
-                      "flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold",
-                      active && "bg-brand text-brand-foreground",
-                      done && "bg-primary text-primary-foreground",
-                      !active && !done && "border",
+                      "h-0.5 w-full rounded-full transition-colors duration-200",
+                      done || active ? "bg-brand" : "bg-border",
+                      clickable && "group-hover/step:bg-brand/70",
                     )}
-                  >
-                    {done ? <CheckIcon className="size-3.5" aria-hidden /> : index + 1}
-                  </span>
-                  {step.label}
-                  {step.optional && active ? (
-                    <span className="text-muted-foreground text-xs font-normal">
-                      ({t("optional")})
-                    </span>
-                  ) : null}
-                </button>
-                {index < steps.length - 1 ? (
-                  <span
-                    className={cn("h-px w-4 lg:w-8", done ? "bg-primary" : "bg-border")}
                     aria-hidden
                   />
-                ) : null}
+                  <span className="flex min-w-0 items-center gap-1.5 text-xs">
+                    <span
+                      className={cn(
+                        "font-mono text-[10px] tabular-nums",
+                        active || done ? "text-brand" : "text-subtle-foreground",
+                      )}
+                    >
+                      {done ? (
+                        <CheckIcon className="size-3" aria-hidden />
+                      ) : (
+                        String(index + 1).padStart(2, "0")
+                      )}
+                    </span>
+                    <span
+                      className={cn(
+                        "truncate",
+                        active
+                          ? "text-foreground font-semibold"
+                          : done
+                            ? "text-foreground/80"
+                            : "text-muted-foreground",
+                      )}
+                    >
+                      {step.label}
+                    </span>
+                  </span>
+                </button>
               </li>
             );
           })}
@@ -123,12 +132,8 @@ export function FormStepBar({
           <span
             key={step.id}
             className={cn(
-              "h-1 flex-1 rounded-full transition-colors duration-300",
-              index < currentIndex
-                ? "bg-primary"
-                : index === currentIndex
-                  ? "bg-brand"
-                  : "bg-muted",
+              "h-0.5 flex-1 rounded-full transition-colors duration-200",
+              index < currentIndex ? "bg-brand" : index === currentIndex ? "bg-brand" : "bg-border",
             )}
           />
         ))}

@@ -130,7 +130,7 @@ export function VehiclePricingPanel({ vehicleId }: { vehicleId: string }) {
       ) : null}
 
       {p.isLoss ? (
-        <Alert className="animate-rise border-amber-500/40 bg-amber-500/10">
+        <Alert className="animate-rise border-warning/40 bg-warning-soft">
           <TrendingDownIcon />
           <AlertTitle>{t("pricing.warnings.lossTitle")}</AlertTitle>
           <AlertDescription>{t("pricing.warnings.lossBody")}</AlertDescription>
@@ -154,10 +154,10 @@ export function VehiclePricingPanel({ vehicleId }: { vehicleId: string }) {
       </div>
 
       {awaitingApproval && canApprove ? (
-        <Card className="animate-rise border-amber-500/40 bg-amber-500/5">
+        <Card className="animate-rise border-warning/40 bg-warning-soft">
           <CardHeader>
             <CardTitle className="flex items-center gap-2.5">
-              <span className="flex size-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-700 dark:text-amber-300">
+              <span className="bg-warning-soft text-warning-foreground flex size-8 items-center justify-center rounded-lg">
                 <ShieldAlertIcon className="size-4" aria-hidden />
               </span>
               {t("pricing.sections.approval")}

@@ -26,7 +26,6 @@ import {
 import { LoadingButton } from "@/components/shared/loading-button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { SearchableSelect, type SearchableSelectOption } from "@/components/ui/searchable-select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -183,16 +182,20 @@ function toDefaults(vehicle: VehicleDetail | undefined, branchId: string): Vehic
   };
 }
 
+/**
+ * AutoNexa form section: on wide screens the title sits in its own column beside the fields
+ * panel; narrower screens stack the title above the panel.
+ */
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <Card className="gap-4 [--card-spacing:--spacing(4)] sm:[--card-spacing:--spacing(5)]">
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="grid gap-x-4 gap-y-3.5 sm:grid-cols-2 lg:grid-cols-3">
+    <section className="grid gap-3 xl:grid-cols-[13rem_minmax(0,1fr)] xl:gap-10">
+      <h2 className="font-heading pt-1 text-[0.9375rem] font-semibold tracking-[-0.015em] xl:pt-5">
+        {title}
+      </h2>
+      <div className="bg-card grid gap-x-4 gap-y-4 rounded-xl border p-4 sm:grid-cols-2 sm:p-5 lg:grid-cols-3">
         {children}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }
 

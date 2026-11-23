@@ -16,7 +16,8 @@ import {
 } from "lucide-react";
 
 import { BranchFormDialog } from "@/components/branches/branch-form-dialog";
-import { KpiCard } from "@/components/cards/kpi-card";
+import { MetricStrip, MetricStripItem } from "@/components/layout/metric-strip";
+import { ChipTabs } from "@/components/ui/chip";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { useAppLocale } from "@/components/inventory/inventory-utils";
 import { PageHeader } from "@/components/layout/page-header";
@@ -106,63 +107,47 @@ export function BranchesPageClient({ initialBranches, canManage }: Props) {
         <EmptyState icon={Building2Icon} title={t("empty")} description={t("emptyHint")} />
       ) : (
         <>
-          <section className="stagger grid grid-cols-2 gap-3 [--stagger:70ms] lg:grid-cols-4 lg:gap-4">
-            <KpiCard
+          <MetricStrip label={t("title")} className="animate-rise">
+            <MetricStripItem
               label={t("summary.branches")}
               value={number(branches.length)}
               hint={t("summary.branchesHint", { count: number(totals.active) })}
               icon={Building2Icon}
               tone="brand"
             />
-            <KpiCard
+            <MetricStripItem
               label={t("summary.inStock")}
               value={number(totals.inStock)}
               hint={t("summary.inStockHint")}
               icon={CarFrontIcon}
               tone="info"
             />
-            <KpiCard
+            <MetricStripItem
               label={t("summary.ready")}
               value={number(totals.ready)}
               icon={BadgeCheckIcon}
               tone="success"
             />
-            <KpiCard
+            <MetricStripItem
               label={t("summary.team")}
               value={number(totals.team)}
               icon={UsersIcon}
-              tone="neutral"
             />
-          </section>
+          </MetricStrip>
 
           {branches.length >= SEARCH_FROM ? (
-            <div className="animate-rise flex flex-col gap-3 [animation-delay:160ms] md:flex-row md:items-center md:justify-between">
-              <div
-                className="bg-muted flex w-full touch-pan-x touch-pan-y overflow-x-auto overflow-y-hidden overscroll-x-contain rounded-lg p-0.5 text-sm md:w-fit"
-                role="tablist"
-              >
-                {(["all", "active", "inactive"] as const).map((key) => (
-                  <button
-                    key={key}
-                    type="button"
-                    role="tab"
-                    aria-selected={filter === key}
-                    onClick={() => setFilter(key)}
-                    className={cn(
-                      "flex-1 rounded-md px-3 py-1.5 whitespace-nowrap transition-all duration-200 md:flex-none",
-                      filter === key
-                        ? "bg-background font-medium shadow-xs"
-                        : "text-muted-foreground hover:text-foreground",
-                    )}
-                  >
-                    {t(`filters.${key}`)}{" "}
-                    <span className="text-muted-foreground tabular-nums">
-                      ({number(counts[key])})
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <InputGroup className="bg-card h-10 md:h-9 md:max-w-xs">
+            <div className="animate-rise bg-card rounded-panel flex flex-col gap-3 border px-3 py-3 shadow-sm [animation-delay:100ms] sm:px-4 md:flex-row md:items-center md:justify-between">
+              <ChipTabs
+                label={t("title")}
+                value={filter}
+                onChange={setFilter}
+                items={(["all", "active", "inactive"] as const).map((key) => ({
+                  value: key,
+                  label: t(`filters.${key}`),
+                  count: number(counts[key]),
+                }))}
+              />
+              <InputGroup className="bg-background h-9 md:max-w-xs">
                 <InputGroupAddon>
                   <SearchIcon />
                 </InputGroupAddon>
@@ -191,7 +176,7 @@ export function BranchesPageClient({ initialBranches, canManage }: Props) {
           {visible.length === 0 ? (
             <EmptyState icon={SearchIcon} title={t("noMatches")} />
           ) : (
-            <div className="stagger grid gap-4 [--stagger:60ms] sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-5 sm:grid-cols-2 2xl:grid-cols-3">
               {visible.map((branch) => (
                 <BranchCard
                   key={branch.id}
@@ -218,19 +203,19 @@ function BranchCard({ branch: b, onEdited }: { branch: BranchListItem; onEdited?
   return (
     <article
       className={cn(
-        "group/branch bg-card ring-foreground/[0.07] flex flex-col overflow-hidden rounded-xl shadow-xs ring-1",
-        "hover:ring-brand/30 transition-[box-shadow,transform] duration-300 hover:-translate-y-1 hover:shadow-lg",
+        "group/branch bg-card flex flex-col overflow-hidden rounded-xl border shadow-sm",
+        "hover:border-brand/40 transition-[box-shadow,border-color,transform] duration-200 hover:-translate-y-0.5 hover:shadow-md",
         !b.isActive && "opacity-75",
       )}
     >
       {/* Carbon header with the branch monogram, like a showroom sign. */}
-      <div className="bg-carbon relative overflow-hidden px-5 pt-5 pb-4">
+      <div className="bg-brand-panel relative overflow-hidden px-5 pt-5 pb-4">
         <span
           className="bg-brand/25 pointer-events-none absolute -end-10 -top-12 size-36 rounded-full opacity-70 blur-3xl transition-opacity duration-500 group-hover/branch:opacity-100"
           aria-hidden
         />
         <div className="relative flex items-start gap-3">
-          <span className="bg-gold text-brand-foreground font-heading flex size-11 shrink-0 items-center justify-center rounded-lg text-sm font-bold tracking-wide shadow-md">
+          <span className="bg-gold text-gold-foreground font-heading flex size-11 shrink-0 items-center justify-center rounded-lg text-sm font-bold tracking-wide shadow-md">
             {b.code.slice(0, 3).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1">
@@ -291,7 +276,7 @@ function BranchCard({ branch: b, onEdited }: { branch: BranchListItem; onEdited?
             <div className="bg-muted flex h-1.5 overflow-hidden rounded-full" aria-hidden>
               <span className="bg-chrome" style={{ width: share(inTransit) }} />
               <span className="bg-gold" style={{ width: share(ready) }} />
-              <span className="bg-amber-500" style={{ width: share(booked) }} />
+              <span className="bg-warning" style={{ width: share(booked) }} />
               <span className="bg-foreground/20" style={{ width: share(other) }} />
             </div>
             <div className="text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 text-[11px]">
@@ -304,7 +289,7 @@ function BranchCard({ branch: b, onEdited }: { branch: BranchListItem; onEdited?
                 label={`${t("stats.ready")} ${formatNumber(ready, locale)}`}
               />
               <Legend
-                className="bg-amber-500"
+                className="bg-warning"
                 label={`${t("stats.booked")} ${formatNumber(booked, locale)}`}
               />
             </div>

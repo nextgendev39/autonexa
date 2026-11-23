@@ -135,7 +135,7 @@ export function FeatureTabs({ copy }: { copy: LandingCopy["features"] }) {
                       className={cn(
                         "flex size-10 shrink-0 items-center justify-center rounded-lg transition-colors duration-300",
                         selected
-                          ? "bg-gold text-brand-foreground"
+                          ? "bg-gold text-gold-foreground"
                           : "bg-muted text-muted-foreground",
                       )}
                     >

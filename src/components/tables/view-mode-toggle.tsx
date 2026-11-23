@@ -22,7 +22,7 @@ export function ViewModeToggle({
     <div
       className={cn(
         // Phones always get the grid, so the switch only shows from tablets up.
-        "bg-muted/50 hidden items-center gap-0.5 rounded-lg border p-0.5 md:inline-flex",
+        "bg-muted hidden items-center gap-0.5 rounded-full border p-0.5 md:inline-flex",
         className,
       )}
       role="group"
@@ -31,8 +31,13 @@ export function ViewModeToggle({
       <Button
         type="button"
         size="sm"
-        variant={mode === "list" ? "secondary" : "ghost"}
-        className="h-8 gap-1.5 px-2.5"
+        variant="ghost"
+        className={cn(
+          "h-8 gap-1.5 rounded-full px-3",
+          mode === "list"
+            ? "bg-card text-foreground hover:bg-card shadow-sm"
+            : "text-muted-foreground",
+        )}
         aria-pressed={mode === "list"}
         onClick={() => onChange("list")}
       >
@@ -42,8 +47,13 @@ export function ViewModeToggle({
       <Button
         type="button"
         size="sm"
-        variant={mode === "grid" ? "secondary" : "ghost"}
-        className="h-8 gap-1.5 px-2.5"
+        variant="ghost"
+        className={cn(
+          "h-8 gap-1.5 rounded-full px-3",
+          mode === "grid"
+            ? "bg-card text-foreground hover:bg-card shadow-sm"
+            : "text-muted-foreground",
+        )}
         aria-pressed={mode === "grid"}
         onClick={() => onChange("grid")}
       >

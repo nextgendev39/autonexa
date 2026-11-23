@@ -305,11 +305,11 @@ function VehicleView({
 
         <section className="grid gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="bg-muted rounded-full px-2.5 py-0.5 text-xs font-medium">
+            <span className="bg-muted border-border rounded-full border px-2.5 py-0.5 text-xs font-medium">
               {tRoot(`inventory.enums.marketType.${v.marketType}`)}
             </span>
             {notice ? (
-              <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:text-amber-200">
+              <span className="bg-warning-soft text-warning-foreground border-warning/25 rounded-full border px-2.5 py-0.5 text-xs font-medium">
                 {notice}
               </span>
             ) : null}

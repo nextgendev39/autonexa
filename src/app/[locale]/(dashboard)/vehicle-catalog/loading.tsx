@@ -11,7 +11,7 @@ export default function Loading() {
         {Array.from({ length: 4 }, (_, column) => (
           <div
             key={column}
-            className={`bg-card ring-foreground/[0.07] h-[max(26rem,calc(100svh-19rem))] flex-col overflow-hidden rounded-xl shadow-xs ring-1 ${column === 0 ? "flex" : "hidden lg:flex"}`}
+            className={`bg-card ring-border h-[max(26rem,calc(100svh-19rem))] flex-col overflow-hidden rounded-xl shadow-xs ring-1 ${column === 0 ? "flex" : "hidden lg:flex"}`}
           >
             <div className="grid gap-3 border-b p-3">
               <div className="flex items-center gap-2.5">

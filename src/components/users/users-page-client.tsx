@@ -21,11 +21,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { KpiCard } from "@/components/cards/kpi-card";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { PageHeader } from "@/components/layout/page-header";
 import { Spinner } from "@/components/shared/spinner";
-import { TabCount } from "@/components/shared/tab-count";
+import { DataPanel } from "@/components/layout/data-panel";
+import { statusTones } from "@/components/shared/status-badge";
+import { MetricStrip, MetricStripItem } from "@/components/layout/metric-strip";
+import { ChipTabs } from "@/components/ui/chip";
 import { ResponsiveTable } from "@/components/tables/responsive-table";
 import { Button } from "@/components/ui/button";
 import {
@@ -76,8 +78,7 @@ const isSuperAdmin = (user: UserListItem) => user.roles.some((r) => r.key === "s
 const matchesFilter = (user: UserListItem, filter: Filter) =>
   filter === "inactive" ? user.status === "disabled" : user.status === filter;
 
-export function UsersPageClient({ initialUsers, roles,
-  branches, currentUserId }: Props) {
+export function UsersPageClient({ initialUsers, roles, branches, currentUserId }: Props) {
   const t = useTranslations("modules.users");
   const tRoot = useTranslations();
   const locale = useLocale() as AppLocale;
@@ -233,173 +234,170 @@ export function UsersPageClient({ initialUsers, roles,
         <EmptyState icon={UsersIcon} title={t("noUsers")} />
       ) : (
         <>
-          <section className="stagger grid grid-cols-2 gap-3 [--stagger:70ms] lg:grid-cols-4 lg:gap-4">
-            <KpiCard
+          <MetricStrip label={t("title")} className="animate-rise">
+            <MetricStripItem
               label={t("kpis.total")}
               value={number(counts.all)}
               icon={UsersIcon}
               tone="brand"
             />
-            <KpiCard
+            <MetricStripItem
               label={t("kpis.active")}
               value={number(counts.active)}
               hint={t("kpis.activeHint")}
               icon={UserCheckIcon}
               tone="success"
             />
-            <KpiCard
+            <MetricStripItem
               label={t("kpis.invited")}
               value={number(counts.invited)}
               hint={t("kpis.invitedHint")}
               icon={MailIcon}
               tone={counts.invited > 0 ? "warning" : "neutral"}
             />
-            <KpiCard
+            <MetricStripItem
               label={t("kpis.admins")}
               value={number(counts.admins)}
               icon={ShieldCheckIcon}
-              tone="neutral"
             />
-          </section>
+          </MetricStrip>
 
-          <div className="animate-rise flex flex-col gap-3 [animation-delay:160ms] md:flex-row md:items-center md:justify-between">
-            <div
-              className="bg-muted flex w-full touch-pan-x touch-pan-y overflow-x-auto overflow-y-hidden overscroll-x-contain rounded-lg p-0.5 text-sm md:w-fit"
-              role="tablist"
-            >
-              {FILTERS.map((key) => (
-                <button
-                  key={key}
-                  type="button"
-                  role="tab"
-                  aria-selected={filter === key}
-                  onClick={() => setFilter(key)}
-                  className={cn(
-                    "flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 whitespace-nowrap transition-all duration-200 md:flex-none",
-                    filter === key
-                      ? "bg-background font-medium shadow-xs"
-                      : "text-muted-foreground hover:text-foreground",
-                  )}
-                >
-                  {t(`filters.${key}`)}
-                  <TabCount selected={filter === key}>{number(counts[key])}</TabCount>
-                </button>
-              ))}
-            </div>
-            <InputGroup className="bg-card h-10 md:h-9 md:max-w-xs">
-              <InputGroupAddon>
-                <SearchIcon />
-              </InputGroupAddon>
-              <InputGroupInput
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder={t("searchPlaceholder")}
-                aria-label={t("searchPlaceholder")}
-              />
-              {query ? (
-                <InputGroupAddon align="inline-end">
-                  <InputGroupButton
-                    size="icon-xs"
-                    onClick={() => setQuery("")}
-                    aria-label={t("clearSearch")}
-                  >
-                    <XIcon />
-                  </InputGroupButton>
-                </InputGroupAddon>
-              ) : null}
-            </InputGroup>
-          </div>
-
-          {visible.length === 0 ? (
-            query.trim() ? (
-              <EmptyState
-                icon={SearchIcon}
-                title={t("noMatches")}
-                description={t("noMatchesHint")}
-              />
+          <DataPanel
+            className="animate-rise [animation-delay:100ms]"
+            toolbar={
+              <>
+                <ChipTabs
+                  label={t("title")}
+                  value={filter}
+                  onChange={setFilter}
+                  items={FILTERS.map((key) => ({
+                    value: key,
+                    label: t(`filters.${key}`),
+                    count: number(counts[key]),
+                  }))}
+                />
+                <InputGroup className="bg-background h-9 xl:w-72 xl:shrink-0">
+                  <InputGroupAddon>
+                    <SearchIcon />
+                  </InputGroupAddon>
+                  <InputGroupInput
+                    type="search"
+                    value={query}
+                    onChange={(event) => setQuery(event.target.value)}
+                    placeholder={t("searchPlaceholder")}
+                    aria-label={t("searchPlaceholder")}
+                  />
+                  {query ? (
+                    <InputGroupAddon align="inline-end">
+                      <InputGroupButton
+                        size="icon-xs"
+                        onClick={() => setQuery("")}
+                        aria-label={t("clearSearch")}
+                      >
+                        <XIcon />
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  ) : null}
+                </InputGroup>
+              </>
+            }
+          >
+            {visible.length === 0 ? (
+              query.trim() ? (
+                <EmptyState
+                  inset
+                  className="py-12"
+                  icon={SearchIcon}
+                  title={t("noMatches")}
+                  description={t("noMatchesHint")}
+                />
+              ) : (
+                <EmptyState
+                  inset
+                  className="py-12"
+                  icon={
+                    filter === "inactive"
+                      ? UserXIcon
+                      : filter === "suspended"
+                        ? CirclePauseIcon
+                        : filter === "invited"
+                          ? MailIcon
+                          : UsersIcon
+                  }
+                  title={t(`empty.${filter}`)}
+                  description={t(`empty.${filter}Hint`)}
+                />
+              )
             ) : (
-              <EmptyState
-                icon={
-                  filter === "inactive"
-                    ? UserXIcon
-                    : filter === "suspended"
-                      ? CirclePauseIcon
-                      : filter === "invited"
-                        ? MailIcon
-                        : UsersIcon
-                }
-                title={t(`empty.${filter}`)}
-                description={t(`empty.${filter}Hint`)}
-              />
-            )
-          ) : (
-            <ResponsiveTable
-              rows={visible}
-              columns={[
-                {
-                  key: "name",
-                  header: t("name"),
-                  className: "ps-4",
-                  cell: (user) => <UserIdentity user={user} />,
-                },
-                {
-                  key: "role",
-                  header: t("role"),
-                  cell: (user) => <RoleList user={user} label={role} />,
-                },
-                {
-                  key: "status",
-                  header: t("status"),
-                  cell: (user) => <UserStatus status={user.status} />,
-                },
-                {
-                  key: "lastSignIn",
-                  header: t("lastSignIn"),
-                  className: "hidden whitespace-nowrap lg:table-cell",
-                  cell: (user) => (
-                    <div className="grid gap-0.5">
-                      <span className={user.lastSignInAt ? undefined : "text-muted-foreground"}>
-                        {user.lastSignInAt
-                          ? formatDate(user.lastSignInAt, locale, "short")
-                          : t("neverSignedIn")}
-                      </span>
-                      <span className="text-muted-foreground text-xs">
-                        {t("joinedOn", { date: formatDate(user.createdAt, locale, "short") })}
-                      </span>
+              <ResponsiveTable
+                bare
+                gridClassName="bg-muted/35 p-3 sm:p-4"
+                rows={visible}
+                columns={[
+                  {
+                    key: "name",
+                    header: t("name"),
+                    className: "ps-4",
+                    cell: (user) => <UserIdentity user={user} />,
+                  },
+                  {
+                    key: "role",
+                    header: t("role"),
+                    cell: (user) => <RoleList user={user} label={role} />,
+                  },
+                  {
+                    key: "status",
+                    header: t("status"),
+                    cell: (user) => <UserStatus status={user.status} />,
+                  },
+                  {
+                    key: "lastSignIn",
+                    header: t("lastSignIn"),
+                    className: "hidden whitespace-nowrap lg:table-cell",
+                    cell: (user) => (
+                      <div className="grid gap-0.5">
+                        <span className={user.lastSignInAt ? undefined : "text-muted-foreground"}>
+                          {user.lastSignInAt
+                            ? formatDate(user.lastSignInAt, locale, "short")
+                            : t("neverSignedIn")}
+                        </span>
+                        <span className="text-muted-foreground text-xs">
+                          {t("joinedOn", { date: formatDate(user.createdAt, locale, "short") })}
+                        </span>
+                      </div>
+                    ),
+                  },
+                  {
+                    key: "actions",
+                    header: <span className="sr-only">{t("editTitle")}</span>,
+                    className: "pe-4 text-end",
+                    cell: actions,
+                  },
+                ]}
+                renderCard={(user) => (
+                  <article
+                    key={user.id}
+                    className="bg-card grid gap-3 rounded-xl border p-4 shadow-xs"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <UserIdentity user={user} />
+                      {actions(user)}
                     </div>
-                  ),
-                },
-                {
-                  key: "actions",
-                  header: <span className="sr-only">{t("editTitle")}</span>,
-                  className: "pe-4 text-end",
-                  cell: actions,
-                },
-              ]}
-              renderCard={(user) => (
-                <article
-                  key={user.id}
-                  className="bg-card grid gap-3 rounded-xl border p-4 shadow-xs"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <UserIdentity user={user} />
-                    {actions(user)}
-                  </div>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <UserStatus status={user.status} />
-                    <RoleList user={user} label={role} />
-                  </div>
-                  <p className="text-muted-foreground border-t pt-3 text-xs">
-                    {t("lastSignIn")}:{" "}
-                    {user.lastSignInAt
-                      ? formatDate(user.lastSignInAt, locale, "short")
-                      : t("neverSignedIn")}
-                  </p>
-                </article>
-              )}
-            />
-          )}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <UserStatus status={user.status} />
+                      <RoleList user={user} label={role} />
+                    </div>
+                    <p className="text-muted-foreground border-t pt-3 text-xs">
+                      {t("lastSignIn")}:{" "}
+                      {user.lastSignInAt
+                        ? formatDate(user.lastSignInAt, locale, "short")
+                        : t("neverSignedIn")}
+                    </p>
+                  </article>
+                )}
+              />
+            )}
+          </DataPanel>
         </>
       )}
 
@@ -437,7 +435,7 @@ function UserAvatar({ user }: { user: UserListItem }) {
       <span
         className={cn(
           "font-heading flex size-10 items-center justify-center rounded-full text-sm font-semibold shadow-sm",
-          admin ? "bg-gold text-brand-foreground" : "bg-carbon ring-brand/30 ring-1",
+          admin ? "bg-gold text-gold-foreground" : "bg-brand-panel ring-brand/30 ring-1",
           user.status !== "active" && "opacity-60",
         )}
       >
@@ -491,7 +489,7 @@ function RoleList({
             className={cn(
               "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap",
               admin
-                ? "bg-gold text-brand-foreground shadow-sm"
+                ? "bg-primary text-primary-foreground shadow-xs"
                 : "bg-muted text-foreground/80 ring-foreground/10 ring-1 ring-inset",
             )}
           >
@@ -512,32 +510,20 @@ function UserStatus({ status }: { status: UserListItem["status"] }) {
   const t = useTranslations("modules.users");
   const label = t(STATUS_LABEL_KEY[status] as Parameters<typeof t>[0]);
   const pill =
-    "inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap ring-1 ring-inset";
-
-  if (status === "active") {
-    return (
-      <span className={cn(pill, "bg-brand-soft text-brand-strong ring-brand/35 dark:text-brand")}>
-        <span className="relative flex size-1.5" aria-hidden>
-          <span className="animate-ping-soft bg-brand absolute inset-0 rounded-full motion-reduce:hidden" />
-          <span className="bg-brand relative size-1.5 rounded-full" />
-        </span>
-        {label}
-      </span>
-    );
-  }
-  if (status === "invited") {
-    return (
-      <span
-        className={cn(pill, "bg-amber-500/10 text-amber-800 ring-amber-500/30 dark:text-amber-300")}
-      >
-        <MailIcon className="size-3.5" aria-hidden />
-        {label}
-      </span>
-    );
-  }
+    "inline-flex h-6 items-center gap-1.5 rounded-full border px-2.5 text-xs font-medium whitespace-nowrap";
+  const tone =
+    status === "active"
+      ? statusTones.available
+      : status === "invited"
+        ? statusTones.pending
+        : statusTones.inactive;
   return (
-    <span className={cn(pill, "bg-muted text-muted-foreground ring-foreground/10")}>
-      <span className="bg-muted-foreground/60 size-1.5 rounded-full" aria-hidden />
+    <span className={cn(pill, tone, status === "invited" && "ps-2")}>
+      {status === "invited" ? (
+        <MailIcon className="size-3.5" aria-hidden />
+      ) : (
+        <span className="size-1.5 rounded-full bg-current" aria-hidden />
+      )}
       {label}
     </span>
   );

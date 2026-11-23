@@ -1,21 +1,29 @@
-import { PageHeaderSkeleton, PageSkeleton, TileGridSkeleton } from "@/components/feedback/skeletons";
+import {
+  PageHeaderSkeleton,
+  PageSkeleton,
+  PanelSkeleton,
+  TileGridSkeleton,
+} from "@/components/feedback/skeletons";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/** Header, the scope switch and type chips with search, then the document tiles. */
+/** Header, then the library: category rail on the left, the documents panel on the right. */
 export default function Loading() {
   return (
     <PageSkeleton>
       <PageHeaderSkeleton actions={1} />
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="flex flex-wrap items-center gap-2">
-          <Skeleton className="h-9 w-44 rounded-lg" />
-          {Array.from({ length: 4 }, (_, index) => (
-            <Skeleton key={index} className="h-7 w-20 rounded-full" />
+      <div className="grid items-start gap-6 lg:grid-cols-[14rem_minmax(0,1fr)]">
+        <div className="flex gap-1.5 lg:grid lg:gap-2">
+          {Array.from({ length: 5 }, (_, index) => (
+            <Skeleton
+              key={index}
+              className="h-8 w-24 shrink-0 rounded-full lg:h-9 lg:w-full lg:rounded-lg"
+            />
           ))}
         </div>
-        <Skeleton className="h-10 w-full md:h-9 lg:max-w-72" />
+        <PanelSkeleton chips={2} well>
+          <TileGridSkeleton count={6} className="sm:grid-cols-2 2xl:grid-cols-3" />
+        </PanelSkeleton>
       </div>
-      <TileGridSkeleton />
     </PageSkeleton>
   );
 }

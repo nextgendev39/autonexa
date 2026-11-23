@@ -6,13 +6,14 @@ import { Link } from "@/lib/i18n/navigation";
 import { cn } from "@/lib/utils";
 
 /**
- * Stock status colours (validated light + dark): in transit blue, ready green, booked amber.
- * Green↔amber is close for protanopes, so every segment is direct-labelled with gaps between.
+ * Stock status colours from the chart tokens (theme-aware): in transit steel blue, ready champagne,
+ * booked graphite. Every segment is direct-labelled with gaps between, so colour is never the
+ * only cue.
  */
 export const STOCK_COLORS = {
-  inTransit: "#2563eb",
-  readyForSale: "#059669",
-  booked: "#d97706",
+  inTransit: "var(--chart-4)",
+  readyForSale: "var(--chart-1)",
+  booked: "var(--chart-2)",
 } as const;
 
 /* ------------------------------------------------------------- sales bars */
@@ -47,9 +48,18 @@ export function SalesBars({
       </div>
       <div className="relative">
         {/* Recessive gridlines at 50% and 100% of the tallest month. */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px border-t border-dashed" aria-hidden />
-        <div className="pointer-events-none absolute inset-x-0 top-1/2 h-px border-t border-dashed" aria-hidden />
-        <ol className="relative flex h-44 items-end gap-2 border-b sm:gap-3" onMouseLeave={() => setHover(null)}>
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-px border-t border-dashed"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-x-0 top-1/2 h-px border-t border-dashed"
+          aria-hidden
+        />
+        <ol
+          className="relative flex h-44 items-end gap-2 border-b sm:gap-3"
+          onMouseLeave={() => setHover(null)}
+        >
           {points.map((point, index) => {
             const height = point.revenue > 0 ? Math.max((point.revenue / max) * 100, 3) : 0;
             const active = index === shown;
@@ -65,7 +75,7 @@ export function SalesBars({
                 <span
                   className={cn(
                     "animate-grow-y w-full origin-bottom rounded-t-[4px] transition-colors",
-                    active ? "bg-gold" : "bg-brand/35 group-hover:bg-brand/55",
+                    active ? "bg-gold" : "bg-foreground/12 group-hover:bg-foreground/22",
                   )}
                   style={{ height: `${height}%`, animationDelay: `${index * 60}ms` }}
                 />
@@ -101,7 +111,11 @@ export function StockPipeline({
   const total = parts.reduce((sum, p) => sum + p.units, 0);
   return (
     <div className="grid gap-4">
-      <div className="flex h-4 w-full gap-0.5 overflow-hidden rounded-full" role="img" aria-label={parts.map((p) => `${p.label}: ${p.units}`).join(", ")}>
+      <div
+        className="flex h-4 w-full gap-0.5 overflow-hidden rounded-full"
+        role="img"
+        aria-label={parts.map((p) => `${p.label}: ${p.units}`).join(", ")}
+      >
         {total === 0 ? (
           <span className="bg-muted h-full w-full" />
         ) : (
@@ -111,7 +125,10 @@ export function StockPipeline({
               <span
                 key={p.key}
                 className="animate-grow-x h-full origin-left first:rounded-s-full last:rounded-e-full"
-                style={{ width: `${(p.units / total) * 100}%`, backgroundColor: STOCK_COLORS[p.key] }}
+                style={{
+                  width: `${(p.units / total) * 100}%`,
+                  backgroundColor: STOCK_COLORS[p.key],
+                }}
                 title={`${p.label}: ${p.units}`}
               />
             ))
@@ -120,9 +137,16 @@ export function StockPipeline({
       <ul className="grid grid-cols-3 gap-2">
         {parts.map((p) => (
           <li key={p.key}>
-            <Link href={p.href} className="hover:bg-muted/60 grid gap-1 rounded-lg px-2 py-1.5 transition-colors">
+            <Link
+              href={p.href}
+              className="hover:bg-muted/60 grid gap-1 rounded-lg px-2 py-1.5 transition-colors"
+            >
               <span className="text-muted-foreground flex items-center gap-1.5 text-xs">
-                <span className="size-2.5 shrink-0 rounded-[3px]" style={{ backgroundColor: STOCK_COLORS[p.key] }} aria-hidden />
+                <span
+                  className="size-2.5 shrink-0 rounded-[3px]"
+                  style={{ backgroundColor: STOCK_COLORS[p.key] }}
+                  aria-hidden
+                />
                 <span className="truncate">{p.label}</span>
               </span>
               <span className="font-heading text-xl font-semibold tabular-nums">{p.units}</span>
@@ -139,7 +163,11 @@ export function StockPipeline({
 
 /* --------------------------------------------------------- outcome donut */
 
-const OUTCOME_COLORS = { sold: "#059669", active: "#d97706", cancelled: "var(--muted-foreground)" } as const;
+const OUTCOME_COLORS = {
+  sold: "var(--chart-1)",
+  active: "var(--chart-2)",
+  cancelled: "var(--chart-5)",
+} as const;
 
 /** Bookings from the last 90 days by outcome, with the conversion rate in the middle. */
 export function OutcomeDonut({
@@ -162,8 +190,21 @@ export function OutcomeDonut({
   return (
     <div className="flex flex-wrap items-center justify-center gap-5">
       <figure className="relative" style={{ width: size, height: size }}>
-        <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} className="-rotate-90" aria-hidden>
-          <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--muted)" strokeWidth={stroke} />
+        <svg
+          viewBox={`0 0 ${size} ${size}`}
+          width={size}
+          height={size}
+          className="-rotate-90"
+          aria-hidden
+        >
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={r}
+            fill="none"
+            stroke="var(--muted)"
+            strokeWidth={stroke}
+          />
           {total > 0
             ? parts.map((p) => {
                 if (p.value <= 0) return null;
@@ -196,7 +237,11 @@ export function OutcomeDonut({
       <ul className="grid gap-2 text-sm">
         {parts.map((p) => (
           <li key={p.key} className="flex items-center gap-2">
-            <span className="size-2.5 shrink-0 rounded-[3px]" style={{ backgroundColor: OUTCOME_COLORS[p.key] }} aria-hidden />
+            <span
+              className="size-2.5 shrink-0 rounded-[3px]"
+              style={{ backgroundColor: OUTCOME_COLORS[p.key] }}
+              aria-hidden
+            />
             <span className="text-muted-foreground">{p.label}</span>
             <span className="ms-auto ps-4 font-medium tabular-nums">{p.value}</span>
           </li>
@@ -212,7 +257,14 @@ export function OutcomeDonut({
 export function HorizontalBars({
   rows,
 }: {
-  rows: { key: string; label: string; value: number; display: string; detail?: string; barClassName: string }[];
+  rows: {
+    key: string;
+    label: string;
+    value: number;
+    display: string;
+    detail?: string;
+    barClassName: string;
+  }[];
 }) {
   const max = Math.max(...rows.map((r) => r.value), 1);
   return (
@@ -223,13 +275,21 @@ export function HorizontalBars({
             <span className="truncate">{row.label}</span>
             <span className="shrink-0 tabular-nums">
               <span className="font-medium">{row.display}</span>
-              {row.detail ? <span className="text-muted-foreground ms-2 text-xs">{row.detail}</span> : null}
+              {row.detail ? (
+                <span className="text-muted-foreground ms-2 text-xs">{row.detail}</span>
+              ) : null}
             </span>
           </div>
           <div className="bg-muted h-2 overflow-hidden rounded-full">
             <div
-              className={cn("animate-grow-x h-full origin-left rounded-full rtl:origin-right", row.barClassName)}
-              style={{ width: `${row.value > 0 ? Math.max((row.value / max) * 100, 2) : 0}%`, animationDelay: `${index * 70}ms` }}
+              className={cn(
+                "animate-grow-x h-full origin-left rounded-full rtl:origin-right",
+                row.barClassName,
+              )}
+              style={{
+                width: `${row.value > 0 ? Math.max((row.value / max) * 100, 2) : 0}%`,
+                animationDelay: `${index * 70}ms`,
+              }}
               title={`${row.label}: ${row.display}`}
             />
           </div>

@@ -2,7 +2,6 @@
 
 import {
   ActivityIcon,
-  BadgeCheckIcon,
   Building2Icon,
   CreditCardIcon,
   GaugeIcon,
@@ -30,10 +29,25 @@ import { cn } from "@/lib/utils";
 const NAV: { href: string; key: string; icon: LucideIcon; permission: PlatformPermission }[] = [
   { href: "/platform", key: "dashboard", icon: GaugeIcon, permission: "console.access" },
   { href: "/platform/tenants", key: "tenants", icon: Building2Icon, permission: "tenants.view" },
-  { href: "/platform/subscriptions", key: "subscriptions", icon: CreditCardIcon, permission: "subscriptions.view" },
+  {
+    href: "/platform/subscriptions",
+    key: "subscriptions",
+    icon: CreditCardIcon,
+    permission: "subscriptions.view",
+  },
   { href: "/platform/plans", key: "plans", icon: LayersIcon, permission: "plans.view" },
-  { href: "/platform/storefronts", key: "storefronts", icon: GlobeIcon, permission: "storefronts.view" },
-  { href: "/platform/demo-requests", key: "demoRequests", icon: InboxIcon, permission: "demo_requests.view" },
+  {
+    href: "/platform/storefronts",
+    key: "storefronts",
+    icon: GlobeIcon,
+    permission: "storefronts.view",
+  },
+  {
+    href: "/platform/demo-requests",
+    key: "demoRequests",
+    icon: InboxIcon,
+    permission: "demo_requests.view",
+  },
   { href: "/platform/usage", key: "usage", icon: ActivityIcon, permission: "usage.view" },
   { href: "/platform/billing", key: "billing", icon: ReceiptTextIcon, permission: "billing.view" },
   { href: "/platform/catalog", key: "catalog", icon: LibraryIcon, permission: "catalog.manage" },
@@ -55,33 +69,16 @@ export function PlatformShell({
     href === "/platform" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <div className="bg-background flex h-svh flex-col overflow-hidden">
-      <header className="border-border flex h-14 shrink-0 items-center gap-3 border-b px-4 lg:px-6">
-        <BrandMark />
-        <span className="bg-brand-soft text-brand inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium">
-          <BadgeCheckIcon className="size-3.5" aria-hidden />
-          {t("nav.badge")}
-        </span>
-        <div className="ms-auto flex items-center gap-1">
-          <span className="text-muted-foreground hidden text-sm sm:inline">
-            {context.email} · {t(`roles.${context.role}`)}
-          </span>
-          <LanguageSwitcher compact />
-          <ThemeToggle />
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={t("nav.signOut")}
-            onClick={() => void signOutClient()}
-          >
-            <LogOutIcon />
-          </Button>
+    <div className="bg-background lg:bg-shell flex h-svh flex-col overflow-hidden lg:flex-row">
+      {/* Rail on the shell frame (desktop); a scrolling tab row on phones. */}
+      <aside className="flex shrink-0 flex-col lg:w-60">
+        <div className="flex h-14 items-center gap-2 px-4 lg:h-16">
+          <BrandMark className="[&_img]:h-8" />
+          <span className="eyebrow ms-auto lg:ms-0">{t("nav.badge")}</span>
         </div>
-      </header>
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <nav
           aria-label={t("nav.label")}
-          className="border-border flex shrink-0 gap-1 overflow-x-auto border-b p-2 lg:w-56 lg:flex-col lg:overflow-y-auto lg:border-e lg:border-b-0 lg:p-3"
+          className="border-divider flex shrink-0 gap-1 overflow-x-auto border-b px-3 pb-2 lg:flex-1 lg:flex-col lg:overflow-y-auto lg:border-0 lg:pt-2"
         >
           {items.map((item) => (
             <Link
@@ -89,18 +86,62 @@ export function PlatformShell({
               href={item.href}
               aria-current={active(item.href) ? "page" : undefined}
               className={cn(
-                "text-muted-foreground hover:bg-muted hover:text-foreground flex shrink-0 items-center gap-2 rounded-md px-3 py-2 text-sm font-medium whitespace-nowrap",
-                active(item.href) && "bg-muted text-foreground",
+                "flex h-9 shrink-0 items-center gap-2.5 rounded-lg px-2.5 text-[0.8125rem] font-medium whitespace-nowrap transition-[color,background-color,box-shadow] duration-150",
+                active(item.href)
+                  ? "bg-sidebar-accent text-foreground ring-sidebar-border/70 shadow-xs ring-1 dark:ring-white/5"
+                  : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-foreground",
               )}
             >
-              <item.icon className="size-4" aria-hidden />
+              <item.icon className={cn("size-4", active(item.href) && "text-brand")} aria-hidden />
               {t(`nav.${item.key}`)}
+              {active(item.href) ? (
+                <span
+                  className="bg-brand ms-auto hidden size-1.5 rounded-full lg:block"
+                  aria-hidden
+                />
+              ) : null}
             </Link>
           ))}
         </nav>
-        <main id="main" className="mx-auto min-h-0 w-full max-w-[1400px] flex-1 overflow-y-auto px-4 py-6 md:px-6 lg:px-8">
-          {children}
-        </main>
+        <div className="border-sidebar-border hidden items-center gap-1 border-t p-3 lg:flex">
+          <span className="text-muted-foreground min-w-0 flex-1 truncate text-xs">
+            {context.email}
+            <span className="text-subtle-foreground block">{t(`roles.${context.role}`)}</span>
+          </span>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label={t("nav.signOut")}
+            onClick={() => void signOutClient()}
+          >
+            <LogOutIcon />
+          </Button>
+        </div>
+      </aside>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:py-2 lg:pe-2">
+        <div className="bg-background flex min-h-0 flex-1 flex-col overflow-hidden lg:rounded-2xl lg:border lg:shadow-sm">
+          <header className="border-divider flex h-14 shrink-0 items-center justify-end gap-2 border-b px-4 md:px-6 lg:px-10">
+            <div className="border-border bg-card flex items-center rounded-full border p-0.5 shadow-xs [&>*>button]:size-8 [&>*>button]:rounded-full [&>button]:size-8 [&>button]:rounded-full">
+              <LanguageSwitcher compact />
+              <ThemeToggle />
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden"
+              aria-label={t("nav.signOut")}
+              onClick={() => void signOutClient()}
+            >
+              <LogOutIcon />
+            </Button>
+          </header>
+          <main
+            id="main"
+            className="min-h-0 flex-1 overflow-y-auto px-4 pt-6 pb-12 md:px-6 lg:px-10 lg:pt-8"
+          >
+            <div className="mx-auto w-full max-w-[1400px]">{children}</div>
+          </main>
+        </div>
       </div>
     </div>
   );

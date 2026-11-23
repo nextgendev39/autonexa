@@ -135,10 +135,13 @@ export function StorefrontManager(props: Props) {
         </Alert>
       ) : null}
 
-      <Tabs defaultValue="design">
-        {/* One row that scrolls sideways on phones, rather than wrapping into two. */}
-        <div className="-mx-4 [scrollbar-width:none] overflow-x-auto px-4 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden">
-          <TabsList className="h-auto w-max">
+      {/* Studio layout: a section rail on desktop (a scrolling row on phones), content beside it. */}
+      <Tabs
+        defaultValue="design"
+        className="items-start gap-6 lg:grid lg:grid-cols-[14rem_minmax(0,1fr)]"
+      >
+        <div className="-mx-4 [scrollbar-width:none] overflow-x-auto px-4 sm:mx-0 sm:px-0 lg:sticky lg:top-0 lg:overflow-visible [&::-webkit-scrollbar]:hidden">
+          <TabsList className="[&>button]:data-active:bg-card [&>button]:data-active:ring-border [&>button_svg]:text-brand max-lg:[&>button]:border-border max-lg:[&>button]:bg-card h-auto w-max gap-1 bg-transparent p-0 lg:w-full lg:flex-col lg:items-stretch [&>button]:h-9 [&>button]:justify-start [&>button]:rounded-lg [&>button]:px-3 [&>button]:data-active:shadow-xs [&>button]:data-active:ring-1 max-lg:[&>button]:rounded-full max-lg:[&>button]:border">
             <TabsTrigger value="design">
               <PaletteIcon aria-hidden />
               {t("tabs.design")}
@@ -163,31 +166,31 @@ export function StorefrontManager(props: Props) {
             </TabsTrigger>
           </TabsList>
         </div>
-        <TabsContent value="design" className="pt-4">
+        <TabsContent value="design" className="min-w-0 pt-2 lg:pt-0">
           <DesignTab draft={props.draft} vehicles={props.vehicles} />
         </TabsContent>
-        <TabsContent value="vehicles" className="pt-4">
+        <TabsContent value="vehicles" className="min-w-0 pt-2 lg:pt-0">
           <VehiclesPanel
             vehicles={props.vehicles}
             currency={props.currency}
             detailsReady={props.detailsReady}
           />
         </TabsContent>
-        <TabsContent value="enquiries" className="pt-4">
+        <TabsContent value="enquiries" className="min-w-0 pt-2 lg:pt-0">
           <EnquiriesTab
             enquiries={props.enquiries}
             salespeople={props.salespeople}
             canBooking={props.canBooking}
           />
         </TabsContent>
-        <TabsContent value="domains" className="pt-4">
+        <TabsContent value="domains" className="min-w-0 pt-2 lg:pt-0">
           <DomainsTab
             domains={props.domains}
             canCustomDomain={props.canCustomDomain}
             cnameTarget={props.cnameTarget}
           />
         </TabsContent>
-        <TabsContent value="analytics" className="pt-4">
+        <TabsContent value="analytics" className="min-w-0 pt-2 lg:pt-0">
           <AnalyticsTab analytics={props.analytics} canAnalytics={props.canAnalytics} />
         </TabsContent>
       </Tabs>
@@ -200,8 +203,8 @@ function TabCount({ value, highlight = false }: { value: number; highlight?: boo
   return (
     <span
       className={cn(
-        "rounded-full px-1.5 text-[11px] leading-5 font-semibold tabular-nums",
-        highlight ? "bg-gold text-brand-foreground" : "bg-muted text-muted-foreground",
+        "ms-auto inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-semibold tabular-nums",
+        highlight ? "bg-destructive text-white" : "bg-muted text-muted-foreground",
       )}
     >
       {value}
@@ -220,7 +223,7 @@ function SiteOverview(props: Props & { newEnquiries: number }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)]">
-      <div className="bg-carbon text-sidebar-foreground relative isolate overflow-hidden rounded-lg p-5">
+      <div className="bg-brand-panel text-sidebar-foreground relative isolate overflow-hidden rounded-lg p-5">
         <div
           className={cn(
             "absolute -end-16 -top-16 -z-10 size-48 rounded-full blur-3xl",
@@ -231,12 +234,12 @@ function SiteOverview(props: Props & { newEnquiries: number }) {
         <div className="flex items-center gap-2 text-sm font-semibold">
           <span className="relative flex size-2.5">
             {live ? (
-              <span className="animate-ping-soft absolute inline-flex size-full rounded-full bg-emerald-400" />
+              <span className="animate-ping-soft bg-success absolute inline-flex size-full rounded-full" />
             ) : null}
             <span
               className={cn(
                 "relative inline-flex size-2.5 rounded-full",
-                live ? "bg-emerald-400" : "bg-sidebar-foreground/40",
+                live ? "bg-success" : "bg-sidebar-foreground/40",
               )}
             />
           </span>

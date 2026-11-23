@@ -32,7 +32,7 @@ export function FaqList({ items }: { items: LandingCopy["faq"]["items"] }) {
                   transition={{ duration: 0.3, ease }}
                   className={cn(
                     "flex size-7 shrink-0 items-center justify-center rounded-full border transition-colors",
-                    expanded ? "border-brand bg-gold text-brand-foreground" : "border-border",
+                    expanded ? "border-brand bg-gold text-gold-foreground" : "border-border",
                   )}
                 >
                   <PlusIcon className="size-4" />

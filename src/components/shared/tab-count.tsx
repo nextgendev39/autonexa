@@ -1,8 +1,8 @@
-import { cn } from "@/lib/utils";
+import { ChipCount } from "@/components/ui/chip";
 
 /**
- * Count pill beside a filter tab label: gold on the selected tab, a white pill on the others,
- * red when the tab needs attention.
+ * Count bubble beside a filter label. Same component as the chip counts, so every counter in
+ * the app looks alike: muted by default, inverted on the selected filter, red for attention.
  */
 export function TabCount({
   children,
@@ -14,17 +14,8 @@ export function TabCount({
   alert?: boolean;
 }) {
   return (
-    <span
-      className={cn(
-        "inline-flex h-5 min-w-6 items-center justify-center rounded-full px-2 text-xs font-semibold tabular-nums shadow-xs transition-colors",
-        alert
-          ? "bg-destructive text-white"
-          : selected
-            ? "bg-brand text-brand-foreground"
-            : "bg-background text-foreground ring-foreground/10 ring-1",
-      )}
-    >
+    <ChipCount selected={selected} alert={alert}>
       {children}
-    </span>
+    </ChipCount>
   );
 }

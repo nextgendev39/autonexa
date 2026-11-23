@@ -69,9 +69,7 @@ export function ResponsiveTable<T extends { id: string }>({
       {showTable ? (
         <div
           className={cn(
-            bare
-              ? ""
-              : "bg-card ring-foreground/[0.07] overflow-hidden rounded-xl shadow-xs ring-1",
+            bare ? "" : "bg-card overflow-hidden rounded-xl border shadow-sm",
             "hidden md:block",
             viewMode === "list" && "overflow-x-auto",
           )}

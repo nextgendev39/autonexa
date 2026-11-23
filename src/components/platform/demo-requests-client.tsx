@@ -2,17 +2,32 @@
 
 import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
-import { MailIcon, MailWarningIcon, MessageCircleIcon, PhoneIcon, UserCheckIcon } from "lucide-react";
+import {
+  MailIcon,
+  MailWarningIcon,
+  MessageCircleIcon,
+  PhoneIcon,
+  UserCheckIcon,
+} from "lucide-react";
 
 import { FormField } from "@/components/forms/form-field";
 import { DataTable } from "@/components/platform/data-table";
-import { ActionDialog, PlatformStatus, SimpleSelect, usePlatformAction } from "@/components/platform/platform-ui";
+import {
+  ActionDialog,
+  PlatformStatus,
+  SimpleSelect,
+  usePlatformAction,
+} from "@/components/platform/platform-ui";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import type { AppLocale } from "@/config/app";
 import { Link } from "@/lib/i18n/navigation";
-import { demoRequestStatuses, type DemoRequestRow, type DemoRequestStatus } from "@/lib/platform/demo-requests";
-import { cn } from "@/lib/utils";
+import {
+  demoRequestStatuses,
+  type DemoRequestRow,
+  type DemoRequestStatus,
+} from "@/lib/platform/demo-requests";
+import { ChipCount, chipClass } from "@/components/ui/chip";
 import { formatDate } from "@/lib/utils/date";
 
 type Filter = "all" | "open" | DemoRequestStatus;
@@ -59,15 +74,10 @@ export function DemoRequestsTable({
             role="tab"
             aria-selected={filter === key}
             onClick={() => setFilter(key)}
-            className={cn(
-              "rounded-full border px-3 py-1 text-sm font-medium transition-colors",
-              filter === key
-                ? "border-foreground bg-foreground text-background"
-                : "text-muted-foreground hover:text-foreground border-border",
-            )}
+            className={chipClass(filter === key)}
           >
             {key === "all" || key === "open" ? t(`demoRequests.${key}`) : t(`status.${key}`)}
-            <span className="ms-1.5 tabular-nums opacity-70">{counts[key]}</span>
+            <ChipCount selected={filter === key}>{counts[key]}</ChipCount>
           </button>
         ))}
       </div>
@@ -88,7 +98,10 @@ export function DemoRequestsTable({
             <div key="w" className="grid gap-1 whitespace-nowrap">
               <span>{formatDate(r.created_at, locale, "medium")}</span>
               {r.email_sent ? null : (
-                <span className="text-muted-foreground inline-flex items-center gap-1 text-xs" title={t("demoRequests.notEmailedHint")}>
+                <span
+                  className="text-muted-foreground inline-flex items-center gap-1 text-xs"
+                  title={t("demoRequests.notEmailedHint")}
+                >
                   <MailWarningIcon className="size-3.5" />
                   {t("demoRequests.notEmailed")}
                 </span>
@@ -98,7 +111,9 @@ export function DemoRequestsTable({
               <span className="font-medium">{r.name}</span>
               {r.dealership ? <span className="text-sm">{r.dealership}</span> : null}
               {r.stock ? (
-                <span className="text-muted-foreground text-xs">{t("demoRequests.stock", { stock: r.stock })}</span>
+                <span className="text-muted-foreground text-xs">
+                  {t("demoRequests.stock", { stock: r.stock })}
+                </span>
               ) : null}
               {r.notes ? (
                 <span className="text-muted-foreground line-clamp-2 text-xs" title={r.notes}>
@@ -108,14 +123,21 @@ export function DemoRequestsTable({
             </div>,
             <div key="r" className="grid gap-1 text-sm">
               {r.email ? (
-                <a href={`mailto:${r.email}`} className="inline-flex items-center gap-1.5 hover:underline" dir="ltr">
+                <a
+                  href={`mailto:${r.email}`}
+                  className="inline-flex items-center gap-1.5 hover:underline"
+                  dir="ltr"
+                >
                   <MailIcon className="text-muted-foreground size-3.5" />
                   {r.email}
                 </a>
               ) : null}
               {r.phone ? (
                 <span className="inline-flex items-center gap-2" dir="ltr">
-                  <a href={`tel:${r.phone.replace(/[^\d+]/g, "")}`} className="inline-flex items-center gap-1.5 hover:underline">
+                  <a
+                    href={`tel:${r.phone.replace(/[^\d+]/g, "")}`}
+                    className="inline-flex items-center gap-1.5 hover:underline"
+                  >
                     <PhoneIcon className="text-muted-foreground size-3.5" />
                     {r.phone}
                   </a>
@@ -135,18 +157,23 @@ export function DemoRequestsTable({
             </div>,
             r.account_user_id ? (
               <div key="a" className="grid gap-0.5 text-sm">
-                <span className="inline-flex items-center gap-1.5 font-medium text-emerald-700 dark:text-emerald-400">
+                <span className="text-success-foreground inline-flex items-center gap-1.5 font-medium">
                   <UserCheckIcon className="size-3.5" />
                   {t("demoRequests.hasAccount")}
                 </span>
                 {r.account_tenant_id ? (
-                  <Link href={`/platform/tenants/${r.account_tenant_id}`} className="hover:underline">
+                  <Link
+                    href={`/platform/tenants/${r.account_tenant_id}`}
+                    className="hover:underline"
+                  >
                     {r.account_tenant_name}
                   </Link>
                 ) : null}
                 <span className="text-muted-foreground text-xs">
                   {r.account_last_sign_in_at
-                    ? t("demoRequests.lastSignIn", { date: formatDate(r.account_last_sign_in_at, locale, "medium") })
+                    ? t("demoRequests.lastSignIn", {
+                        date: formatDate(r.account_last_sign_in_at, locale, "medium"),
+                      })
                     : t("demoRequests.neverSignedIn")}
                 </span>
               </div>
@@ -163,7 +190,10 @@ export function DemoRequestsTable({
                 </Link>
               ) : null}
               {r.staff_notes ? (
-                <span className="text-muted-foreground line-clamp-2 max-w-48 text-xs" title={r.staff_notes}>
+                <span
+                  className="text-muted-foreground line-clamp-2 max-w-48 text-xs"
+                  title={r.staff_notes}
+                >
                   {r.staff_notes}
                 </span>
               ) : null}
@@ -188,7 +218,9 @@ function FollowUpAction({
   const [status, setStatus] = useState<DemoRequestStatus>(request.status);
   const [notes, setNotes] = useState(request.staff_notes ?? "");
   // Suggest the dealership their login already belongs to.
-  const [tenant, setTenant] = useState(request.tenant_id ?? request.account_tenant_id ?? NO_DEALERSHIP);
+  const [tenant, setTenant] = useState(
+    request.tenant_id ?? request.account_tenant_id ?? NO_DEALERSHIP,
+  );
 
   return (
     <ActionDialog
@@ -213,7 +245,9 @@ function FollowUpAction({
     >
       {request.notes ? (
         <div className="bg-muted/60 rounded-md p-3 text-sm">
-          <p className="text-muted-foreground mb-1 text-xs font-medium">{t("demoRequests.theirNotes")}</p>
+          <p className="text-muted-foreground mb-1 text-xs font-medium">
+            {t("demoRequests.theirNotes")}
+          </p>
           <p className="whitespace-pre-wrap">{request.notes}</p>
         </div>
       ) : null}

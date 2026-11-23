@@ -7,7 +7,12 @@ import { toast } from "sonner";
 
 import { LoadingButton } from "@/components/shared/loading-button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+  InputGroupText,
+} from "@/components/ui/input-group";
 import { useFormatDuration } from "@/hooks/use-format-duration";
 import { cn } from "@/lib/utils";
 import { firstFieldErrors } from "@/lib/validation";
@@ -46,7 +51,13 @@ const toMinutes = (draft: Draft) => {
 };
 
 /** Booking payment deadlines: deposit (else auto-cancel) and full amount (else alert). */
-export function PaymentTermsCard({ initial, canManage }: { initial: PaymentTerms; canManage: boolean }) {
+export function PaymentTermsCard({
+  initial,
+  canManage,
+}: {
+  initial: PaymentTerms;
+  canManage: boolean;
+}) {
   const t = useTranslations("settings.paymentTerms");
   const tRoot = useTranslations();
   const formatDuration = useFormatDuration();
@@ -59,9 +70,15 @@ export function PaymentTermsCard({ initial, canManage }: { initial: PaymentTerms
   const [saving, setSaving] = useState(false);
   const [running, setRunning] = useState(false);
 
-  const values = { depositMinutes: toMinutes(form.depositMinutes), balanceMinutes: toMinutes(form.balanceMinutes) };
-  const dirty = values.depositMinutes !== saved.depositMinutes || values.balanceMinutes !== saved.balanceMinutes;
-  const shown = (term: Term) => (Number.isFinite(values[term]) && values[term] > 0 ? values[term] : saved[term]);
+  const values = {
+    depositMinutes: toMinutes(form.depositMinutes),
+    balanceMinutes: toMinutes(form.balanceMinutes),
+  };
+  const dirty =
+    values.depositMinutes !== saved.depositMinutes ||
+    values.balanceMinutes !== saved.balanceMinutes;
+  const shown = (term: Term) =>
+    Number.isFinite(values[term]) && values[term] > 0 ? values[term] : saved[term];
 
   function setPart(term: Term, unit: Unit, value: string) {
     setForm((prev) => ({ ...prev, [term]: { ...prev[term], [unit]: value } }));
@@ -71,7 +88,9 @@ export function PaymentTermsCard({ initial, canManage }: { initial: PaymentTerms
     event.preventDefault();
     const invalid = (Object.keys(values) as Term[]).filter((term) => Number.isNaN(values[term]));
     if (invalid.length > 0) {
-      setFieldErrors(Object.fromEntries(invalid.map((term) => [term, "settings.paymentTerms.errors.parts"])));
+      setFieldErrors(
+        Object.fromEntries(invalid.map((term) => [term, "settings.paymentTerms.errors.parts"])),
+      );
       return;
     }
     const parsed = paymentTermsSchema.safeParse(values);
@@ -95,7 +114,10 @@ export function PaymentTermsCard({ initial, canManage }: { initial: PaymentTerms
         return;
       }
       setSaved(json.data);
-      setForm({ depositMinutes: toDraft(json.data.depositMinutes), balanceMinutes: toDraft(json.data.balanceMinutes) });
+      setForm({
+        depositMinutes: toDraft(json.data.depositMinutes),
+        balanceMinutes: toDraft(json.data.balanceMinutes),
+      });
       toast.success(t("saved"));
     } finally {
       setSaving(false);
@@ -105,13 +127,18 @@ export function PaymentTermsCard({ initial, canManage }: { initial: PaymentTerms
   async function runNow() {
     setRunning(true);
     try {
-      const res = await fetch("/api/settings/payment-terms/run", { method: "POST", credentials: "same-origin" });
+      const res = await fetch("/api/settings/payment-terms/run", {
+        method: "POST",
+        credentials: "same-origin",
+      });
       const json = await res.json().catch(() => null);
       if (json?.status !== "success") {
         toast.error(t("runFailed"));
         return;
       }
-      toast.success(t("ran", { cancelled: json.data.cancelled, overdue: json.data.balanceOverdue }));
+      toast.success(
+        t("ran", { cancelled: json.data.cancelled, overdue: json.data.balanceOverdue }),
+      );
     } finally {
       setRunning(false);
     }
@@ -143,7 +170,9 @@ export function PaymentTermsCard({ initial, canManage }: { initial: PaymentTerms
         ))}
       </div>
       {fieldErrors[term] ? (
-        <p className="text-destructive text-xs">{tRoot(fieldErrors[term] as Parameters<typeof tRoot>[0])}</p>
+        <p className="text-destructive text-xs">
+          {tRoot(fieldErrors[term] as Parameters<typeof tRoot>[0])}
+        </p>
       ) : null}
       <p id={`payment-terms-${term}-hint`} className="text-muted-foreground text-xs">
         {t(`${term}.hint`)}
@@ -219,7 +248,7 @@ function TimelineStep({
         className={cn(
           "h-fit w-fit shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums",
           tone === "destructive" && "bg-destructive/12 text-destructive",
-          tone === "warning" && "bg-amber-500/15 text-amber-700 dark:text-amber-400",
+          tone === "warning" && "bg-warning-soft text-warning-foreground",
           !tone && "bg-background text-foreground border",
         )}
       >

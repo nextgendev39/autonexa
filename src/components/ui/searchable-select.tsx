@@ -161,7 +161,7 @@ export function SearchableSelect({
           <ChevronDownIcon className="text-muted-foreground size-4 opacity-70" aria-hidden />
         </span>
       </PopoverTrigger>
-      <PopoverContent align="start" sideOffset={4} className="w-(--anchor-width) min-w-48 p-0">
+      <PopoverContent align="start" className="w-(--anchor-width) min-w-48 p-0">
         <Command>
           {searchable ? <CommandInput placeholder={searchPlaceholder ?? t("search")} /> : null}
           <CommandList>

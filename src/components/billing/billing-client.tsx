@@ -144,55 +144,84 @@ export function BillingClient({
         </Alert>
       ) : null}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("current.title")}</CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-            <div>
-              <dt className="text-muted-foreground">{t("current.plan")}</dt>
-              <dd className="font-medium">{planName ?? t("current.none")}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("current.status")}</dt>
-              <dd>
-                {subscription ? (
-                  <StatusBadge status={badge[subscription.status] ?? "draft"} label={t(`status.${subscription.status}`)} />
-                ) : (
-                  "—"
-                )}
-              </dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("current.cycle")}</dt>
-              <dd>{subscription ? t(`cycle.${subscription.billing_cycle}`) : "—"}</dd>
-            </div>
-            <div>
-              <dt className="text-muted-foreground">{t("current.ends")}</dt>
-              <dd>{subscription?.current_period_end ? formatDate(subscription.current_period_end, locale) : t("current.noEnd")}</dd>
-            </div>
-          </dl>
-          {subscription?.cancel_at_period_end ? <p className="text-sm">{t("current.ending")}</p> : null}
-          {scheduledPlanName ? <p className="text-sm">{t("current.scheduled", { plan: scheduledPlanName })}</p> : null}
-          <div className="flex flex-wrap gap-2">
-            {subscription?.current_period_end && subscription.status !== "cancelled" && subscription.status !== "expired" ? (
-              <LoadingButton
-                variant="outline"
-                loading={busy === "cancel"}
-                onClick={() => void act("/api/billing/cancel", { cancel: !subscription.cancel_at_period_end }, "cancel")}
-              >
-                {t(subscription.cancel_at_period_end ? "current.keep" : "current.cancel")}
-              </LoadingButton>
+      {/* Current plan as the page's hero band (obsidian in both themes). */}
+      <section className="bg-brand-panel animate-rise grid overflow-hidden rounded-2xl lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+        <div className="grid content-between gap-5 p-5 sm:p-7">
+          <div>
+            <p className="eyebrow text-sidebar-primary">{t("current.title")}</p>
+            <p className="figure text-gold mt-3 pb-1 text-[2rem] sm:text-[2.5rem]">
+              {planName ?? t("current.none")}
+            </p>
+          </div>
+          <div className="grid gap-3 text-sm text-white/75 [&_button]:border-white/15 [&_button]:bg-white/8 [&_button]:text-white [&_button:hover]:bg-white/15">
+            {subscription?.cancel_at_period_end ? (
+              <p className="text-sm">{t("current.ending")}</p>
             ) : null}
             {scheduledPlanName ? (
-              <LoadingButton variant="ghost" loading={busy === "clear"} onClick={() => void act("/api/billing/schedule", { planId: null, cycle: null }, "clear")}>
-                {t("current.clearScheduled")}
-              </LoadingButton>
+              <p className="text-sm">{t("current.scheduled", { plan: scheduledPlanName })}</p>
             ) : null}
+            <div className="flex flex-wrap gap-2">
+              {subscription?.current_period_end &&
+              subscription.status !== "cancelled" &&
+              subscription.status !== "expired" ? (
+                <LoadingButton
+                  variant="outline"
+                  loading={busy === "cancel"}
+                  onClick={() =>
+                    void act(
+                      "/api/billing/cancel",
+                      { cancel: !subscription.cancel_at_period_end },
+                      "cancel",
+                    )
+                  }
+                >
+                  {t(subscription.cancel_at_period_end ? "current.keep" : "current.cancel")}
+                </LoadingButton>
+              ) : null}
+              {scheduledPlanName ? (
+                <LoadingButton
+                  variant="ghost"
+                  loading={busy === "clear"}
+                  onClick={() =>
+                    void act("/api/billing/schedule", { planId: null, cycle: null }, "clear")
+                  }
+                >
+                  {t("current.clearScheduled")}
+                </LoadingButton>
+              ) : null}
+            </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <dl className="grid border-white/10 max-lg:border-t sm:grid-cols-3 lg:border-s">
+          <div className="grid content-start gap-2 border-white/10 p-5 not-first:max-sm:border-t sm:p-6 sm:not-first:border-s">
+            <dt className="text-xs font-medium text-white/55">{t("current.status")}</dt>
+            <dd>
+              {subscription ? (
+                <StatusBadge
+                  status={badge[subscription.status] ?? "draft"}
+                  label={t(`status.${subscription.status}`)}
+                />
+              ) : (
+                <span className="text-white">—</span>
+              )}
+            </dd>
+          </div>
+          <div className="grid content-start gap-2 border-white/10 p-5 not-first:max-sm:border-t sm:p-6 sm:not-first:border-s">
+            <dt className="text-xs font-medium text-white/55">{t("current.cycle")}</dt>
+            <dd className="figure text-xl text-white">
+              {subscription ? t(`cycle.${subscription.billing_cycle}`) : "—"}
+            </dd>
+          </div>
+          <div className="grid content-start gap-2 border-white/10 p-5 not-first:max-sm:border-t sm:p-6 sm:not-first:border-s">
+            <dt className="text-xs font-medium text-white/55">{t("current.ends")}</dt>
+            <dd className="figure text-xl text-white">
+              {subscription?.current_period_end
+                ? formatDate(subscription.current_period_end, locale)
+                : t("current.noEnd")}
+            </dd>
+          </div>
+        </dl>
+      </section>
 
       {payable.length > 0 && canCheckOut ? (
         <Card>
@@ -201,12 +230,20 @@ export function BillingClient({
           </CardHeader>
           <CardContent className="grid gap-3">
             {payable.map((invoice) => (
-              <div key={invoice.id} className="flex flex-wrap items-center justify-between gap-2 text-sm">
+              <div
+                key={invoice.id}
+                className="flex flex-wrap items-center justify-between gap-2 text-sm"
+              >
                 <span>
                   {invoice.invoice_number} · {money(invoice.amount, invoice.currency)}
-                  {invoice.due_at ? ` · ${t("due.by", { date: formatDate(invoice.due_at, locale) })}` : ""}
+                  {invoice.due_at
+                    ? ` · ${t("due.by", { date: formatDate(invoice.due_at, locale) })}`
+                    : ""}
                 </span>
-                <LoadingButton loading={busy === invoice.id} onClick={() => void goToCheckout({ invoiceId: invoice.id }, invoice.id)}>
+                <LoadingButton
+                  loading={busy === invoice.id}
+                  onClick={() => void goToCheckout({ invoiceId: invoice.id }, invoice.id)}
+                >
                   {t("due.pay")}
                 </LoadingButton>
               </div>
@@ -247,11 +284,18 @@ export function BillingClient({
                     price={price}
                     cycle={cycle}
                     currency={currency}
-                    isCurrent={subscription?.plan_id === plan.id && subscription.billing_cycle === cycle && subscription.status !== "cancelled" && subscription.status !== "expired"}
+                    isCurrent={
+                      subscription?.plan_id === plan.id &&
+                      subscription.billing_cycle === cycle &&
+                      subscription.status !== "cancelled" &&
+                      subscription.status !== "expired"
+                    }
                     disabled={!canCheckOut || price === null}
                     busy={busy === plan.id}
                     onCheckout={() => void goToCheckout({ planId: plan.id, cycle }, plan.id)}
-                    onSchedule={() => void act("/api/billing/schedule", { planId: plan.id, cycle }, plan.id)}
+                    onSchedule={() =>
+                      void act("/api/billing/schedule", { planId: plan.id, cycle }, plan.id)
+                    }
                   />
                 );
               })}
@@ -269,7 +313,14 @@ export function BillingClient({
         <CardContent>
           <DataTableClient
             empty={t("invoices.none")}
-            headers={[t("invoices.number"), t("invoices.date"), t("invoices.description"), t("invoices.amount"), t("invoices.status"), ""]}
+            headers={[
+              t("invoices.number"),
+              t("invoices.date"),
+              t("invoices.description"),
+              t("invoices.amount"),
+              t("invoices.status"),
+              "",
+            ]}
             rows={invoices.map((invoice) => ({
               key: invoice.id,
               cells: [
@@ -277,12 +328,34 @@ export function BillingClient({
                 formatDate(invoice.issued_at, locale),
                 invoice.description ?? "—",
                 money(invoice.amount, invoice.currency),
-                <StatusBadge key="s" status={badge[invoice.status] ?? "draft"} label={t(`invoiceStatus.${invoice.status}`)} />,
+                <StatusBadge
+                  key="s"
+                  status={badge[invoice.status] ?? "draft"}
+                  label={t(`invoiceStatus.${invoice.status}`)}
+                />,
                 <div key="a" className="flex gap-1">
-                  <Button variant="ghost" size="icon" aria-label={t("invoices.view")} nativeButton={false} render={<a href={`/api/billing/invoices/${invoice.id}`} target="_blank" rel="noopener noreferrer" />}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t("invoices.view")}
+                    nativeButton={false}
+                    render={
+                      <a
+                        href={`/api/billing/invoices/${invoice.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
+                    }
+                  >
                     <ExternalLinkIcon />
                   </Button>
-                  <Button variant="ghost" size="icon" aria-label={t("invoices.download")} nativeButton={false} render={<a href={`/api/billing/invoices/${invoice.id}?download=1`} />}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={t("invoices.download")}
+                    nativeButton={false}
+                    render={<a href={`/api/billing/invoices/${invoice.id}?download=1`} />}
+                  >
                     <DownloadIcon />
                   </Button>
                 </div>,
@@ -300,17 +373,28 @@ export function BillingClient({
         <CardContent>
           <DataTableClient
             empty={t("history.none")}
-            headers={[t("history.date"), t("history.type"), t("history.status"), t("history.amount"), t("history.reference")]}
+            headers={[
+              t("history.date"),
+              t("history.type"),
+              t("history.status"),
+              t("history.amount"),
+              t("history.reference"),
+            ]}
             rows={transactions.map((tx) => ({
               key: tx.id,
               cells: [
                 formatDate(tx.occurred_at, locale),
                 t(`history.kinds.${tx.kind}`),
                 <div key="s" className="grid gap-1">
-                  <StatusBadge status={badge[tx.status] ?? "draft"} label={t(`history.statuses.${tx.status}`)} />
+                  <StatusBadge
+                    status={badge[tx.status] ?? "draft"}
+                    label={t(`history.statuses.${tx.status}`)}
+                  />
                 </div>,
                 money(tx.amount, tx.currency),
-                <span key="r" dir="ltr" className="text-xs break-all">{tx.reference ?? "—"}</span>,
+                <span key="r" dir="ltr" className="text-xs break-all">
+                  {tx.reference ?? "—"}
+                </span>,
               ],
             }))}
           />
@@ -346,33 +430,60 @@ function PlanOption({
   const [quote, setQuote] = useState<Quote | null>(null);
 
   async function loadQuote() {
-    const response = await fetch(`/api/billing/quote?plan=${plan.id}&cycle=${cycle}`, { credentials: "same-origin" });
+    const response = await fetch(`/api/billing/quote?plan=${plan.id}&cycle=${cycle}`, {
+      credentials: "same-origin",
+    });
     const json = await response.json().catch(() => null);
     setQuote(json?.data ?? { error: "failed" });
   }
-  const money = (amount: number | undefined) => formatCurrency(Number(amount ?? 0), locale, quote?.currency ?? currency);
+  const money = (amount: number | undefined) =>
+    formatCurrency(Number(amount ?? 0), locale, quote?.currency ?? currency);
 
   return (
     <div className="ring-border grid content-start gap-3 rounded-lg p-4 ring-1">
       <div>
         <h3 className="font-medium">{plan.name}</h3>
-        {plan.description ? <p className="text-muted-foreground text-sm">{plan.description}</p> : null}
+        {plan.description ? (
+          <p className="text-muted-foreground text-sm">{plan.description}</p>
+        ) : null}
       </div>
       <p className="text-lg font-semibold">
         {price !== null ? formatCurrency(price, locale, currency) : t("plans.notAvailable")}
-        {price !== null ? <span className="text-muted-foreground text-sm font-normal"> / {t(`per.${cycle}`)}</span> : null}
+        {price !== null ? (
+          <span className="text-muted-foreground text-sm font-normal"> / {t(`per.${cycle}`)}</span>
+        ) : null}
       </p>
       {isCurrent ? <p className="text-sm font-medium">{t("plans.current")}</p> : null}
       {quote && !quote.error ? (
         <dl className="grid gap-1 text-sm">
-          <div className="flex justify-between"><dt>{t("quote.price")}</dt><dd>{money(quote.subtotal)}</dd></div>
-          {Number(quote.credit) > 0 ? <div className="flex justify-between"><dt>{t("quote.credit")}</dt><dd>-{money(quote.credit)}</dd></div> : null}
-          <div className="flex justify-between"><dt>{quote.taxLabel} ({Number(quote.taxRate)}%)</dt><dd>{money(quote.tax)}</dd></div>
-          <div className="flex justify-between font-medium"><dt>{t("quote.total")}</dt><dd>{money(quote.total)}</dd></div>
+          <div className="flex justify-between">
+            <dt>{t("quote.price")}</dt>
+            <dd>{money(quote.subtotal)}</dd>
+          </div>
+          {Number(quote.credit) > 0 ? (
+            <div className="flex justify-between">
+              <dt>{t("quote.credit")}</dt>
+              <dd>-{money(quote.credit)}</dd>
+            </div>
+          ) : null}
+          <div className="flex justify-between">
+            <dt>
+              {quote.taxLabel} ({Number(quote.taxRate)}%)
+            </dt>
+            <dd>{money(quote.tax)}</dd>
+          </div>
+          <div className="flex justify-between font-medium">
+            <dt>{t("quote.total")}</dt>
+            <dd>{money(quote.total)}</dd>
+          </div>
         </dl>
       ) : null}
-      {quote?.error === "schedule_downgrade" ? <p className="text-sm">{t("quote.downgrade")}</p> : null}
-      {quote?.error && quote.error !== "schedule_downgrade" ? <p className="text-destructive text-sm">{t("quote.unavailable")}</p> : null}
+      {quote?.error === "schedule_downgrade" ? (
+        <p className="text-sm">{t("quote.downgrade")}</p>
+      ) : null}
+      {quote?.error && quote.error !== "schedule_downgrade" ? (
+        <p className="text-destructive text-sm">{t("quote.unavailable")}</p>
+      ) : null}
       {quote === null ? (
         <Button variant="outline" disabled={disabled} onClick={() => void loadQuote()}>
           {t(isCurrent ? "plans.renew" : "plans.choose")}
@@ -390,7 +501,13 @@ function PlanOption({
   );
 }
 
-function ProfileCard({ profile, onSaved }: { profile: BillingProfile | null; onSaved: () => void }) {
+function ProfileCard({
+  profile,
+  onSaved,
+}: {
+  profile: BillingProfile | null;
+  onSaved: () => void;
+}) {
   const t = useTranslations("billing");
   const [legalName, setName] = useState(profile?.legal_name ?? "");
   const [taxId, setTaxId] = useState(profile?.tax_id ?? "");
@@ -408,7 +525,15 @@ function ProfileCard({ profile, onSaved }: { profile: BillingProfile | null; onS
       method: "PUT",
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ legalName, taxId, address, city, country: country.toUpperCase(), currency, email }),
+      body: JSON.stringify({
+        legalName,
+        taxId,
+        address,
+        city,
+        country: country.toUpperCase(),
+        currency,
+        email,
+      }),
     });
     const json = await response.json().catch(() => null);
     setPending(false);
@@ -429,7 +554,12 @@ function ProfileCard({ profile, onSaved }: { profile: BillingProfile | null; onS
       <CardContent>
         <form onSubmit={save} className="grid gap-4 sm:grid-cols-2">
           <FormField label={t("profile.legalName")} htmlFor="bp-name" required>
-            <Input id="bp-name" required value={legalName} onChange={(e) => setName(e.target.value)} />
+            <Input
+              id="bp-name"
+              required
+              value={legalName}
+              onChange={(e) => setName(e.target.value)}
+            />
           </FormField>
           <FormField label={t("profile.taxId")} htmlFor="bp-tax" hint={t("profile.taxIdHint")}>
             <Input id="bp-tax" dir="ltr" value={taxId} onChange={(e) => setTaxId(e.target.value)} />
@@ -463,10 +593,17 @@ function ProfileCard({ profile, onSaved }: { profile: BillingProfile | null; onS
             />
           </FormField>
           <FormField label={t("profile.email")} htmlFor="bp-email" hint={t("profile.emailHint")}>
-            <Input id="bp-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <Input
+              id="bp-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </FormField>
           <div className="flex items-end justify-end sm:col-span-2">
-            <LoadingButton type="submit" loading={pending}>{t("profile.save")}</LoadingButton>
+            <LoadingButton type="submit" loading={pending}>
+              {t("profile.save")}
+            </LoadingButton>
           </div>
         </form>
       </CardContent>

@@ -35,7 +35,10 @@ import { BookingRowsSkeleton } from "@/components/bookings/booking-list-skeleton
 import { EditBookingDialog } from "@/components/bookings/edit-booking-dialog";
 import { NewBookingDialog } from "@/components/bookings/new-booking-dialog";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { TabCount } from "@/components/shared/tab-count";
+import { DataPanel } from "@/components/layout/data-panel";
+import { statusTones } from "@/components/shared/status-badge";
+import { MetricStrip, MetricStripItem, type MetricTone } from "@/components/layout/metric-strip";
+import { ChipTabs } from "@/components/ui/chip";
 import { useNotifications } from "@/components/providers/notification-provider";
 import { PageHeader } from "@/components/layout/page-header";
 import { PAYMENT_COLORS } from "@/components/bookings/booking-charts";
@@ -49,7 +52,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ListPagination } from "@/components/tables/list-pagination";
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import type { AppLocale } from "@/config/app";
 import {
   BOOKING_FILTERS,
@@ -85,7 +93,10 @@ async function fetchBookingPage(query: BookingListQuery): Promise<BookingListPag
     pageSize: String(query.pageSize),
   });
   if (query.q) params.set("q", query.q);
-  const res = await fetch(`/api/bookings?${params}`, { credentials: "same-origin", cache: "no-store" });
+  const res = await fetch(`/api/bookings?${params}`, {
+    credentials: "same-origin",
+    cache: "no-store",
+  });
   const json = await res.json().catch(() => null);
   if (json?.status !== "success") throw new Error(json?.message ?? "Could not load bookings.");
   return json.data;
@@ -143,7 +154,11 @@ export function BookingsPageClient({
     searchTerm === initialQuery.q &&
     page === initialPage.page &&
     pageSize === initialQuery.pageSize;
-  const { data = initialPage, isFetching, isPlaceholderData } = useQuery({
+  const {
+    data = initialPage,
+    isFetching,
+    isPlaceholderData,
+  } = useQuery({
     queryKey: bookingListKey(listQuery),
     queryFn: () => fetchBookingPage(listQuery),
     initialData: isInitialQuery ? initialPage : undefined,
@@ -248,7 +263,7 @@ export function BookingsPageClient({
       />
 
       {counts.all > 0 ? (
-        <section className="stagger grid grid-cols-2 gap-3 [--stagger:60ms] xl:grid-cols-4">
+        <MetricStrip label={t("title")} className="animate-rise">
           <SummaryTile
             icon={CalendarCheckIcon}
             tone="brand"
@@ -290,110 +305,102 @@ export function BookingsPageClient({
             value={total(summary.toCollect)}
             hint={t("summary.toCollectHint")}
           />
-        </section>
+        </MetricStrip>
       ) : null}
 
-      <div className="animate-rise flex flex-col gap-3 [animation-delay:120ms] xl:flex-row xl:items-center xl:justify-between">
-        <div
-          className="bg-muted flex w-full touch-pan-x touch-pan-y overflow-x-auto overflow-y-hidden overscroll-x-contain rounded-lg p-0.5 text-sm xl:w-fit"
-          role="tablist"
-        >
-          {FILTERS.map((key) => (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={filter === key}
-              onClick={() => setFilter(key)}
-              className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 whitespace-nowrap transition-all duration-200 xl:flex-none",
-                filter === key
-                  ? "bg-background font-medium shadow-xs"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
+      <DataPanel
+        className="animate-rise [animation-delay:100ms]"
+        well
+        toolbar={
+          <>
+            <ChipTabs
+              label={t("title")}
+              value={filter}
+              onChange={setFilter}
+              items={FILTERS.map((key) => ({
+                value: key,
+                label: t(`filters.${key}`),
+                count: number(counts[key]),
+                alert: key === "attention" && counts.attention > 0,
+              }))}
+            />
+            <InputGroup className="bg-background h-9 xl:w-72 xl:shrink-0">
+              <InputGroupAddon>
+                <SearchIcon />
+              </InputGroupAddon>
+              <InputGroupInput
+                type="search"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={t("searchPlaceholder")}
+                aria-label={t("searchPlaceholder")}
+              />
+              {query ? (
+                <InputGroupAddon align="inline-end">
+                  <InputGroupButton
+                    size="icon-xs"
+                    onClick={() => setQuery("")}
+                    aria-label={t("clearSearch")}
+                  >
+                    <XIcon />
+                  </InputGroupButton>
+                </InputGroupAddon>
+              ) : null}
+            </InputGroup>
+          </>
+        }
+        footer={
+          !isPlaceholderData && visible.length > 0 ? (
+            <ListPagination
+              namespace="bookings"
+              page={page}
+              pageSize={pageSize}
+              total={data.total}
+              fetching={isFetching}
+              onChange={(next) => {
+                if (next.pageSize) setPageSize(Number(next.pageSize));
+                setPage(next.page);
+                document.getElementById("main")?.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          ) : undefined
+        }
+      >
+        {/* A new tab, page or search is loading: the old rows belong to another list. */}
+        {isPlaceholderData ? (
+          <BookingRowsSkeleton count={Math.min(Math.max(visible.length, 3), pageSize)} />
+        ) : visible.length === 0 ? (
+          <EmptyState
+            inset
+            className="py-12"
+            icon={query ? SearchIcon : filter === "attention" ? BadgeCheckIcon : CalendarCheckIcon}
+            title={
+              query ? t("noMatches") : filter === "attention" ? t("attentionEmpty") : t("empty")
+            }
+            action={
+              canCreate && !query && filter === "active" ? (
+                <Button variant="brand" onClick={openDialog}>
+                  <PlusIcon />
+                  {t("new")}
+                </Button>
+              ) : undefined
+            }
+          />
+        ) : (
+          <>
+            <ul
+              className={cn("grid gap-3 transition-opacity", isFetching && "opacity-70")}
+              aria-busy={isFetching}
             >
-              {t(`filters.${key}`)}
-              <TabCount
-                selected={filter === key}
-                alert={key === "attention" && counts.attention > 0}
-              >
-                {number(counts[key])}
-              </TabCount>
-            </button>
-          ))}
-        </div>
-        <InputGroup className="bg-card h-10 lg:h-9 xl:max-w-xs">
-          <InputGroupAddon>
-            <SearchIcon />
-          </InputGroupAddon>
-          <InputGroupInput
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={t("searchPlaceholder")}
-            aria-label={t("searchPlaceholder")}
-          />
-          {query ? (
-            <InputGroupAddon align="inline-end">
-              <InputGroupButton
-                size="icon-xs"
-                onClick={() => setQuery("")}
-                aria-label={t("clearSearch")}
-              >
-                <XIcon />
-              </InputGroupButton>
-            </InputGroupAddon>
-          ) : null}
-        </InputGroup>
-      </div>
-
-      {/* A new tab, page or search is loading: the old rows belong to another list. */}
-      {isPlaceholderData ? (
-        <BookingRowsSkeleton count={Math.min(Math.max(visible.length, 3), pageSize)} />
-      ) : visible.length === 0 ? (
-        <EmptyState
-          icon={query ? SearchIcon : filter === "attention" ? BadgeCheckIcon : CalendarCheckIcon}
-          title={
-            query ? t("noMatches") : filter === "attention" ? t("attentionEmpty") : t("empty")
-          }
-          action={
-            canCreate && !query && filter === "active" ? (
-              <Button variant="brand" onClick={openDialog}>
-                <PlusIcon />
-                {t("new")}
-              </Button>
-            ) : undefined
-          }
-        />
-      ) : (
-        <>
-          <ul
-            className={cn(
-              "stagger grid gap-3 transition-opacity [--stagger:40ms]",
-              isFetching && "opacity-70",
-            )}
-            aria-busy={isFetching}
-          >
-            {visible.map((b) => (
-              <li key={b.id} className="@container">
-                <BookingRow booking={b} showSalesperson={!ownOnly} onAction={openAction} />
-              </li>
-            ))}
-          </ul>
-          <ListPagination
-            namespace="bookings"
-            page={page}
-            pageSize={pageSize}
-            total={data.total}
-            fetching={isFetching}
-            onChange={(next) => {
-              if (next.pageSize) setPageSize(Number(next.pageSize));
-              setPage(next.page);
-              document.getElementById("main")?.scrollTo({ top: 0, behavior: "smooth" });
-            }}
-          />
-        </>
-      )}
+              {visible.map((b) => (
+                <li key={b.id} className="@container">
+                  <BookingRow booking={b} showSalesperson={!ownOnly} onAction={openAction} />
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </DataPanel>
 
       <EditBookingDialog
         booking={selected}
@@ -424,14 +431,14 @@ export function BookingsPageClient({
 
 const TONES = {
   brand: "bg-brand-soft text-brand",
-  success: "bg-emerald-600/10 text-emerald-700 dark:bg-emerald-400/12 dark:text-emerald-300",
-  warning: "bg-amber-600/12 text-amber-700 dark:bg-amber-400/12 dark:text-amber-300",
-  danger: "bg-rose-600/10 text-rose-700 dark:bg-rose-400/12 dark:text-rose-300",
+  success: "bg-success-soft text-success-foreground",
+  warning: "bg-warning-soft text-warning-foreground",
+  danger: "bg-danger-soft text-danger-foreground",
 } as const;
 
-/** A summary figure; the ones tied to a tab filter the list when clicked. */
+/** A summary figure in the metric strip; the ones tied to a tab filter the list when clicked. */
 function SummaryTile({
-  icon: Icon,
+  icon,
   tone,
   label,
   value,
@@ -440,78 +447,40 @@ function SummaryTile({
   onSelect,
 }: {
   icon: LucideIcon;
-  tone: keyof typeof TONES;
+  tone: MetricTone;
   label: string;
   value: string;
   hint: string;
   selected?: boolean;
   onSelect?: () => void;
 }) {
-  const tile = (className: string) => (
-    <span
-      className={cn("flex shrink-0 items-center justify-center rounded-lg", TONES[tone], className)}
-      aria-hidden
-    >
-      <Icon className="size-4" />
-    </span>
-  );
-  // Phones: a short row (icon, then label / value / hint), like the shared KPI cards.
-  const content = (
-    <>
-      <span className="flex items-center gap-2.5 sm:justify-between sm:gap-2">
-        {tile("size-8 sm:hidden")}
-        <span className="grid min-w-0 flex-1">
-          <span className="text-muted-foreground truncate text-xs font-medium">{label}</span>
-          <span className="font-heading truncate text-lg leading-tight font-semibold tracking-tight tabular-nums sm:hidden">
-            {value}
-          </span>
-          <span className="text-muted-foreground truncate text-[11px] leading-tight sm:hidden">
-            {hint}
-          </span>
-        </span>
-        {tile("size-8 max-sm:hidden")}
-      </span>
-      <span className="font-heading truncate text-xl font-semibold tracking-tight tabular-nums max-sm:hidden sm:text-2xl">
-        {value}
-      </span>
-      <span className="text-muted-foreground truncate text-xs max-sm:hidden">{hint}</span>
-    </>
-  );
-  const className = cn(
-    "bg-card grid min-w-0 gap-1.5 rounded-xl px-3 py-2.5 text-start shadow-xs ring-1 ring-foreground/[0.07] sm:p-4",
-    "transition-[box-shadow,transform] duration-300",
-  );
-  if (!onSelect) return <div className={className}>{content}</div>;
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-pressed={selected}
-      className={cn(
-        className,
-        "hover:ring-brand/30 outline-none hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring",
-        selected && "ring-brand/60 ring-2",
-      )}
-    >
-      {content}
-    </button>
+    <MetricStripItem
+      icon={icon}
+      tone={tone}
+      label={label}
+      value={value}
+      hint={hint}
+      selected={selected}
+      onSelect={onSelect}
+    />
   );
 }
 
 /** Edge colour by state: open, waiting on the customer, sold, or closed. */
 function accentOf(b: BookingListItem) {
-  if (b.status === "converted") return "bg-emerald-500";
+  if (b.status === "converted") return "bg-success";
   if (b.status !== "active") return "bg-muted-foreground/30";
   if (b.balanceOverdue) return "bg-destructive";
-  if (b.depositDueAt) return "bg-amber-500";
+  if (b.depositDueAt) return "bg-warning";
   return "bg-brand";
 }
 
 const STATUS_STYLE: Record<BookingListItem["status"], { icon: LucideIcon; className: string }> = {
-  active: { icon: CalendarCheckIcon, className: TONES.brand },
-  converted: { icon: BadgeCheckIcon, className: TONES.success },
-  cancelled: { icon: BanIcon, className: "bg-muted text-muted-foreground" },
-  expired: { icon: HourglassIcon, className: "bg-muted text-muted-foreground" },
+  active: { icon: CalendarCheckIcon, className: statusTones.pending },
+  converted: { icon: BadgeCheckIcon, className: statusTones.sold },
+  cancelled: { icon: BanIcon, className: statusTones.inactive },
+  expired: { icon: HourglassIcon, className: statusTones.rejected },
 };
 
 function StatusPill({ status }: { status: BookingListItem["status"] }) {
@@ -520,7 +489,7 @@ function StatusPill({ status }: { status: BookingListItem["status"] }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold whitespace-nowrap",
+        "inline-flex h-6 items-center gap-1.5 rounded-full border ps-2 pe-2.5 text-xs font-medium whitespace-nowrap",
         className,
       )}
     >
@@ -584,7 +553,9 @@ function DeadlineChip({ booking: b }: { booking: BookingListItem }) {
         CircleAlertIcon,
         TONES.danger,
         late == null
-          ? t("balanceOverdueSince", { date: formatDate(b.balanceDueAt, locale, "dateTime", timeZone) })
+          ? t("balanceOverdueSince", {
+              date: formatDate(b.balanceDueAt, locale, "dateTime", timeZone),
+            })
           : t("deadline.overdue", { duration: formatDuration(roughMinutes(-late)) }),
         b.balanceDueAt,
       );
@@ -616,7 +587,11 @@ function DeadlineChip({ booking: b }: { booking: BookingListItem }) {
       );
     }
     if (b.cancelReason) {
-      return chip(BanIcon, "bg-muted text-muted-foreground", t("cancelReason", { reason: b.cancelReason }));
+      return chip(
+        BanIcon,
+        "bg-muted text-muted-foreground",
+        t("cancelReason", { reason: b.cancelReason }),
+      );
     }
   }
   return null;
@@ -628,7 +603,7 @@ const HOLD_STYLE: Record<
 > = {
   pending: {
     icon: ShieldEllipsisIcon,
-    className: "bg-sky-600/10 text-sky-800 dark:bg-sky-400/12 dark:text-sky-300",
+    className: "bg-info-soft text-info-foreground",
   },
   approved: { icon: ShieldCheckIcon, className: TONES.success },
   rejected: { icon: ShieldXIcon, className: TONES.danger },
@@ -662,7 +637,8 @@ function PaymentProgress({ booking: b }: { booking: BookingListItem }) {
   if (b.totalPrice == null || b.totalPrice <= 0) {
     return (
       <p className="text-muted-foreground text-xs">
-        {t("payment.deposit")}: <span className="text-foreground tabular-nums">{money(b.deposit)}</span>
+        {t("payment.deposit")}:{" "}
+        <span className="text-foreground tabular-nums">{money(b.deposit)}</span>
       </p>
     );
   }
@@ -691,13 +667,11 @@ function PaymentProgress({ booking: b }: { booking: BookingListItem }) {
         ) : null}
       </div>
       {closed ? null : outstanding > 0 ? (
-        <p className="text-xs font-medium text-amber-700 tabular-nums dark:text-amber-400">
+        <p className="text-warning-foreground text-xs font-medium tabular-nums">
           {t("progress.toCollect", { amount: money(outstanding) })}
         </p>
       ) : (
-        <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">
-          {t("progress.paidInFull")}
-        </p>
+        <p className="text-success-foreground text-xs font-medium">{t("progress.paidInFull")}</p>
       )}
     </div>
   );
@@ -733,7 +707,7 @@ function BookingRow({
   return (
     <article
       className={cn(
-        "group/booking bg-card relative grid gap-4 overflow-hidden rounded-xl p-4 ps-5 shadow-xs ring-1 ring-foreground/[0.07]",
+        "group/booking bg-card ring-border relative grid gap-4 overflow-hidden rounded-xl p-4 ps-5 shadow-xs ring-1",
         "hover:ring-brand/30 transition-[box-shadow] duration-300 hover:shadow-md",
         // Sized by the card, not the window: stacked on phones, two columns (car | customer,
         // payment | actions) on medium cards, one line on wide ones. The actions column has a
@@ -748,7 +722,7 @@ function BookingRow({
       <div className="flex min-w-0 items-start gap-3">
         {/* The car's main photo, or the showroom placeholder when it has none. */}
         <span
-          className="bg-muted relative size-14 shrink-0 overflow-hidden rounded-lg ring-1 ring-foreground/[0.07] sm:h-16 sm:w-20"
+          className="bg-muted ring-border relative size-14 shrink-0 overflow-hidden rounded-lg ring-1 sm:h-16 sm:w-20"
           aria-hidden
         >
           {vehicle?.photoUrl ? (
@@ -786,11 +760,13 @@ function BookingRow({
               </Link>
             ) : null}
             {b.units > 1 ? (
-              <span className="bg-brand-soft text-brand rounded-full px-1.5 py-px font-medium">
+              <span className="border-brand/25 bg-brand-soft text-brand rounded-full border px-1.5 py-px font-medium">
                 {t("unitsBadge", { count: b.units })}
               </span>
             ) : null}
-            <span>{t("bookedOn", { date: formatDate(b.reservedAt, locale, "short", timeZone) })}</span>
+            <span>
+              {t("bookedOn", { date: formatDate(b.reservedAt, locale, "short", timeZone) })}
+            </span>
           </p>
         </div>
       </div>

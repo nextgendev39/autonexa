@@ -24,7 +24,9 @@ import { useTranslations } from "next-intl";
 
 import { EditCustomerDialog } from "@/components/customers/edit-customer-dialog";
 import { EmptyState } from "@/components/feedback/empty-state";
-import { TabCount } from "@/components/shared/tab-count";
+import { DataPanel } from "@/components/layout/data-panel";
+import { MetricStrip, MetricStripItem, type MetricTone } from "@/components/layout/metric-strip";
+import { ChipTabs } from "@/components/ui/chip";
 import { NativeSelect } from "@/components/inventory/native-select";
 import { useAppLocale } from "@/components/inventory/inventory-utils";
 import { PageHeader } from "@/components/layout/page-header";
@@ -66,7 +68,10 @@ async function fetchCustomerPage(query: CustomerListQuery): Promise<CustomerList
     pageSize: String(query.pageSize),
   });
   if (query.q) params.set("q", query.q);
-  const res = await fetch(`/api/customers?${params}`, { credentials: "same-origin", cache: "no-store" });
+  const res = await fetch(`/api/customers?${params}`, {
+    credentials: "same-origin",
+    cache: "no-store",
+  });
   const json = await res.json().catch(() => null);
   if (json?.status !== "success") throw new Error(json?.message ?? "Could not load customers.");
   return json.data;
@@ -170,7 +175,7 @@ export function CustomersPageClient({
       />
 
       {counts.all > 0 ? (
-        <section className="stagger grid grid-cols-2 gap-3 [--stagger:60ms] lg:grid-cols-4">
+        <MetricStrip label={t("title")} className="animate-rise">
           <SummaryTile
             icon={UsersIcon}
             tone="brand"
@@ -219,120 +224,119 @@ export function CustomersPageClient({
               onSelect={() => setFilter("unassigned")}
             />
           )}
-        </section>
+        </MetricStrip>
       ) : null}
 
-      <div className="animate-rise flex flex-col gap-3 [animation-delay:120ms] lg:flex-row lg:items-center lg:justify-between">
-        <div
-          className="bg-muted flex w-full touch-pan-x touch-pan-y overflow-x-auto overflow-y-hidden overscroll-x-contain rounded-lg p-0.5 text-sm lg:w-fit"
-          role="tablist"
-        >
-          {filters.map((key) => (
-            <button
-              key={key}
-              type="button"
-              role="tab"
-              aria-selected={filter === key}
-              onClick={() => setFilter(key)}
-              className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 whitespace-nowrap transition-all duration-200 lg:flex-none",
-                filter === key
-                  ? "bg-background font-medium shadow-xs"
-                  : "text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t(`filters.${key}`)}
-              <TabCount selected={filter === key}>{number(counts[key])}</TabCount>
-            </button>
-          ))}
-        </div>
-        <div className="flex gap-2">
-          <InputGroup className="bg-card h-10 flex-1 lg:h-9 lg:w-72 lg:flex-none">
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-            <InputGroupInput
-              type="search"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder={t("searchPlaceholder")}
-              aria-label={t("searchPlaceholder")}
+      <DataPanel
+        className="animate-rise [animation-delay:100ms]"
+        well
+        toolbar={
+          <>
+            <ChipTabs
+              label={t("title")}
+              value={filter}
+              onChange={setFilter}
+              items={filters.map((key) => ({
+                value: key,
+                label: t(`filters.${key}`),
+                count: number(counts[key]),
+              }))}
             />
-            {query ? (
-              <InputGroupAddon align="inline-end">
-                <InputGroupButton
-                  size="icon-xs"
-                  onClick={() => setQuery("")}
-                  aria-label={t("clearSearch")}
-                >
-                  <XIcon />
-                </InputGroupButton>
-              </InputGroupAddon>
-            ) : null}
-          </InputGroup>
-          <label className="relative flex shrink-0 items-center">
-            <span className="sr-only">{t("sort.label")}</span>
-            <ArrowUpDownIcon
-              className="text-muted-foreground pointer-events-none absolute start-2.5 size-4"
-              aria-hidden
-            />
-            <NativeSelect
-              className="bg-card h-10 w-40 ps-8 lg:h-9"
-              value={sort}
-              onChange={(event) => setSort(event.target.value as Sort)}
-            >
-              {CUSTOMER_SORTS.map((key) => (
-                <option key={key} value={key}>
-                  {t(`sort.${key}`)}
-                </option>
-              ))}
-            </NativeSelect>
-          </label>
-        </div>
-      </div>
-
-      {visible.length === 0 ? (
-        <EmptyState
-          icon={counts.all === 0 ? UsersIcon : SearchIcon}
-          title={counts.all === 0 ? t("empty") : t("noMatches")}
-          description={counts.all === 0 ? t("emptyHint") : t("noMatchesHint")}
-        />
-      ) : (
-        <>
-          <ul
-            className={cn(
-              "stagger grid gap-3 transition-opacity [--stagger:35ms] sm:grid-cols-2 xl:grid-cols-3",
-              isFetching && "opacity-70",
-            )}
-            aria-busy={isFetching}
-          >
-            {visible.map((c) => (
-              <li key={c.id} className="min-w-0">
-                <CustomerCard
-                  customer={c}
-                  showSalesperson={!ownOnly}
-                  canCreateBooking={canCreateBooking}
-                  isNew={monthKey(c.createdAt) === thisMonth}
-                  onEdit={() => setEditing(c)}
+            <div className="flex gap-2 xl:shrink-0">
+              <InputGroup className="bg-background h-9 flex-1 xl:w-64 xl:flex-none">
+                <InputGroupAddon>
+                  <SearchIcon />
+                </InputGroupAddon>
+                <InputGroupInput
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder={t("searchPlaceholder")}
+                  aria-label={t("searchPlaceholder")}
                 />
-              </li>
-            ))}
-          </ul>
-          <ListPagination
-            namespace="customers"
-            page={page}
-            pageSize={pageSize}
-            pageSizes={CUSTOMER_PAGE_SIZES}
-            total={data.total}
-            fetching={isFetching}
-            onChange={(next) => {
-              if (next.pageSize) setPageSize(Number(next.pageSize));
-              setPage(next.page);
-              document.getElementById("main")?.scrollTo({ top: 0, behavior: "smooth" });
-            }}
+                {query ? (
+                  <InputGroupAddon align="inline-end">
+                    <InputGroupButton
+                      size="icon-xs"
+                      onClick={() => setQuery("")}
+                      aria-label={t("clearSearch")}
+                    >
+                      <XIcon />
+                    </InputGroupButton>
+                  </InputGroupAddon>
+                ) : null}
+              </InputGroup>
+              <label className="relative flex shrink-0 items-center">
+                <span className="sr-only">{t("sort.label")}</span>
+                <ArrowUpDownIcon
+                  className="text-muted-foreground pointer-events-none absolute start-2.5 size-4"
+                  aria-hidden
+                />
+                <NativeSelect
+                  className="bg-background h-9 w-40 ps-8"
+                  value={sort}
+                  onChange={(event) => setSort(event.target.value as Sort)}
+                >
+                  {CUSTOMER_SORTS.map((key) => (
+                    <option key={key} value={key}>
+                      {t(`sort.${key}`)}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </label>
+            </div>
+          </>
+        }
+        footer={
+          visible.length > 0 ? (
+            <ListPagination
+              namespace="customers"
+              page={page}
+              pageSize={pageSize}
+              pageSizes={CUSTOMER_PAGE_SIZES}
+              total={data.total}
+              fetching={isFetching}
+              onChange={(next) => {
+                if (next.pageSize) setPageSize(Number(next.pageSize));
+                setPage(next.page);
+                document.getElementById("main")?.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            />
+          ) : undefined
+        }
+      >
+        {visible.length === 0 ? (
+          <EmptyState
+            inset
+            className="py-12"
+            icon={counts.all === 0 ? UsersIcon : SearchIcon}
+            title={counts.all === 0 ? t("empty") : t("noMatches")}
+            description={counts.all === 0 ? t("emptyHint") : t("noMatchesHint")}
           />
-        </>
-      )}
+        ) : (
+          <>
+            <ul
+              className={cn(
+                "grid gap-3 transition-opacity sm:grid-cols-2 2xl:grid-cols-3",
+                isFetching && "opacity-70",
+              )}
+              aria-busy={isFetching}
+            >
+              {visible.map((c) => (
+                <li key={c.id} className="min-w-0">
+                  <CustomerCard
+                    customer={c}
+                    showSalesperson={!ownOnly}
+                    canCreateBooking={canCreateBooking}
+                    isNew={monthKey(c.createdAt) === thisMonth}
+                    onEdit={() => setEditing(c)}
+                  />
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
+      </DataPanel>
 
       <EditCustomerDialog
         customer={editing}
@@ -348,68 +352,40 @@ export function CustomersPageClient({
 
 const TONES = {
   brand: "bg-brand-soft text-brand",
-  success: "bg-emerald-600/10 text-emerald-700 dark:bg-emerald-400/12 dark:text-emerald-300",
-  info: "bg-sky-600/10 text-sky-700 dark:bg-sky-400/12 dark:text-sky-300",
-  warning: "bg-amber-600/12 text-amber-700 dark:bg-amber-400/12 dark:text-amber-300",
+  success: "bg-success-soft text-success-foreground",
+  info: "bg-info-soft text-info-foreground",
+  warning: "bg-warning-soft text-warning-foreground",
   neutral: "bg-muted text-foreground/70",
 } as const;
 
-/** A summary figure that filters the list when clicked (same shape as the Bookings tiles). */
+/** A summary figure in the metric strip that filters the list when clicked. */
 function SummaryTile({
-  icon: Icon,
+  icon,
   tone,
   label,
   value,
   hint,
-  selected,
+  selected = false,
   onSelect,
 }: {
   icon: LucideIcon;
-  tone: keyof typeof TONES;
+  tone: MetricTone;
   label: string;
   value: string;
   hint: string;
-  selected: boolean;
-  onSelect: () => void;
+  selected?: boolean;
+  onSelect?: () => void;
 }) {
-  const tile = (className: string) => (
-    <span
-      className={cn("flex shrink-0 items-center justify-center rounded-lg", TONES[tone], className)}
-      aria-hidden
-    >
-      <Icon className="size-4" />
-    </span>
-  );
   return (
-    <button
-      type="button"
-      onClick={onSelect}
-      aria-pressed={selected}
-      className={cn(
-        "bg-card grid min-w-0 gap-1.5 rounded-xl px-3 py-2.5 text-start shadow-xs ring-1 ring-foreground/[0.07] sm:p-4",
-        "hover:ring-brand/30 outline-none transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring",
-        selected && "ring-brand/60 ring-2",
-      )}
-    >
-      {/* Phones: a short row (icon, then label / value / hint). */}
-      <span className="flex items-center gap-2.5 sm:justify-between sm:gap-2">
-        {tile("size-8 sm:hidden")}
-        <span className="grid min-w-0 flex-1">
-          <span className="text-muted-foreground truncate text-xs font-medium">{label}</span>
-          <span className="font-heading truncate text-lg leading-tight font-semibold tracking-tight tabular-nums sm:hidden">
-            {value}
-          </span>
-          <span className="text-muted-foreground truncate text-[11px] leading-tight sm:hidden">
-            {hint}
-          </span>
-        </span>
-        {tile("size-8 max-sm:hidden")}
-      </span>
-      <span className="font-heading truncate text-2xl font-semibold tracking-tight tabular-nums max-sm:hidden">
-        {value}
-      </span>
-      <span className="text-muted-foreground truncate text-xs max-sm:hidden">{hint}</span>
-    </button>
+    <MetricStripItem
+      icon={icon}
+      tone={tone}
+      label={label}
+      value={value}
+      hint={hint}
+      selected={selected}
+      onSelect={onSelect}
+    />
   );
 }
 
@@ -502,7 +478,7 @@ function CustomerCard({
   return (
     <article
       className={cn(
-        "bg-card flex h-full flex-col overflow-hidden rounded-xl shadow-xs ring-1 ring-foreground/[0.07]",
+        "bg-card ring-border flex h-full flex-col overflow-hidden rounded-xl shadow-xs ring-1",
         "hover:ring-brand/30 transition-[box-shadow] duration-300 hover:shadow-md",
       )}
     >
@@ -513,7 +489,7 @@ function CustomerCard({
             className={cn(
               "flex size-11 shrink-0 items-center justify-center rounded-full text-sm font-semibold",
               active
-                ? "bg-gold text-brand-foreground shadow-sm"
+                ? "bg-primary text-primary-foreground shadow-xs"
                 : "bg-muted text-foreground/70",
             )}
             aria-hidden
@@ -530,7 +506,7 @@ function CustomerCard({
             <p className="text-muted-foreground flex items-center gap-1.5 text-xs">
               <span className="font-mono">{c.code}</span>
               {isNew ? (
-                <span className="rounded-full bg-sky-600/10 px-1.5 py-px font-medium text-sky-700 dark:bg-sky-400/12 dark:text-sky-300">
+                <span className="bg-info-soft text-info-foreground border-info/25 rounded-full border px-1.5 py-px font-medium">
                   {t("newBadge")}
                 </span>
               ) : null}
@@ -571,7 +547,7 @@ function CustomerCard({
                   "flex size-3.5 shrink-0 items-center justify-center rounded-full text-[7px] font-bold",
                   c.salesperson
                     ? "bg-foreground/10 text-foreground/70"
-                    : "bg-amber-500/20 text-amber-700",
+                    : "bg-warning-soft text-warning-foreground",
                 )}
                 aria-hidden
               >
@@ -580,12 +556,10 @@ function CustomerCard({
               <dd
                 className={cn(
                   "truncate",
-                  c.salesperson ? "text-muted-foreground" : "text-amber-700 dark:text-amber-400",
+                  c.salesperson ? "text-muted-foreground" : "text-warning-foreground",
                 )}
               >
-                {c.salesperson
-                  ? t("ownedBy", { name: c.salesperson.name })
-                  : t("unassigned")}
+                {c.salesperson ? t("ownedBy", { name: c.salesperson.name }) : t("unassigned")}
               </dd>
             </div>
           ) : null}
@@ -624,7 +598,7 @@ function CustomerCard({
           icon={MessageCircleIcon}
           label={t("actions.whatsapp")}
           external
-          className="hover:border-emerald-500/50 hover:text-emerald-700 dark:hover:text-emerald-400"
+          className="hover:border-success/50 hover:text-success-foreground"
         />
         {c.email ? (
           <ContactAction href={`mailto:${c.email}`} icon={MailIcon} label={t("actions.email")} />

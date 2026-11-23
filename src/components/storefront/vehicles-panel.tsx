@@ -31,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import type { AppLocale } from "@/config/app";
 import { useRouter } from "@/lib/i18n/navigation";
 import type { ManagedVehicle } from "@/lib/storefront/manage";
+import { ChipCount, chipClass } from "@/components/ui/chip";
 import { cn } from "@/lib/utils";
 import { formatCurrency, formatNumber } from "@/lib/utils/currency";
 
@@ -115,8 +116,8 @@ function VisibilityBadge({ vehicle }: { vehicle: ManagedVehicle }) {
   const t = useTranslations("storefrontAdmin");
   const state = visibilityOf(vehicle);
   const styles = {
-    live: "bg-emerald-600/10 text-emerald-700 dark:bg-emerald-400/12 dark:text-emerald-300",
-    waiting: "bg-amber-600/12 text-amber-700 dark:bg-amber-400/12 dark:text-amber-300",
+    live: "bg-success-soft text-success-foreground",
+    waiting: "bg-warning-soft text-warning-foreground",
     hidden: "bg-muted text-muted-foreground",
   }[state];
   const Icon = { live: GlobeIcon, waiting: HourglassIcon, hidden: EyeOffIcon }[state];
@@ -323,23 +324,13 @@ export function VehiclesPanel({
               role="tab"
               aria-selected={visibility === key}
               onClick={() => setVisibility(key)}
-              className={cn(
-                "inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-sm font-medium transition-colors",
-                visibility === key
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border bg-card hover:bg-muted",
-              )}
+              className={chipClass(visibility === key)}
             >
-              <Icon className="size-4" aria-hidden />
+              <Icon aria-hidden />
               {label}
-              <span
-                className={cn(
-                  "rounded-full px-1.5 text-xs tabular-nums",
-                  visibility === key ? "bg-primary-foreground/20" : "bg-muted",
-                )}
-              >
+              <ChipCount selected={visibility === key}>
                 {formatNumber(counts[key], locale)}
-              </span>
+              </ChipCount>
             </button>
           ))}
         </div>

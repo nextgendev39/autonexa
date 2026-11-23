@@ -18,10 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { PermissionGate } from "@/components/auth/permission-gate";
 import { EmptyState } from "@/components/feedback/empty-state";
-import {
-  useAppLocale,
-  vehicleTitle,
-} from "@/components/inventory/inventory-utils";
+import { useAppLocale, vehicleTitle } from "@/components/inventory/inventory-utils";
 import { VehicleArchiveDialog } from "@/components/inventory/vehicle-archive-dialog";
 import { VehicleDocumentsPanel } from "@/components/inventory/vehicle-documents-panel";
 import { VehicleHistory } from "@/components/inventory/vehicle-history";
@@ -106,48 +103,28 @@ function Overview({ vehicle }: { vehicle: VehicleDetail }) {
     vehicle.minimumSellingPrice !== undefined ||
     vehicle.currentSellingPrice != null;
 
+  // Dossier layout: the story of the car on the left, a sticky spec sheet on the right.
   return (
-    <div className="grid gap-4">
-      <VehicleHero vehicle={vehicle} />
-
-      {/* Money and time: the questions owners ask first. */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        {hasPrivate ? (
-          <div className="lg:col-span-2">
-            <PriceProfitCard vehicle={vehicle} />
-          </div>
-        ) : null}
+    <div className="grid items-start gap-5 xl:grid-cols-12">
+      <div className="grid min-w-0 gap-5 xl:col-span-8">
+        <VehicleHero vehicle={vehicle} />
+        {vehicle.booking ? <BookingProgressCard vehicle={vehicle} /> : null}
+        {hasPrivate ? <PriceProfitCard vehicle={vehicle} /> : null}
+        <div className="grid gap-5 lg:grid-cols-2">
+          <IdentificationCard vehicle={vehicle} />
+          {vehicle.acquisition ? (
+            <AcquisitionSummaryCard vehicle={vehicle} />
+          ) : (
+            <RecordNotesCard vehicle={vehicle} />
+          )}
+        </div>
+        {vehicle.acquisition ? <RecordNotesCard vehicle={vehicle} /> : null}
+      </div>
+      <aside className="grid min-w-0 gap-5 xl:sticky xl:top-16 xl:col-span-4">
         <StockAgeCard vehicle={vehicle} />
-        {!hasPrivate ? (
-          <div className="lg:col-span-2">
-            <KeyDatesCard vehicle={vehicle} />
-          </div>
-        ) : null}
-      </div>
-
-      {vehicle.booking || hasPrivate ? (
-        <div className="grid gap-4 lg:grid-cols-3">
-          {vehicle.booking ? (
-            <div className="lg:col-span-2">
-              <BookingProgressCard vehicle={vehicle} />
-            </div>
-          ) : null}
-          {hasPrivate ? (
-            <div className={cn(!vehicle.booking && "lg:col-span-3")}>
-              <KeyDatesCard vehicle={vehicle} />
-            </div>
-          ) : null}
-        </div>
-      ) : null}
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <IdentificationCard vehicle={vehicle} />
         <OriginLocationCard vehicle={vehicle} />
-        {vehicle.acquisition ? <AcquisitionSummaryCard vehicle={vehicle} /> : null}
-        <div className={cn(!vehicle.acquisition && "lg:col-span-2")}>
-          <RecordNotesCard vehicle={vehicle} />
-        </div>
-      </div>
+        <KeyDatesCard vehicle={vehicle} />
+      </aside>
     </div>
   );
 }
@@ -191,7 +168,10 @@ function AcquisitionPanel({ vehicle }: { vehicle: VehicleDetail }) {
           action={
             isSoldStatus(vehicle.status) ? undefined : (
               <PermissionGate permission="acquisition.create">
-                <Link href={vehicleHref(vehicle.stockNumber, "/edit")} className={cn(buttonVariants())}>
+                <Link
+                  href={vehicleHref(vehicle.stockNumber, "/edit")}
+                  className={cn(buttonVariants())}
+                >
                   {t("inventory.actions.addAcquisition")}
                 </Link>
               </PermissionGate>
@@ -229,7 +209,11 @@ function AcquisitionPanel({ vehicle }: { vehicle: VehicleDetail }) {
                 stock: vehicle.acquisitionSharedFrom.stockNumber,
                 link: (chunks) => (
                   <Link
-                    href={vehicleHref(vehicle.acquisitionSharedFrom!.stockNumber, "", "acquisition")}
+                    href={vehicleHref(
+                      vehicle.acquisitionSharedFrom!.stockNumber,
+                      "",
+                      "acquisition",
+                    )}
                     className="font-medium underline underline-offset-4"
                   >
                     {chunks}
@@ -263,7 +247,9 @@ function AcquisitionPanel({ vehicle }: { vehicle: VehicleDetail }) {
           <DetailItem
             label={
               vehicle.quantity > 1
-                ? t("inventory.quantity.perUnitLabel", { label: t("inventory.fields.purchasePrice") })
+                ? t("inventory.quantity.perUnitLabel", {
+                    label: t("inventory.fields.purchasePrice"),
+                  })
                 : t("inventory.fields.purchasePrice")
             }
             value={money(acquisition.purchasePrice)}
@@ -277,7 +263,9 @@ function AcquisitionPanel({ vehicle }: { vehicle: VehicleDetail }) {
           <DetailItem
             label={
               vehicle.quantity > 1
-                ? t("inventory.quantity.perUnitLabel", { label: t("inventory.fields.acquisitionCost") })
+                ? t("inventory.quantity.perUnitLabel", {
+                    label: t("inventory.fields.acquisitionCost"),
+                  })
                 : t("inventory.fields.acquisitionCost")
             }
             value={
@@ -287,11 +275,15 @@ function AcquisitionPanel({ vehicle }: { vehicle: VehicleDetail }) {
                 : null)
             }
           />
-          {vehicle.quantity > 1 && (acquisition.totalAcquisitionCost ?? vehicle.totalAcquisitionCost) != null ? (
+          {vehicle.quantity > 1 &&
+          (acquisition.totalAcquisitionCost ?? vehicle.totalAcquisitionCost) != null ? (
             <DetailItem
               label={t("inventory.totals.totalAcquisitionCost", { count: vehicle.quantity })}
               value={money(
-                quantityTotal(acquisition.totalAcquisitionCost ?? vehicle.totalAcquisitionCost, vehicle.quantity),
+                quantityTotal(
+                  acquisition.totalAcquisitionCost ?? vehicle.totalAcquisitionCost,
+                  vehicle.quantity,
+                ),
               )}
             />
           ) : null}
@@ -324,7 +316,9 @@ export function VehicleDetailClient({
   useEffect(() => {
     if (!headerEnd) return;
     const observer = new IntersectionObserver(([entry]) =>
-      setTabsStuck(!entry.isIntersecting && entry.boundingClientRect.top < (entry.rootBounds?.top ?? 0) + 200),
+      setTabsStuck(
+        !entry.isIntersecting && entry.boundingClientRect.top < (entry.rootBounds?.top ?? 0) + 200,
+      ),
     );
     observer.observe(headerEnd);
     return () => observer.disconnect();
@@ -344,7 +338,13 @@ export function VehicleDetailClient({
       [
         { id: "overview" as const, label: t("inventory.tabs.overview"), icon: LayoutDashboardIcon },
         ...(canViewPurchase
-          ? [{ id: "acquisition" as const, label: t("inventory.tabs.acquisition"), icon: PackageIcon }]
+          ? [
+              {
+                id: "acquisition" as const,
+                label: t("inventory.tabs.acquisition"),
+                icon: PackageIcon,
+              },
+            ]
           : []),
         { id: "pricing" as const, label: t("inventory.tabs.pricing"), icon: TagsIcon },
         { id: "photos" as const, label: t("inventory.tabs.photos"), icon: CameraIcon },
@@ -389,7 +389,9 @@ export function VehicleDetailClient({
         actions={
           <>
             {isSoldStatus(vehicle.status) ? (
-              <SoldTag soldAt={vehicle.booking?.status === "converted" ? vehicle.booking.soldAt : null} />
+              <SoldTag
+                soldAt={vehicle.booking?.status === "converted" ? vehicle.booking.soldAt : null}
+              />
             ) : (
               <VehicleSaleActions vehicle={vehicle} />
             )}
@@ -452,17 +454,17 @@ export function VehicleDetailClient({
       <Tabs defaultValue={resolvedTab} className="gap-4">
         <div
           className={cn(
-            "bg-background/95 supports-backdrop-filter:bg-background/90 sticky z-20 flex items-center gap-2 border-b backdrop-blur-md",
+            "bg-background/95 supports-backdrop-filter:bg-background/85 border-divider sticky z-20 flex items-center gap-3 border-b backdrop-blur-md",
             // Cancel #main py-5 / lg:py-8 so the bar sits flush under the app header.
-            "-top-5 -mx-4 px-4 py-2 md:-mx-6 md:px-6 lg:-top-8 lg:-mx-8 lg:px-8",
+            "-top-5 -mx-4 px-4 py-1 md:-mx-6 md:px-6 lg:-top-8 lg:-mx-10 lg:px-10",
           )}
         >
           {/* The list is wider than a phone, so it scrolls sideways inside its own box
               instead of stretching the whole page. */}
-          <div className="bg-muted/40 min-w-0 flex-1 overflow-x-auto overscroll-x-contain rounded-2xl border p-1.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="min-w-0 flex-1 [scrollbar-width:none] overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden">
             <TabsList
-              variant="default"
-              className="h-auto w-max min-w-full justify-start gap-1 bg-transparent p-0"
+              variant="line"
+              className="h-auto w-max min-w-full justify-start gap-5 rounded-none bg-transparent p-0 sm:gap-7"
             >
               {tabs.map((tab) => {
                 const Icon = tab.icon;
@@ -472,13 +474,13 @@ export function VehicleDetailClient({
                     value={tab.id}
                     // Keep the chosen tab visible when it starts off-screen on a phone.
                     onClick={(event) =>
-                      event.currentTarget.scrollIntoView({ block: "nearest", inline: "center", behavior: "smooth" })
+                      event.currentTarget.scrollIntoView({
+                        block: "nearest",
+                        inline: "center",
+                        behavior: "smooth",
+                      })
                     }
-                    className={cn(
-                      "h-9 shrink-0 flex-none rounded-xl px-3 text-[13px] font-medium sm:h-10 sm:px-3.5 sm:text-sm",
-                      "data-active:bg-background data-active:text-foreground data-active:shadow-sm",
-                      "dark:data-active:bg-background",
-                    )}
+                    className="h-11 flex-none shrink-0 rounded-none px-0 text-[13px] font-medium sm:text-sm"
                   >
                     <Icon data-icon="inline-start" aria-hidden />
                     <span>{tab.label}</span>
@@ -488,7 +490,7 @@ export function VehicleDetailClient({
             </TabsList>
           </div>
           {tabsStuck ? (
-            <div className="animate-in fade-in slide-in-from-right-2 flex shrink-0 items-center gap-2 duration-200 rtl:slide-in-from-left-2">
+            <div className="animate-in fade-in slide-in-from-right-2 rtl:slide-in-from-left-2 flex shrink-0 items-center gap-2 duration-200">
               <VehicleSaleActions vehicle={vehicle} layout="bar" />
             </div>
           ) : null}
@@ -503,7 +505,6 @@ export function VehicleDetailClient({
             <AcquisitionPanel vehicle={vehicle} />
           </TabsContent>
         ) : null}
-
 
         <TabsContent value="pricing" className="outline-none">
           <VehiclePricingPanel vehicleId={vehicle.id} />
@@ -524,7 +525,6 @@ export function VehicleDetailClient({
         <TabsContent value="history" className="outline-none">
           <VehicleHistory vehicleId={vehicle.id} />
         </TabsContent>
-
       </Tabs>
 
       <VehicleTransferDialog vehicle={vehicle} open={transferOpen} onOpenChange={setTransferOpen} />

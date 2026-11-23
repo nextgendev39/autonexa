@@ -227,7 +227,7 @@ export function VerifyEmailForm({
     return (
       <div className="grid gap-4" aria-live="polite">
         <Alert role="status">
-          <CircleCheckIcon className="text-emerald-600 dark:text-emerald-400" />
+          <CircleCheckIcon className="text-success" />
           <AlertDescription>
             {error === "alreadyVerified" ? t("errors.alreadyVerified") : t("success")}
           </AlertDescription>

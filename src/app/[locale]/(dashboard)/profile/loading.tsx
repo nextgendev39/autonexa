@@ -6,31 +6,28 @@ import {
 } from "@/components/feedback/skeletons";
 import { Skeleton } from "@/components/ui/skeleton";
 
-/** Identity banner, then details and password beside the account summary. */
+/** Header, then the identity column (obsidian card, account facts) beside the editable cards. */
 export default function Loading() {
   return (
-    <PageSkeleton className="mx-auto w-full max-w-4xl">
+    <PageSkeleton className="mx-auto w-full max-w-6xl gap-8">
       <PageHeaderSkeleton />
-      <div className="bg-carbon flex flex-col gap-4 rounded-2xl p-5 sm:flex-row sm:items-center sm:p-6">
-        <Skeleton className="size-16 shrink-0 rounded-full bg-white/10 sm:size-20" />
-        <div className="grid flex-1 gap-2">
-          <Skeleton className="h-6 w-48 bg-white/10" />
-          <Skeleton className="h-4 w-56 bg-white/10" />
-          <div className="flex gap-1.5 pt-1">
-            <Skeleton className="h-5 w-24 rounded-full bg-white/10" />
+      <div className="grid items-start gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+        <div className="grid gap-6">
+          <div className="bg-brand-panel grid justify-items-center gap-3 rounded-2xl p-6">
+            <Skeleton className="size-20 rounded-full bg-white/10" />
+            <Skeleton className="h-5 w-36 bg-white/10" />
+            <Skeleton className="h-3.5 w-44 bg-white/10" />
           </div>
+          <SectionCardSkeleton bodyClassName="h-32" />
         </div>
-      </div>
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <div className="grid content-start gap-6">
+        <div className="grid gap-6">
           <SectionCardSkeleton>
             <FormFieldsSkeleton fields={4} />
           </SectionCardSkeleton>
           <SectionCardSkeleton>
-            <FormFieldsSkeleton fields={3} />
+            <FormFieldsSkeleton fields={2} />
           </SectionCardSkeleton>
         </div>
-        <SectionCardSkeleton bodyClassName="h-80" />
       </div>
     </PageSkeleton>
   );

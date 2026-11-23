@@ -142,7 +142,7 @@ function PhotoThumb({
   return (
     <li
       className={cn(
-        "bg-muted/20 group relative overflow-hidden rounded-2xl ring-1 ring-foreground/8 transition-all duration-200",
+        "bg-muted/20 group ring-foreground/8 relative overflow-hidden rounded-2xl ring-1 transition-all duration-200",
         onOpen && "hover:ring-foreground/20 hover:shadow-md",
         featured ? "h-full min-h-48 w-full" : "w-full",
         draggable && "cursor-grab active:cursor-grabbing",
@@ -239,7 +239,7 @@ function PhotoThumb({
 
       {canEdit && !uploading && !selecting ? (
         <div
-          className="absolute inset-e-2 bottom-2 flex items-center gap-1 rounded-full bg-black/50 p-1 opacity-100 backdrop-blur-md transition-opacity sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+          className="absolute inset-e-2 bottom-2 flex items-center gap-1 rounded-full bg-black/50 p-1 opacity-100 backdrop-blur-md transition-opacity sm:opacity-0 sm:group-focus-within:opacity-100 sm:group-hover:opacity-100"
           data-row-stop
           onClick={(event) => event.stopPropagation()}
         >
@@ -284,7 +284,7 @@ function PhotoThumb({
               type="button"
               size="icon-sm"
               variant="ghost"
-              className="size-8 text-white hover:bg-rose-500/80 hover:text-white"
+              className="hover:bg-destructive/85 size-8 text-white hover:text-white"
               aria-label={t("inventory.photos.remove")}
               onClick={onRemove}
             >
@@ -536,7 +536,7 @@ function DraftManager({
           <p className="text-muted-foreground text-sm">{t("inventory.photos.hint")}</p>
         </div>
         {photos.length > 0 ? (
-          <span className="text-muted-foreground rounded-full bg-muted px-2.5 py-1 text-xs tabular-nums">
+          <span className="text-muted-foreground bg-muted border-border rounded-full border px-2.5 py-1 text-xs tabular-nums">
             {photos.length}
           </span>
         ) : null}
@@ -587,9 +587,7 @@ function DraftManager({
               onPrimary={() => setPrimary(photo.localId)}
               onRemove={() => remove(photo.localId)}
               onMoveLeft={index > 0 ? () => move(photo.localId, -1) : undefined}
-              onMoveRight={
-                index < photos.length - 1 ? () => move(photo.localId, 1) : undefined
-              }
+              onMoveRight={index < photos.length - 1 ? () => move(photo.localId, 1) : undefined}
               draggable={!disabled}
               onDragStart={() => {
                 dragId.current = photo.localId;
@@ -614,13 +612,7 @@ function DraftManager({
   );
 }
 
-function ManageManager({
-  vehicleId,
-  readOnly,
-}: {
-  vehicleId: string;
-  readOnly?: boolean;
-}) {
+function ManageManager({ vehicleId, readOnly }: { vehicleId: string; readOnly?: boolean }) {
   const t = useTranslations();
   const { can } = usePermission();
   // Managing photos of a saved car is editing it; create-only roles add photos in the create flow.
@@ -737,16 +729,13 @@ function ManageManager({
             })),
           );
 
-          queryClient.setQueryData<VehiclePhoto[]>(
-            vehiclePhotoKeys.all(vehicleId),
-            (current) => {
-              const list = current ?? [];
-              const known = new Set(list.map((photo) => photo.id));
-              return [...list, ...saved.filter((photo) => !known.has(photo.id))].sort(
-                (a, b) => a.sortOrder - b.sortOrder,
-              );
-            },
-          );
+          queryClient.setQueryData<VehiclePhoto[]>(vehiclePhotoKeys.all(vehicleId), (current) => {
+            const list = current ?? [];
+            const known = new Set(list.map((photo) => photo.id));
+            return [...list, ...saved.filter((photo) => !known.has(photo.id))].sort(
+              (a, b) => a.sortOrder - b.sortOrder,
+            );
+          });
 
           success = saved.length;
           const savedIds = new Set(ready.map((item) => item.localId));
@@ -838,7 +827,9 @@ function ManageManager({
       setDeleteIds(null);
       exitSelecting();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t("inventory.photos.errors.deleteFailed"));
+      toast.error(
+        error instanceof Error ? error.message : t("inventory.photos.errors.deleteFailed"),
+      );
     } finally {
       setBusyId(null);
     }
@@ -976,7 +967,7 @@ function ManageManager({
         ) : null}
 
         {pendingUploads.length > 0 ? (
-          <div className="grid gap-3 rounded-2xl border border-border/70 bg-muted/20 p-3">
+          <div className="border-border/70 bg-muted/20 grid gap-3 rounded-2xl border p-3">
             <p className="text-sm font-medium tracking-tight">
               {t("inventory.photos.progress.title")}
             </p>
@@ -994,9 +985,7 @@ function ManageManager({
                     errorMessage: photo.errorMessage,
                   }}
                   onRemove={
-                    photo.status === "error"
-                      ? () => dismissFailedUpload(photo.localId)
-                      : undefined
+                    photo.status === "error" ? () => dismissFailedUpload(photo.localId) : undefined
                   }
                 />
               ))}
@@ -1040,9 +1029,7 @@ function ManageManager({
               onPrimary={() => void setPrimary(photo.id)}
               onRemove={() => setDeleteIds([photo.id])}
               onMoveLeft={index > 0 ? () => void move(photo.id, -1) : undefined}
-              onMoveRight={
-                index < photos.length - 1 ? () => void move(photo.id, 1) : undefined
-              }
+              onMoveRight={index < photos.length - 1 ? () => void move(photo.id, 1) : undefined}
               selecting={selecting}
               selected={selectedIds.has(photo.id)}
               onToggleSelect={() => toggleSelected(photo.id)}
@@ -1158,7 +1145,11 @@ function ManageManager({
                   >
                     {photo.url ? (
                       // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL
-                      <img src={photo.url} alt={photo.fileName} className="size-full object-cover" />
+                      <img
+                        src={photo.url}
+                        alt={photo.fileName}
+                        className="size-full object-cover"
+                      />
                     ) : null}
                     {index === 7 && deletePhotos.length > 8 ? (
                       <span className="absolute inset-0 flex items-center justify-center bg-black/55 text-sm font-medium text-white">
@@ -1199,11 +1190,7 @@ function ManageManager({
 export function VehicleImageManager(props: VehicleImageManagerProps) {
   if (props.mode === "draft") {
     return (
-      <DraftManager
-        photos={props.photos}
-        onChange={props.onChange}
-        disabled={props.disabled}
-      />
+      <DraftManager photos={props.photos} onChange={props.onChange} disabled={props.disabled} />
     );
   }
   return (
@@ -1236,8 +1223,7 @@ export async function uploadPendingVehiclePhotos(
   ) => void,
 ): Promise<PendingVehiclePhoto[]> {
   const failed: PendingVehiclePhoto[] = [];
-  const primaryId =
-    photos.find((photo) => photo.isPrimary)?.localId ?? photos[0]?.localId;
+  const primaryId = photos.find((photo) => photo.isPrimary)?.localId ?? photos[0]?.localId;
 
   function fail(photo: PendingVehiclePhoto, error: unknown) {
     const message = error instanceof Error ? error.message : "Upload failed";

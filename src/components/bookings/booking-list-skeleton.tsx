@@ -10,7 +10,7 @@ export function BookingSummarySkeleton() {
       {range(4).map((index) => (
         <div
           key={index}
-          className="bg-card ring-foreground/[0.07] grid min-w-0 gap-1.5 rounded-xl px-3 py-2.5 shadow-xs ring-1 sm:p-4"
+          className="bg-card ring-border grid min-w-0 gap-1.5 rounded-xl px-3 py-2.5 shadow-xs ring-1 sm:p-4"
         >
           <div className="flex items-center gap-2.5 sm:justify-between sm:gap-2">
             <Skeleton
@@ -70,7 +70,7 @@ export function BookingRowsSkeleton({ count = 5 }: { count?: number }) {
         <li key={index} className="@container">
           <div
             className={cn(
-              "bg-card ring-foreground/[0.07] relative grid gap-4 overflow-hidden rounded-xl p-4 ps-5 shadow-xs ring-1",
+              "bg-card ring-border relative grid gap-4 overflow-hidden rounded-xl p-4 ps-5 shadow-xs ring-1",
               "@2xl:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] @2xl:gap-x-6",
               "@[66rem]:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,1.3fr)_12rem] @[66rem]:items-center",
             )}

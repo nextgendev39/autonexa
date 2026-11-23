@@ -50,7 +50,7 @@ export function WhyVisual({ copy, alt }: { copy: Copy; alt: string }) {
       </div>
 
       <div aria-hidden className="flex justify-center">
-        <span className="bg-gold text-brand-foreground flex size-8 items-center justify-center rounded-full shadow-md">
+        <span className="bg-gold text-gold-foreground flex size-8 items-center justify-center rounded-full shadow-md">
           <ArrowDownIcon className="size-4" />
         </span>
       </div>

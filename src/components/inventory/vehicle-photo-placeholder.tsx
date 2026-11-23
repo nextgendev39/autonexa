@@ -21,7 +21,7 @@ export function VehiclePhotoPlaceholder({
   return (
     <div
       className={cn(
-        "bg-carbon relative flex size-full flex-col items-center justify-center overflow-hidden",
+        "bg-brand-panel relative flex size-full flex-col items-center justify-center overflow-hidden",
         small ? "gap-0" : "gap-2",
         className,
       )}
@@ -44,7 +44,12 @@ export function VehiclePhotoPlaceholder({
           className={cn("relative w-auto opacity-80", size === "lg" ? "h-10" : "h-7")}
         />
       )}
-      <CarOutline className={cn("text-brand/70 relative", small ? "w-4/5" : size === "lg" ? "w-1/2" : "w-3/5")} />
+      <CarOutline
+        className={cn(
+          "text-brand/70 relative",
+          small ? "w-4/5" : size === "lg" ? "w-1/2" : "w-3/5",
+        )}
+      />
       {small ? null : (
         <div className="relative grid justify-items-center gap-0.5 text-center">
           <span className="font-heading text-sidebar-foreground/70 text-[0.7rem] font-semibold tracking-[0.2em] uppercase">

@@ -10,16 +10,27 @@ import { cn } from "@/lib/utils";
  * separated by gaps, and every value is labelled in text next to the chart.
  */
 export const PAYMENT_COLORS = {
-  deposit: "#2563eb",
-  balance: "#059669",
-  outstanding: "#d97706",
+  deposit: "var(--chart-4)",
+  balance: "var(--chart-1)",
+  outstanding: "var(--chart-2)",
 } as const;
 
-export type PaymentPart = { key: keyof typeof PAYMENT_COLORS; label: string; value: number; display: string };
+export type PaymentPart = {
+  key: keyof typeof PAYMENT_COLORS;
+  label: string;
+  value: number;
+  display: string;
+};
 
 function Hatch({ id }: { id: string }) {
   return (
-    <pattern id={id} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <pattern
+      id={id}
+      width="6"
+      height="6"
+      patternUnits="userSpaceOnUse"
+      patternTransform="rotate(45)"
+    >
       <rect width="6" height="6" fill={PAYMENT_COLORS.outstanding} />
       <line x1="0" y1="0" x2="0" y2="6" stroke="var(--card)" strokeWidth="2" strokeOpacity="0.55" />
     </pattern>
@@ -48,11 +59,24 @@ export function PaymentRing({
   let offset = 0;
   return (
     <figure className="relative mx-auto" style={{ width: size, height: size }}>
-      <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} className="-rotate-90" aria-hidden>
+      <svg
+        viewBox={`0 0 ${size} ${size}`}
+        width={size}
+        height={size}
+        className="-rotate-90"
+        aria-hidden
+      >
         <defs>
           <Hatch id={hatchId} />
         </defs>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--muted)" strokeWidth={stroke} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--muted)"
+          strokeWidth={stroke}
+        />
         {total > 0
           ? parts.map((part) => {
               if (part.value <= 0) return null;
@@ -64,7 +88,9 @@ export function PaymentRing({
                   cy={size / 2}
                   r={r}
                   fill="none"
-                  stroke={part.key === "outstanding" ? `url(#${hatchId})` : PAYMENT_COLORS[part.key]}
+                  stroke={
+                    part.key === "outstanding" ? `url(#${hatchId})` : PAYMENT_COLORS[part.key]
+                  }
                   strokeWidth={stroke}
                   strokeLinecap="butt"
                   strokeDasharray={`${length} ${c - length}`}
@@ -95,7 +121,13 @@ export function PaymentBar({ parts, label }: { parts: PaymentPart[]; label: stri
 
   return (
     <div className="grid gap-3">
-      <svg viewBox="0 0 100 10" preserveAspectRatio="none" className="h-3 w-full" role="img" aria-label={label}>
+      <svg
+        viewBox="0 0 100 10"
+        preserveAspectRatio="none"
+        className="h-3 w-full"
+        role="img"
+        aria-label={label}
+      >
         <defs>
           <Hatch id={hatchId} />
         </defs>
@@ -111,7 +143,9 @@ export function PaymentBar({ parts, label }: { parts: PaymentPart[]; label: stri
                     x={x + (index > 0 ? 0.6 : 0)}
                     width={Math.max(width - (index > 0 ? 0.6 : 0), 0.4)}
                     height="10"
-                    fill={part.key === "outstanding" ? `url(#${hatchId})` : PAYMENT_COLORS[part.key]}
+                    fill={
+                      part.key === "outstanding" ? `url(#${hatchId})` : PAYMENT_COLORS[part.key]
+                    }
                   >
                     <title>{`${part.label}: ${part.display}`}</title>
                   </rect>
@@ -126,8 +160,16 @@ export function PaymentBar({ parts, label }: { parts: PaymentPart[]; label: stri
         {parts.map((part) => (
           <li key={part.key} className="flex items-start gap-2">
             <span
-              className={cn("mt-1 size-2.5 shrink-0 rounded-[3px]", part.key === "outstanding" && "bg-[repeating-linear-gradient(45deg,#d97706_0_3px,#f3c58a_3px_5px)]")}
-              style={part.key === "outstanding" ? undefined : { backgroundColor: PAYMENT_COLORS[part.key] }}
+              className={cn(
+                "mt-1 size-2.5 shrink-0 rounded-[3px]",
+                part.key === "outstanding" &&
+                  "bg-[repeating-linear-gradient(45deg,var(--chart-2)_0_3px,var(--gold-soft)_3px_5px)]",
+              )}
+              style={
+                part.key === "outstanding"
+                  ? undefined
+                  : { backgroundColor: PAYMENT_COLORS[part.key] }
+              }
               aria-hidden
             />
             <span className="grid">
@@ -168,8 +210,21 @@ export function CountdownRing({
           : "var(--brand)";
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }}>
-      <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} className="-rotate-90" aria-hidden>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--muted)" strokeWidth={stroke} />
+      <svg
+        viewBox={`0 0 ${size} ${size}`}
+        width={size}
+        height={size}
+        className="-rotate-90"
+        aria-hidden
+      >
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="var(--muted)"
+          strokeWidth={stroke}
+        />
         <circle
           cx={size / 2}
           cy={size / 2}

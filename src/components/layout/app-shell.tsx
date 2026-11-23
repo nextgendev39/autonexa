@@ -25,7 +25,7 @@ export function AppShell({ user, children }: { user: UserContext; children: Reac
   return (
     <PermissionProvider value={user}>
       <NotificationProvider enabled={notificationsEnabled}>
-        <div className="bg-background flex h-svh flex-col overflow-hidden">
+        <div className="bg-background lg:bg-shell flex h-svh flex-col overflow-hidden">
           <a
             href="#main"
             className="bg-primary text-primary-foreground sr-only z-50 rounded-md px-3 py-2 focus:not-sr-only focus:absolute focus:start-4 focus:top-3"
@@ -34,22 +34,27 @@ export function AppShell({ user, children }: { user: UserContext; children: Reac
           </a>
           <div className="flex min-h-0 flex-1">
             <Sidebar collapsed={collapsed} onToggle={toggle} />
-            <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-              <HeaderBar user={user} />
-              <main
-                id="main"
-                className={cn(
-                  "mx-auto flex min-h-0 w-full max-w-[1600px] flex-1 flex-col overflow-y-auto px-4 md:px-6 lg:px-8",
-                  focus
-                    ? "py-0"
-                    : "py-5 pb-[calc(6.5rem+env(safe-area-inset-bottom))] lg:py-8 lg:pb-10",
-                )}
-              >
-                {/* Booking payment alerts stay on every page until dismissed. */}
-                <BookingPaymentAlerts />
-                {notificationsEnabled ? <PushBanner /> : null}
-                {children}
-              </main>
+            {/* The canvas: inset and rounded on desktop, full-bleed on phones. */}
+            <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:py-2 lg:pe-2">
+              <div className="bg-background flex min-h-0 flex-1 flex-col overflow-hidden lg:rounded-2xl lg:border lg:shadow-sm">
+                <HeaderBar user={user} />
+                <main
+                  id="main"
+                  className={cn(
+                    "flex min-h-0 w-full flex-1 flex-col overflow-y-auto px-4 md:px-6 lg:px-10",
+                    focus
+                      ? "py-0"
+                      : "pt-5 pb-[calc(7rem+env(safe-area-inset-bottom))] lg:pt-8 lg:pb-12",
+                  )}
+                >
+                  <div className="mx-auto flex w-full max-w-[1480px] flex-1 flex-col">
+                    {/* Booking payment alerts stay on every page until dismissed. */}
+                    <BookingPaymentAlerts />
+                    {notificationsEnabled ? <PushBanner /> : null}
+                    {children}
+                  </div>
+                </main>
+              </div>
             </div>
           </div>
           {focus ? null : <MobileNav />}

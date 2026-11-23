@@ -72,97 +72,99 @@ export function ProfilePageClient({ profile }: { profile: MyProfile }) {
   );
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
       <PageHeader title={t("title")} description={t("description")} />
 
-      {/* Identity: who you are and what you can do, at a glance. */}
-      <section className="bg-carbon text-sidebar-foreground relative overflow-hidden rounded-2xl p-5 shadow-sm sm:p-6">
-        <span
-          className="bg-brand/25 pointer-events-none absolute -end-16 -top-20 size-56 rounded-full blur-3xl"
-          aria-hidden
-        />
-        <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center">
-          <Avatar className="ring-brand/50 size-16 shrink-0 ring-2 sm:size-20">
-            {profile.avatarUrl ? <AvatarImage src={profile.avatarUrl} alt="" /> : null}
-            <AvatarFallback className="bg-gold text-brand-foreground font-heading text-xl font-semibold">
-              {initials || "Z"}
-            </AvatarFallback>
-          </Avatar>
-          <div className="grid min-w-0 flex-1 gap-1.5">
-            <h2 className="font-heading truncate text-xl font-semibold tracking-tight sm:text-2xl">
-              {profile.displayName}
-            </h2>
-            {profile.email ? (
-              <p className="text-sidebar-foreground/70 flex items-center gap-1.5 truncate text-sm">
-                <MailIcon className="size-4 shrink-0" aria-hidden />
-                {profile.email}
-              </p>
-            ) : null}
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {roles.map((role) => (
-                <RoleChip key={role} label={role} className="text-sidebar-foreground bg-white/10" />
-              ))}
+      <div className="grid items-start gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+        {/* Identity column: who you are and what you can do, kept in view. */}
+        <aside className="grid gap-6 lg:sticky lg:top-0">
+          <section className="bg-brand-panel text-sidebar-foreground relative overflow-hidden rounded-2xl p-5 shadow-sm sm:p-6 lg:flex lg:flex-col lg:items-center lg:text-center">
+            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center lg:flex-col">
+              <Avatar className="ring-brand/50 size-16 shrink-0 ring-2 sm:size-20">
+                {profile.avatarUrl ? <AvatarImage src={profile.avatarUrl} alt="" /> : null}
+                <AvatarFallback className="bg-gold text-gold-foreground font-heading text-xl font-semibold">
+                  {initials || "A"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid min-w-0 flex-1 gap-1.5">
+                <h2 className="font-heading truncate text-xl font-semibold tracking-tight sm:text-2xl">
+                  {profile.displayName}
+                </h2>
+                {profile.email ? (
+                  <p className="text-sidebar-foreground/70 flex items-center gap-1.5 truncate text-sm lg:justify-center">
+                    <MailIcon className="size-4 shrink-0" aria-hidden />
+                    {profile.email}
+                  </p>
+                ) : null}
+                <div className="flex flex-wrap gap-1.5 pt-1 lg:justify-center">
+                  {roles.map((role) => (
+                    <RoleChip
+                      key={role}
+                      label={role}
+                      className="text-sidebar-foreground bg-white/10"
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          </section>
+          <Card className="content-start">
+            <CardHeader>
+              <CardTitle>{t("account.title")}</CardTitle>
+              <CardDescription>{t("account.hint")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <dl className="grid gap-3 text-sm">
+                <InfoRow
+                  icon={HashIcon}
+                  label={t("account.employeeCode")}
+                  value={profile.employeeCode}
+                />
+                <InfoRow
+                  icon={Building2Icon}
+                  label={t("account.branch")}
+                  value={
+                    profile.branch
+                      ? [profile.branch.name, profile.branch.city].filter(Boolean).join(" · ")
+                      : t("account.allBranches")
+                  }
+                />
+                <InfoRow
+                  icon={ShieldCheckIcon}
+                  label={t("account.roles")}
+                  value={roles.join(", ") || null}
+                />
+                <InfoRow
+                  icon={BadgeCheckIcon}
+                  label={t("account.status")}
+                  value={
+                    tRoot.has(`profile.statuses.${profile.status}` as Parameters<typeof tRoot>[0])
+                      ? tRoot(`profile.statuses.${profile.status}` as Parameters<typeof tRoot>[0])
+                      : profile.status
+                  }
+                />
+                <InfoRow
+                  icon={CalendarIcon}
+                  label={t("account.memberSince")}
+                  value={formatDate(profile.memberSince, locale)}
+                />
+                <InfoRow
+                  icon={ClockIcon}
+                  label={t("account.lastSignIn")}
+                  value={
+                    profile.lastSignInAt
+                      ? formatDate(profile.lastSignInAt, locale, "dateTime")
+                      : null
+                  }
+                />
+              </dl>
+            </CardContent>
+          </Card>
+        </aside>
         <div className="grid content-start gap-6">
           <DetailsCard profile={profile} />
           <PasswordCard />
         </div>
-
-        <Card className="content-start">
-          <CardHeader>
-            <CardTitle>{t("account.title")}</CardTitle>
-            <CardDescription>{t("account.hint")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <dl className="grid gap-3 text-sm">
-              <InfoRow
-                icon={HashIcon}
-                label={t("account.employeeCode")}
-                value={profile.employeeCode}
-              />
-              <InfoRow
-                icon={Building2Icon}
-                label={t("account.branch")}
-                value={
-                  profile.branch
-                    ? [profile.branch.name, profile.branch.city].filter(Boolean).join(" · ")
-                    : t("account.allBranches")
-                }
-              />
-              <InfoRow
-                icon={ShieldCheckIcon}
-                label={t("account.roles")}
-                value={roles.join(", ") || null}
-              />
-              <InfoRow
-                icon={BadgeCheckIcon}
-                label={t("account.status")}
-                value={
-                  tRoot.has(`profile.statuses.${profile.status}` as Parameters<typeof tRoot>[0])
-                    ? tRoot(`profile.statuses.${profile.status}` as Parameters<typeof tRoot>[0])
-                    : profile.status
-                }
-              />
-              <InfoRow
-                icon={CalendarIcon}
-                label={t("account.memberSince")}
-                value={formatDate(profile.memberSince, locale)}
-              />
-              <InfoRow
-                icon={ClockIcon}
-                label={t("account.lastSignIn")}
-                value={
-                  profile.lastSignInAt ? formatDate(profile.lastSignInAt, locale, "dateTime") : null
-                }
-              />
-            </dl>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );

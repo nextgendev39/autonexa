@@ -1,19 +1,20 @@
 import {
-  FilterBarSkeleton,
-  KpiRowSkeleton,
-  ListSkeleton,
+  MetricStripSkeleton,
   PageHeaderSkeleton,
   PageSkeleton,
+  PanelSkeleton,
+  TableSkeleton,
 } from "@/components/feedback/skeletons";
 
-/** Header with Invite, user KPIs, status tabs with search, then the people list. */
+/** Header, the metric strip, then the people panel (filter chips + search, table). */
 export default function Loading() {
   return (
     <PageSkeleton>
       <PageHeaderSkeleton actions={1} />
-      <KpiRowSkeleton />
-      <FilterBarSkeleton tabs={4} />
-      <ListSkeleton columns={5} lead="avatar" />
+      <MetricStripSkeleton />
+      <PanelSkeleton chips={4}>
+        <TableSkeleton rows={6} columns={5} lead="avatar" bare />
+      </PanelSkeleton>
     </PageSkeleton>
   );
 }

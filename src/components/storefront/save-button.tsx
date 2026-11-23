@@ -50,7 +50,10 @@ export function SaveButton({
         className="inline-flex"
       >
         <HeartIcon
-          className={cn("size-4.5", saved ? "fill-red-500 text-red-500" : "text-foreground")}
+          className={cn(
+            "size-4.5",
+            saved ? "fill-destructive text-destructive" : "text-foreground",
+          )}
           aria-hidden
         />
       </motion.span>

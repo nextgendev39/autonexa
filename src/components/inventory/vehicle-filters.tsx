@@ -5,10 +5,7 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 import { FormField } from "@/components/forms/form-field";
-import {
-  countActiveFilters,
-  useInventoryUrlState,
-} from "@/components/inventory/inventory-query";
+import { countActiveFilters, useInventoryUrlState } from "@/components/inventory/inventory-query";
 import { bodyTypeKey } from "@/components/inventory/inventory-utils";
 import {
   BRANCH_ICON,
@@ -44,10 +41,10 @@ import {
 
 /** Same colours as the "Days in stock" card's bands. */
 const STOCK_AGE_DOTS: Record<StockAgeBand, string> = {
-  fresh: "bg-emerald-500",
+  fresh: "bg-success",
   mid: "bg-brand",
-  aging: "bg-orange-500",
-  old: "bg-rose-500",
+  aging: "bg-warning",
+  old: "bg-destructive",
 };
 
 const ADVANCED_KEYS = [
@@ -98,9 +95,7 @@ export function VehicleFilters({ actions }: { actions?: React.ReactNode }) {
 
   const modelOptions = useMemo(() => {
     const models = meta.data?.models ?? [];
-    return selectedMake
-      ? models.filter((model) => model.makeId === selectedMake.id)
-      : models;
+    return selectedMake ? models.filter((model) => model.makeId === selectedMake.id) : models;
   }, [meta.data?.models, selectedMake]);
 
   const chips = useMemo(() => {
@@ -526,9 +521,7 @@ export function VehicleFilters({ actions }: { actions?: React.ReactNode }) {
               <Checkbox
                 id="filter-archived"
                 checked={searchParams.get("includeArchived") === "true"}
-                onCheckedChange={(checked) =>
-                  update({ includeArchived: checked ? "true" : null })
-                }
+                onCheckedChange={(checked) => update({ includeArchived: checked ? "true" : null })}
               />
               <Label htmlFor="filter-archived" className="cursor-pointer">
                 {t("inventory.filters.includeArchived")}

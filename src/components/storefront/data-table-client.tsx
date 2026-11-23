@@ -1,7 +1,14 @@
 "use client";
 
 import { EmptyState } from "@/components/feedback/empty-state";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export function DataTableClient({
   headers,
@@ -12,9 +19,9 @@ export function DataTableClient({
   rows: { key: string; cells: React.ReactNode[] }[];
   empty: string;
 }) {
-  if (rows.length === 0) return <EmptyState title={empty} />;
+  if (rows.length === 0) return <EmptyState inset title={empty} className="py-12" />;
   return (
-    <div className="overflow-x-auto">
+    <div className="-mx-(--card-spacing,0px) overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>

@@ -105,7 +105,9 @@ function InfoRow({
         <Icon className="size-4" aria-hidden />
       </span>
       <div className="grid min-w-0 flex-1 gap-0.5">
-        <dt className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">{label}</dt>
+        <dt className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
+          {label}
+        </dt>
         <dd
           className={cn(
             "flex min-w-0 items-center gap-1.5 text-sm font-medium",
@@ -141,7 +143,11 @@ function CopyButton({ text }: { text: string }) {
       aria-label={t("inventory.overview.copy")}
       title={t("inventory.overview.copy")}
     >
-      {done ? <CheckIcon className="size-3.5 text-emerald-600" aria-hidden /> : <CopyIcon className="size-3.5" aria-hidden />}
+      {done ? (
+        <CheckIcon className="text-success size-3.5" aria-hidden />
+      ) : (
+        <CopyIcon className="size-3.5" aria-hidden />
+      )}
     </button>
   );
 }
@@ -154,8 +160,20 @@ export function IdentificationCard({ vehicle }: { vehicle: VehicleDetail }) {
   return (
     <SectionCard icon={FingerprintIcon} title={t("inventory.detail.identity")} delay={240}>
       <dl className="grid grid-cols-1 gap-1 sm:grid-cols-2">
-        <InfoRow icon={HashIcon} label={t("inventory.fields.stockId")} value={vehicle.stockNumber} mono copy={vehicle.stockNumber} />
-        <InfoRow icon={BarcodeIcon} label={t("inventory.fields.vin")} value={vehicle.vin} mono copy={vehicle.vin} />
+        <InfoRow
+          icon={HashIcon}
+          label={t("inventory.fields.stockId")}
+          value={vehicle.stockNumber}
+          mono
+          copy={vehicle.stockNumber}
+        />
+        <InfoRow
+          icon={BarcodeIcon}
+          label={t("inventory.fields.vin")}
+          value={vehicle.vin}
+          mono
+          copy={vehicle.vin}
+        />
         <InfoRow
           icon={ScanLineIcon}
           label={t("inventory.fields.chassis")}
@@ -163,15 +181,26 @@ export function IdentificationCard({ vehicle }: { vehicle: VehicleDetail }) {
           mono
           copy={vehicle.chassisNumber}
         />
-        <InfoRow icon={TagIcon} label={t("inventory.fields.brand")} value={`${vehicle.make} · ${vehicle.model}`} />
+        <InfoRow
+          icon={TagIcon}
+          label={t("inventory.fields.brand")}
+          value={`${vehicle.make} · ${vehicle.model}`}
+        />
         <InfoRow icon={LayersIcon} label={t("inventory.fields.variant")} value={vehicle.variant} />
-        <InfoRow icon={PackageIcon} label={t("inventory.fields.quantity")} value={formatNumber(vehicle.quantity, locale)} />
+        <InfoRow
+          icon={PackageIcon}
+          label={t("inventory.fields.quantity")}
+          value={formatNumber(vehicle.quantity, locale)}
+        />
         {vehicle.splitFrom ? (
           <InfoRow
             icon={SplitIcon}
             label={t("inventory.fields.splitFrom")}
             value={
-              <Link href={vehicleHref(vehicle.splitFrom.stockNumber)} className="text-brand underline-offset-4 hover:underline">
+              <Link
+                href={vehicleHref(vehicle.splitFrom.stockNumber)}
+                className="text-brand underline-offset-4 hover:underline"
+              >
                 {vehicle.splitFrom.stockNumber}
               </Link>
             }
@@ -192,7 +221,7 @@ export function OriginLocationCard({ vehicle }: { vehicle: VehicleDetail }) {
     <SectionCard icon={GlobeIcon} title={t("inventory.detail.originLocation")} delay={300}>
       {/* Where the car physically is, as a small breadcrumb: branch → bay (→ port while in transit). */}
       <div className="bg-muted/40 mb-3 flex flex-wrap items-center gap-2 rounded-xl p-3 text-sm">
-        <span className="bg-gold text-brand-foreground flex size-8 items-center justify-center rounded-full">
+        <span className="bg-gold text-gold-foreground flex size-8 items-center justify-center rounded-full">
           <MapPinIcon className="size-4" aria-hidden />
         </span>
         <span className="font-semibold">{vehicle.branchName ?? t("inventory.fields.notSet")}</span>
@@ -205,14 +234,18 @@ export function OriginLocationCard({ vehicle }: { vehicle: VehicleDetail }) {
           </>
         ) : null}
         {vehicle.status === "acquired" && vehicle.portLocation ? (
-          <span className="ms-auto inline-flex items-center gap-1 rounded-full bg-sky-500/12 px-2 py-0.5 text-xs font-medium text-sky-700 dark:text-sky-300">
+          <span className="bg-info-soft text-info-foreground border-info/25 ms-auto inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium">
             <ShipIcon className="size-3.5" aria-hidden />
             {vehicle.portLocation}
           </span>
         ) : null}
       </div>
       <dl className="grid grid-cols-1 gap-1 sm:grid-cols-2">
-        <InfoRow icon={ShieldCheckIcon} label={t("inventory.fields.origin")} value={enumLabel(t, "origin", vehicle.originType)} />
+        <InfoRow
+          icon={ShieldCheckIcon}
+          label={t("inventory.fields.origin")}
+          value={enumLabel(t, "origin", vehicle.originType)}
+        />
         <InfoRow
           icon={GlobeIcon}
           label={t("inventory.fields.countryOfOrigin")}
@@ -230,12 +263,16 @@ export function OriginLocationCard({ vehicle }: { vehicle: VehicleDetail }) {
         <InfoRow
           icon={PaletteIcon}
           label={t("inventory.fields.exteriorColor")}
-          value={vehicle.exteriorColor ? <VehicleColorDisplay value={vehicle.exteriorColor} /> : null}
+          value={
+            vehicle.exteriorColor ? <VehicleColorDisplay value={vehicle.exteriorColor} /> : null
+          }
         />
         <InfoRow
           icon={PaletteIcon}
           label={t("inventory.fields.interiorColor")}
-          value={vehicle.interiorColor ? <VehicleColorDisplay value={vehicle.interiorColor} /> : null}
+          value={
+            vehicle.interiorColor ? <VehicleColorDisplay value={vehicle.interiorColor} /> : null
+          }
         />
       </dl>
     </SectionCard>
@@ -245,11 +282,11 @@ export function OriginLocationCard({ vehicle }: { vehicle: VehicleDetail }) {
 /* ------------------------------------------------------------ acquisition */
 
 const ACQ_TONE: Record<string, string> = {
-  received: "bg-emerald-600/10 text-emerald-700 dark:text-emerald-300",
-  purchased: "bg-sky-500/12 text-sky-700 dark:text-sky-300",
-  approved: "bg-sky-500/12 text-sky-700 dark:text-sky-300",
+  received: "bg-success-soft text-success-foreground",
+  purchased: "bg-info-soft text-info-foreground",
+  approved: "bg-info-soft text-info-foreground",
   cancelled: "bg-muted text-muted-foreground",
-  rejected: "bg-rose-500/12 text-rose-700 dark:text-rose-300",
+  rejected: "bg-danger-soft text-danger-foreground",
 };
 
 export function AcquisitionSummaryCard({ vehicle }: { vehicle: VehicleDetail }) {
@@ -280,7 +317,7 @@ export function AcquisitionSummaryCard({ vehicle }: { vehicle: VehicleDetail }) 
         <span
           className={cn(
             "rounded-full px-2 py-0.5 text-xs font-medium",
-            ACQ_TONE[acquisition.status] ?? "bg-amber-500/12 text-amber-700 dark:text-amber-300",
+            ACQ_TONE[acquisition.status] ?? "bg-warning-soft text-warning-foreground",
           )}
         >
           {t(`acquisitions.status.${acquisition.status}`)}
@@ -290,12 +327,16 @@ export function AcquisitionSummaryCard({ vehicle }: { vehicle: VehicleDetail }) 
         <InfoRow
           icon={BuildingIcon}
           label={t("inventory.fields.acquisitionType")}
-          value={acquisition.sourceType ? t(`acquisitions.sourceTypes.${acquisition.sourceType}`) : null}
+          value={
+            acquisition.sourceType ? t(`acquisitions.sourceTypes.${acquisition.sourceType}`) : null
+          }
         />
         <InfoRow
           icon={CalendarIcon}
           label={t("inventory.fields.purchaseDate")}
-          value={acquisition.purchaseDate ? formatDate(acquisition.purchaseDate, locale, "medium") : null}
+          value={
+            acquisition.purchaseDate ? formatDate(acquisition.purchaseDate, locale, "medium") : null
+          }
         />
         {acquisition.purchasePrice != null ? (
           <InfoRow
@@ -309,7 +350,11 @@ export function AcquisitionSummaryCard({ vehicle }: { vehicle: VehicleDetail }) 
           />
         ) : null}
         {cost != null ? (
-          <InfoRow icon={WarehouseIcon} label={t("inventory.fields.acquisitionCost")} value={money(cost)} />
+          <InfoRow
+            icon={WarehouseIcon}
+            label={t("inventory.fields.acquisitionCost")}
+            value={money(cost)}
+          />
         ) : null}
       </dl>
     </SectionCard>
@@ -322,8 +367,18 @@ export function RecordNotesCard({ vehicle }: { vehicle: VehicleDetail }) {
   const t = useTranslations();
   const locale = useAppLocale();
   const entries = [
-    { key: "created", label: t("inventory.overview.created"), at: vehicle.createdAt, by: vehicle.createdByName },
-    { key: "updated", label: t("inventory.overview.updated"), at: vehicle.updatedAt, by: vehicle.updatedByName },
+    {
+      key: "created",
+      label: t("inventory.overview.created"),
+      at: vehicle.createdAt,
+      by: vehicle.createdByName,
+    },
+    {
+      key: "updated",
+      label: t("inventory.overview.updated"),
+      at: vehicle.updatedAt,
+      by: vehicle.updatedByName,
+    },
   ];
 
   return (
@@ -339,7 +394,12 @@ export function RecordNotesCard({ vehicle }: { vehicle: VehicleDetail }) {
             <NotebookPenIcon className="size-3.5" aria-hidden />
             {t("inventory.fields.notes")}
           </figcaption>
-          <p className={cn("whitespace-pre-wrap", !vehicle.description && "text-muted-foreground italic")}>
+          <p
+            className={cn(
+              "whitespace-pre-wrap",
+              !vehicle.description && "text-muted-foreground italic",
+            )}
+          >
             {vehicle.description || t("inventory.overview.noNotes")}
           </p>
         </figure>
@@ -359,9 +419,14 @@ export function RecordNotesCard({ vehicle }: { vehicle: VehicleDetail }) {
                 )}
               </span>
               <div className="grid min-w-0 gap-0.5">
-                <span className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">{entry.label}</span>
+                <span className="text-muted-foreground text-[11px] font-medium tracking-wide uppercase">
+                  {entry.label}
+                </span>
                 <span className="truncate text-sm font-medium">{entry.by ?? "—"}</span>
-                <span className="text-muted-foreground text-xs" title={formatDate(entry.at, locale, "dateTime")}>
+                <span
+                  className="text-muted-foreground text-xs"
+                  title={formatDate(entry.at, locale, "dateTime")}
+                >
                   {formatRelativeTime(entry.at, locale)}
                 </span>
               </div>

@@ -169,7 +169,7 @@ function AfterPurchase({
 }
 
 /** Edge-to-edge bars inside <main>, which pads its content by these amounts. */
-const BLEED = "-mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-8 lg:px-8";
+const BLEED = "-mx-4 px-4 md:-mx-6 md:px-6 lg:-mx-10 lg:px-10";
 
 /**
  * Full-screen step form: a slim sticky step bar, the form, and the actions pinned to the

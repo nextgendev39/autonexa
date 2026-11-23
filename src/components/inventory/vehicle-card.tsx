@@ -35,7 +35,7 @@ import type { VehicleListItem } from "@/types/vehicle";
  */
 function Chip({ children }: { children: React.ReactNode }) {
   return (
-    <span className="bg-background/95 inline-flex rounded-full shadow-sm ring-1 ring-black/5 backdrop-blur-sm dark:ring-white/10">
+    <span className="bg-card/95 inline-flex rounded-full shadow-sm ring-1 ring-black/5 backdrop-blur-sm dark:ring-white/10">
       {children}
     </span>
   );
@@ -63,10 +63,9 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleListItem }) {
   ].filter((spec): spec is { icon: typeof CalendarIcon; value: string } => !!spec.value);
 
   return (
-    // h-full + flex column: every card in a grid row is the same height and the
-    // price/location row and action bar line up along the bottom. Phones get a compact
-    // horizontal card: photo on the side, status inside the details.
-    <Card className="group/vehicle hover:ring-brand/30 flex h-full flex-col gap-0 overflow-hidden py-0 hover:-translate-y-1 hover:shadow-lg">
+    // h-full + flex column: every card in a grid row is the same height and the action bar
+    // lines up along the bottom. Phones get a compact horizontal card: photo on the side.
+    <Card className="group/vehicle hover:ring-brand/45 flex h-full flex-col gap-0 overflow-hidden py-0 hover:shadow-md">
       <Link
         href={vehicleHref(vehicle.stockNumber)}
         className="focus-visible:ring-ring/50 flex flex-1 outline-none focus-visible:ring-3 max-sm:flex-row sm:flex-col"
@@ -77,21 +76,18 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleListItem }) {
             <img
               src={vehicle.primaryPhotoUrl}
               alt={vehicleTitle(vehicle)}
-              className="size-full object-cover transition-transform duration-700 ease-(--ease-out-expo) group-hover/vehicle:scale-105"
+              className="size-full object-cover transition-transform duration-500 ease-(--ease-standard) group-hover/vehicle:scale-[1.03]"
               loading="lazy"
               decoding="async"
             />
           ) : (
             <VehiclePhotoPlaceholder className="sm:pt-8" />
           )}
-          {/* Soft scrim behind the chips for extra separation on busy photos. */}
+          {/* Scrims top and bottom so the chips and the price plate read on any photo. */}
           <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-linear-to-b from-black/30 to-transparent max-sm:hidden"
+            className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgb(8_10_15/0.35),transparent_28%,transparent_62%,rgb(8_10_15/0.55))] max-sm:hidden"
             aria-hidden
           />
-          {/* Sold cars get the corner ribbon instead of a status chip, so the condition
-              chip moves to the free corner. */}
-          {/* Phones keep the Sold ribbon, sized for the small side photo. */}
           {sold ? (
             <div className="sm:hidden">
               <SoldRibbon size="sm" />
@@ -100,14 +96,14 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleListItem }) {
           {sold ? (
             <div className="max-sm:hidden">
               <SoldRibbon size="md" />
-              <div className="absolute start-2.5 top-2.5">
+              <div className="absolute start-3 top-3">
                 <Chip>
                   <MarketTypeBadge value={vehicle.marketType} />
                 </Chip>
               </div>
             </div>
           ) : (
-            <div className="absolute inset-x-2.5 top-2.5 flex items-start justify-between gap-2 max-sm:hidden">
+            <div className="absolute inset-x-3 top-3 flex items-start justify-between gap-2 max-sm:hidden">
               <Chip>
                 <VehicleStatusBadge status={vehicle.status} />
               </Chip>
@@ -116,64 +112,85 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleListItem }) {
               </Chip>
             </div>
           )}
+          {/* Price plate: obsidian glass with a champagne figure. */}
+          {showPrice ? (
+            <div className="absolute start-3 bottom-3 max-w-[calc(100%-1.5rem)] rounded-lg bg-[#111318]/80 px-3 py-1.5 text-white shadow-sm ring-1 ring-white/10 backdrop-blur-md max-sm:hidden [&_.text-muted-foreground]:text-white/65">
+              <VehiclePrice vehicle={vehicle} amountClassName="figure text-base text-[#e8d5a9]" />
+            </div>
+          ) : null}
         </div>
 
-        <div className="flex min-w-0 flex-1 flex-col gap-3 p-4 max-sm:gap-1.5 max-sm:p-3">
+        <div className="flex min-w-0 flex-1 flex-col gap-3.5 p-4 max-sm:gap-1.5 max-sm:p-3">
           <div className="flex flex-wrap items-center gap-1.5 sm:hidden">
-            {/* Sold cars already say so on the photo ribbon. */}
             {sold ? null : <VehicleStatusBadge status={vehicle.status} />}
             <MarketTypeBadge value={vehicle.marketType} className="h-5 px-1.5 text-[11px]" />
           </div>
           <div className="min-w-0">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-muted-foreground font-mono text-xs">{vehicle.stockNumber}</p>
-              <span
-                className={cn(
-                  "inline-flex shrink-0 items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-semibold tabular-nums",
-                  vehicle.quantity > 1
-                    ? "bg-violet-500/10 text-violet-800 dark:text-violet-200"
-                    : "bg-muted/60 text-muted-foreground",
-                )}
-              >
-                <LayersIcon className="size-3.5" aria-hidden />
-                {t("inventory.quantity.units", { count: vehicle.quantity })}
-              </span>
+              <p className="text-subtle-foreground font-mono text-[11px] tracking-wide">
+                {vehicle.stockNumber}
+              </p>
+              {vehicle.quantity > 1 ? (
+                <span className="bg-gold-soft text-premium-foreground border-gold/25 inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold tabular-nums">
+                  <LayersIcon className="size-3" aria-hidden />
+                  {t("inventory.quantity.units", { count: vehicle.quantity })}
+                </span>
+              ) : (
+                <span className="text-subtle-foreground inline-flex shrink-0 items-center gap-1 text-[11px] tabular-nums">
+                  <LayersIcon className="size-3" aria-hidden />
+                  {t("inventory.quantity.units", { count: vehicle.quantity })}
+                </span>
+              )}
             </div>
-            <p className="group-hover/vehicle:text-brand truncate font-semibold tracking-tight transition-colors sm:text-base">
+            <p className="font-heading group-hover/vehicle:text-brand mt-1 truncate text-[0.9375rem] font-semibold tracking-[-0.015em] transition-colors sm:text-base">
               {vehicle.make} {vehicle.model}
             </p>
             {/* Always one line tall so titles line up across the row. */}
             <p className="text-muted-foreground min-h-5 truncate text-sm max-sm:hidden">
-              {vehicle.variant ?? " "}
+              {vehicle.variant ?? " "}
             </p>
           </div>
 
-          <ul className="flex flex-wrap gap-1.5 max-sm:gap-1">
-            {specs.map((spec, index) => (
+          {/* Spec strip: equal cells divided by hairlines (phones keep year and mileage). */}
+          <ul
+            className={cn(
+              "divide-divider border-divider grid divide-x rounded-lg border max-sm:hidden rtl:divide-x-reverse",
+              specs.length >= 4
+                ? "grid-cols-4"
+                : specs.length === 3
+                  ? "grid-cols-3"
+                  : "grid-cols-2",
+            )}
+          >
+            {specs.map((spec) => (
               <li
                 key={spec.value}
-                className={cn(
-                  "bg-muted/60 text-foreground/80 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs tabular-nums max-sm:px-1.5 max-sm:py-0.5",
-                  // Phones keep year and mileage; the rest is on the vehicle page.
-                  index > 1 && "max-sm:hidden",
-                )}
+                className="flex min-w-0 flex-col items-center gap-1 px-1 py-2 text-center text-[11px] leading-tight tabular-nums"
               >
                 <spec.icon className="text-brand size-3.5" aria-hidden />
-                {spec.value}
+                <span className="text-foreground/85 w-full truncate">{spec.value}</span>
               </li>
             ))}
           </ul>
+          <p className="text-muted-foreground flex gap-2 text-xs tabular-nums sm:hidden">
+            {specs.slice(0, 2).map((spec) => (
+              <span key={spec.value} className="inline-flex items-center gap-1">
+                <spec.icon className="text-brand size-3" aria-hidden />
+                {spec.value}
+              </span>
+            ))}
+          </p>
 
-          <div className="mt-auto flex items-end justify-between gap-3 border-t pt-3 text-sm max-sm:gap-2 max-sm:border-0 max-sm:pt-1 max-sm:text-xs">
-            <span className="text-muted-foreground flex min-w-0 items-center gap-1.5">
+          <div className="mt-auto flex items-end justify-between gap-3 text-sm max-sm:gap-2 max-sm:text-xs">
+            <span className="text-muted-foreground flex min-w-0 items-center gap-1.5 text-xs">
               <MapPinIcon className="size-3.5 shrink-0" aria-hidden />
               <span className="truncate">{place || t("inventory.fields.notSet")}</span>
             </span>
             {showPrice ? (
               <VehiclePrice
                 vehicle={vehicle}
-                className="shrink-0 text-end"
-                amountClassName="font-heading text-sm font-semibold sm:text-base"
+                className="shrink-0 text-end sm:hidden"
+                amountClassName="figure text-sm"
               />
             ) : null}
           </div>
@@ -184,7 +201,7 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleListItem }) {
           them, and Edit is a full button when there are no sale actions. No actions, no bar. */}
       {sale.any || canEdit || canShare ? (
         <div
-          className="bg-muted/30 flex items-center gap-2 border-t px-3 py-2.5 max-sm:py-2"
+          className="border-divider flex items-center gap-2 border-t px-3 py-2.5 max-sm:py-2"
           data-row-stop
         >
           <VehicleSaleActions vehicle={vehicle} layout="card" />
